@@ -1,12 +1,8 @@
 import express from 'express';
 
-import { getData } from './getData';
-
 const app = express();
 
 app.get('/', (_, res) => {
-  getData();
-
   return res.send('Hello World!');
 });
 

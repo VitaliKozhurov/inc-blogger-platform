@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "watch": "tsc -w",
     "dev": "nodemon dist/index.js",
@@ -28,7 +29,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-unused-imports": "^4.3.0",
     "globals": "^17.0.0",
     "jest": "^30.2.0",
     "nodemon": "^3.1.11",
