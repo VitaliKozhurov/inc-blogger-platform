@@ -1,11 +1,13 @@
 import express from 'express';
 
+import { bodyParserMiddleware } from './core/middleware';
+
+const PORT = 5000;
+
 const app = express();
 
-app.get('/', (_, res) => {
-  return res.send('Hello World!');
-});
+app.use(bodyParserMiddleware);
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
