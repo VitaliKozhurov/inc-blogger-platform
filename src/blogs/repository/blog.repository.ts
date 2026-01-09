@@ -1,8 +1,6 @@
 import { db } from '../../db/db';
 import { BlogInputType } from '../types/blog';
 
-import { UpdateEntityType } from './../../core/types/util-types';
-
 export const blogRepository = {
   getBlogs: () => {
     return db.blogs;
@@ -17,7 +15,7 @@ export const blogRepository = {
 
     return newBlog;
   },
-  updateBlogById: ({ id, body }: UpdateEntityType<BlogInputType>) => {
+  updateBlogById: ({ id, body }: { id: string; body: BlogInputType }) => {
     const blogIndex = db.posts.findIndex(p => p.id === id);
 
     if (blogIndex !== -1) {

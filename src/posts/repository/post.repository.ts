@@ -2,8 +2,6 @@ import { Nullable } from '../../core/types';
 import { db } from '../../db/db';
 import { CreatePostInputType, PostType, UpdatePostInputType } from '../types/post';
 
-import { UpdateEntityType } from './../../core/types/util-types';
-
 export const postRepository = {
   getPosts: () => {
     return db.posts;
@@ -18,7 +16,7 @@ export const postRepository = {
 
     return newPost;
   },
-  updatePostById: ({ id, body }: UpdateEntityType<UpdatePostInputType>) => {
+  updatePostById: ({ id, body }: { id: string; body: UpdatePostInputType }) => {
     const postIndex = db.posts.findIndex(p => p.id === id);
 
     if (postIndex !== -1) {
