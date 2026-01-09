@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { appRoutes } from '../../core/constants';
+import { APP_ROUTES } from '../../core/constants';
 
 import { createPostHandler } from './handlers/create-post.handler';
 import { deletePostHandler } from './handlers/delete-post.handler';
@@ -10,8 +10,8 @@ import { updatePostHandler } from './handlers/update-post.handler';
 
 export const postRouter = Router();
 
-postRouter.get(appRoutes.POSTS, getPostsHandler);
-postRouter.get(appRoutes.POST_BY_ID, getPostHandler);
-postRouter.post(appRoutes.POSTS, createPostHandler);
-postRouter.put(appRoutes.POST_BY_ID, updatePostHandler);
-postRouter.delete(appRoutes.POST_BY_ID, deletePostHandler);
+postRouter.get(APP_ROUTES.ROOT, getPostsHandler);
+postRouter.get(APP_ROUTES.ID, getPostHandler);
+postRouter.post(APP_ROUTES.ROOT, createPostHandler);
+postRouter.put(APP_ROUTES.ID, updatePostHandler);
+postRouter.delete(APP_ROUTES.ID, deletePostHandler);

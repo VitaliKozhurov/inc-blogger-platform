@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { appRoutes } from '../../core/constants';
+import { APP_ROUTES } from '../../core/constants';
 
 import { createBlogHandler } from './handlers/create-blog.handler';
 import { deleteBlogHandler } from './handlers/delete-blog.handler';
@@ -10,12 +10,8 @@ import { updateBlogHandler } from './handlers/update-blog.handler';
 
 export const blogRouter = Router();
 
-blogRouter.get(appRoutes.BLOGS, getBlogsHandler);
-
-blogRouter.get(appRoutes.BLOG_BY_ID, getBlogByIdHandler);
-
-blogRouter.post(appRoutes.BLOGS, createBlogHandler);
-
-blogRouter.put(appRoutes.BLOG_BY_ID, updateBlogHandler);
-
-blogRouter.delete(appRoutes.BLOG_BY_ID, deleteBlogHandler);
+blogRouter.get(APP_ROUTES.ROOT, getBlogsHandler);
+blogRouter.get(APP_ROUTES.ID, getBlogByIdHandler);
+blogRouter.post(APP_ROUTES.ROOT, createBlogHandler);
+blogRouter.put(APP_ROUTES.ID, updateBlogHandler);
+blogRouter.delete(APP_ROUTES.ID, deleteBlogHandler);

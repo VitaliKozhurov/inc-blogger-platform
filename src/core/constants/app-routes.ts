@@ -1,7 +1,8 @@
-export const appRoutes = {
+export const APP_ROUTES = {
+  ROOT: '/',
+  ID: ':/id',
   BLOGS: '/blogs',
-  BLOG_BY_ID: '/blogs/:id',
   POSTS: '/posts',
-  POST_BY_ID: '/posts/:id',
-  TESTING: '/testing/all-data',
+  TESTING: '/testing',
+  CLEAR_DATA: 'all-data',
 } as const;
