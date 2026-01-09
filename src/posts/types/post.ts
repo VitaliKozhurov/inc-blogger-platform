@@ -6,3 +6,6 @@ export type PostType = {
   blogId: string;
   blogName: string;
 };
+
+export type CreatePostInputType = Omit<PostType, 'id'>;
+export type UpdatePostInputType = Omit<PostType, 'id' | 'blogName'>;
