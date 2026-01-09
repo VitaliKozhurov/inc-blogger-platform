@@ -5,3 +5,4 @@ export {
   RequestWithBodyType,
   RequestWithUriParamType,
 } from './util-types';
+export { ValidationErrorType } from './errors';
