@@ -1,1 +1,8 @@
-export { Nullable, UpdateEntityType } from './util-types';
+export {
+  IdParamType,
+  Nullable,
+  RequestWithBodyAndParamType,
+  RequestWithBodyType,
+  RequestWithUriParamType,
+  UpdateEntityType,
+} from './util-types';
