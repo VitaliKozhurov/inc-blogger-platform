@@ -1,1 +1,1 @@
-export { Nullable } from './util-types';
+export { Nullable, UpdateEntityType } from './util-types';

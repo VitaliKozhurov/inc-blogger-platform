@@ -4,3 +4,5 @@ export type BlogType = {
   description: string;
   websiteUrl: string;
 };
+
+export type BlogInputType = Omit<BlogType, 'id'>;
