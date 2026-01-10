@@ -54,6 +54,15 @@ describe('Blogs', () => {
   });
 
   describe('POST /blogs', () => {
+    it('should return 401 status', async () => {
+      await request(app)
+        .post(`${APP_ROUTES.BLOGS}`)
+        .send(mockBlog)
+        .expect(HTTP_STATUSES.UNAUTHORIZED);
+
+      await request(app).get(`${APP_ROUTES.BLOGS}`).expect(HTTP_STATUSES.OK).expect([]);
+    });
+
     it('should return 201 status and created blog', async () => {
       const { body: createdBlog } = await request(app)
         .post(`${APP_ROUTES.BLOGS}`)
@@ -85,6 +94,13 @@ describe('Blogs', () => {
   });
 
   describe('PUT /blogs:id', () => {
+    it('should return 401 status', async () => {
+      await request(app)
+        .put(`${APP_ROUTES.BLOGS}/1`)
+        .send(mockUpdatedBlog)
+        .expect(HTTP_STATUSES.UNAUTHORIZED);
+    });
+
     it('should return 400 status send incorrect id', async () => {
       await request(app)
         .put(`${APP_ROUTES.BLOGS}/null`)
@@ -140,6 +156,10 @@ describe('Blogs', () => {
   });
 
   describe('DELETE /blogs/:id', () => {
+    it('should return 401 status', async () => {
+      await request(app).delete(`${APP_ROUTES.BLOGS}/1`).expect(HTTP_STATUSES.UNAUTHORIZED);
+    });
+
     it('should return 400 status if send incorrect id', async () => {
       const createdBlog = await createBlog();
 

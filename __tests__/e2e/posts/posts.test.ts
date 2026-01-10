@@ -66,6 +66,15 @@ describe('Posts', () => {
   });
 
   describe('POST /posts', () => {
+    it('should return 401 status', async () => {
+      await request(app)
+        .post(`${APP_ROUTES.POSTS}`)
+        .send(mockPost)
+        .expect(HTTP_STATUSES.UNAUTHORIZED);
+
+      await request(app).get(`${APP_ROUTES.POSTS}`).expect(HTTP_STATUSES.OK).expect([]);
+    });
+
     it('should return 400 status if blog id not exist', async () => {
       await request(app)
         .post(`${APP_ROUTES.POSTS}`)
@@ -111,6 +120,13 @@ describe('Posts', () => {
   });
 
   describe('PUT /posts:id', () => {
+    it('should return 401 status', async () => {
+      await request(app)
+        .put(`${APP_ROUTES.POSTS}/1`)
+        .send(mockPost)
+        .expect(HTTP_STATUSES.UNAUTHORIZED);
+    });
+
     it('should return 400 status send incorrect id', async () => {
       await request(app)
         .put(`${APP_ROUTES.POSTS}/null`)
@@ -170,6 +186,10 @@ describe('Posts', () => {
   });
 
   describe('DELETE /posts/:id', () => {
+    it('should return 401 status', async () => {
+      await request(app).delete(`${APP_ROUTES.POSTS}/1`).expect(HTTP_STATUSES.UNAUTHORIZED);
+    });
+
     it('should return 400 status if send incorrect id', async () => {
       const createdPost = await createPost();
 
