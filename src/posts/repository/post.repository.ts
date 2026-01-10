@@ -1,6 +1,6 @@
 import { Nullable } from '../../core/types';
 import { db } from '../../db/db';
-import { CreatePostInputType, PostType, UpdatePostInputType } from '../types/post';
+import { PostInputModelType, PostType } from '../types/post';
 
 export const postRepository = {
   getPosts: () => {
@@ -9,14 +9,20 @@ export const postRepository = {
   getPostById: (id: string): Nullable<PostType> => {
     return db.posts.find(p => p.id === id) ?? null;
   },
-  createPost: (post: CreatePostInputType) => {
-    const newPost = { id: String(db.posts.length + 1), ...post };
+  createPost: (post: PostInputModelType) => {
+    const blog = db.blogs.find(b => b.id === post.blogId);
 
-    db.posts.push(newPost);
+    if (blog) {
+      const newPost: PostType = { id: String(db.posts.length + 1), blogName: blog.name, ...post };
 
-    return newPost;
+      db.posts.push(newPost);
+
+      return newPost;
+    }
+
+    return null;
   },
-  updatePostById: ({ id, body }: { id: string; body: UpdatePostInputType }) => {
+  updatePostById: ({ id, body }: { id: string; body: PostInputModelType }) => {
     const postIndex = db.posts.findIndex(p => p.id === id);
 
     if (postIndex !== -1) {

@@ -7,5 +7,13 @@ export type PostType = {
   blogName: string;
 };
 
-export type CreatePostInputType = Omit<PostType, 'id'>;
-export type UpdatePostInputType = Omit<PostType, 'id' | 'blogName'>;
+export type PostInputModelType = Omit<PostType, 'id' | 'blogName'>;
+
+export enum PostFields {
+  ID = 'id',
+  TITLE = 'title',
+  SHORT_DESCRIPTION = 'shortDescription',
+  CONTENT = 'content',
+  BLOG_ID = 'blogId',
+  BLOG_NAME = 'blogName',
+}
