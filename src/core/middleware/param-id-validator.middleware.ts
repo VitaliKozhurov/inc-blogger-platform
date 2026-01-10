@@ -3,7 +3,7 @@ import { param } from 'express-validator';
 import { PARAM_ID_ERROR_MESSAGES } from '../constants';
 import { checkValidationMiddleware } from '../validation';
 
-export const paramIdValidatorMiddleware = (uriParam: string = 'id') => {
+export const getUriParamValidatorMiddleware = (uriParam: string = 'id') => {
   return [
     param(uriParam)
       .exists()
@@ -18,3 +18,5 @@ export const paramIdValidatorMiddleware = (uriParam: string = 'id') => {
     checkValidationMiddleware,
   ];
 };
+
+export const idUriParamValidatorMiddleware = getUriParamValidatorMiddleware();
