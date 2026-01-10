@@ -16,10 +16,10 @@ export const blogRepository = {
     return newBlog;
   },
   updateBlogById: ({ id, body }: { id: string; body: BlogInputModelType }) => {
-    const blogIndex = db.blogs.findIndex(blog => blog.id === id);
+    const foundBlog = db.blogs.find(blog => blog.id === id);
 
-    if (blogIndex !== -1) {
-      db.blogs = db.blogs.map((blog, index) => (index === blogIndex ? { ...blog, ...body } : blog));
+    if (foundBlog) {
+      db.blogs = db.blogs.map(blog => (blog.id === foundBlog.id ? { ...blog, ...body } : blog));
 
       return true;
     }
@@ -27,10 +27,10 @@ export const blogRepository = {
     return false;
   },
   deleteBlogById: (id: string) => {
-    const blogIndex = db.blogs.findIndex(blog => blog.id === id);
+    const foundBlog = db.blogs.find(blog => blog.id === id);
 
-    if (blogIndex !== -1) {
-      db.blogs = db.blogs.filter((_, index) => index !== blogIndex);
+    if (foundBlog) {
+      db.blogs = db.blogs.filter(blog => blog.id !== foundBlog.id);
 
       return true;
     }

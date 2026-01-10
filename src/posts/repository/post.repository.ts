@@ -23,10 +23,10 @@ export const postRepository = {
     return null;
   },
   updatePostById: ({ id, body }: { id: string; body: PostInputModelType }) => {
-    const postIndex = db.posts.findIndex(post => post.id === id);
+    const foundPost = db.posts.find(post => post.id === id);
 
-    if (postIndex !== -1) {
-      db.posts = db.posts.map((post, index) => (index === postIndex ? { ...post, ...body } : post));
+    if (foundPost) {
+      db.posts = db.posts.map(post => (post.id === foundPost.id ? { ...post, ...body } : post));
 
       return true;
     }
@@ -34,10 +34,10 @@ export const postRepository = {
     return false;
   },
   deletePostById: (id: string) => {
-    const postIndex = db.posts.findIndex(post => post.id === id);
+    const foundPost = db.posts.find(post => post.id === id);
 
-    if (postIndex !== -1) {
-      db.posts = db.posts.filter((_, index) => index !== postIndex);
+    if (foundPost) {
+      db.posts = db.posts.filter(post => post.id !== foundPost.id);
 
       return true;
     }
