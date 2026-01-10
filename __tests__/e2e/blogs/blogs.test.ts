@@ -3,18 +3,18 @@ import { Server } from 'http';
 import express from 'express';
 import request from 'supertest';
 
-import { BlogInputType } from '../../../src/blogs/types/blog';
+import { BlogInputModelType } from '../../../src/blogs/types/blog';
 import { APP_ROUTES, HTTP_STATUSES } from '../../../src/core/constants';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { initApp } from '../../../src/init-app';
 
-const mockBlog: BlogInputType = {
+const mockBlog: BlogInputModelType = {
   name: 'New blog',
   description: 'Blog description',
   websiteUrl: 'https://google.com',
 };
 
-const mockUpdatedBlog: BlogInputType = {
+const mockUpdatedBlog: BlogInputModelType = {
   name: 'Updated blog',
   description: 'Updated description',
   websiteUrl: 'https://updated-google.com',
@@ -153,7 +153,7 @@ describe('Blogs', () => {
 
     it('should return 404 status if blog id not exist', async () => {
       await request(app)
-        .delete('/blogs/100')
+        .delete(`${APP_ROUTES.BLOGS}/100`)
         .set('Authorization', authToken)
         .expect(HTTP_STATUSES.NOT_FOUND);
 
@@ -166,7 +166,7 @@ describe('Blogs', () => {
       await request(app).get(`${APP_ROUTES.BLOGS}`).expect(HTTP_STATUSES.OK).expect([createdBlog]);
 
       await request(app)
-        .delete('/blogs/1')
+        .delete(`${APP_ROUTES.BLOGS}/1`)
         .set('Authorization', authToken)
         .expect(HTTP_STATUSES.NO_CONTENT);
 

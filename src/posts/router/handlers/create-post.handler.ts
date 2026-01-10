@@ -9,7 +9,7 @@ export const createPostHandler = (req: RequestWithBodyType<PostInputModelType>, 
   const newPost = postRepository.createPost(req.body);
 
   if (newPost) {
-    res.send(HTTP_STATUSES.CREATED).send(newPost);
+    res.status(HTTP_STATUSES.CREATED).send(newPost);
   }
 
   res.sendStatus(HTTP_STATUSES.BAD_REQUEST);

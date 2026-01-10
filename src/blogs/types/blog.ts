@@ -5,7 +5,7 @@ export type BlogType = {
   websiteUrl: string;
 };
 
-export type BlogInputType = Omit<BlogType, 'id'>;
+export type BlogInputModelType = Omit<BlogType, 'id'>;
 
 export enum BlogFields {
   ID = 'id',

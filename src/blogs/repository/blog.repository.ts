@@ -1,5 +1,5 @@
 import { db } from '../../db/db';
-import { BlogInputType } from '../types/blog';
+import { BlogInputModelType } from '../types/blog';
 
 export const blogRepository = {
   getBlogs: () => {
@@ -8,14 +8,14 @@ export const blogRepository = {
   getBlogById: (id: string) => {
     return db.blogs.find(p => p.id === id) ?? null;
   },
-  createBlog: (blog: BlogInputType) => {
+  createBlog: (blog: BlogInputModelType) => {
     const newBlog = { id: String(db.blogs.length + 1), ...blog };
 
     db.blogs.push(newBlog);
 
     return newBlog;
   },
-  updateBlogById: ({ id, body }: { id: string; body: BlogInputType }) => {
+  updateBlogById: ({ id, body }: { id: string; body: BlogInputModelType }) => {
     const blogIndex = db.blogs.findIndex(blog => blog.id === id);
 
     if (blogIndex !== -1) {

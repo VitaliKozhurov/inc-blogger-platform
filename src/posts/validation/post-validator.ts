@@ -8,14 +8,14 @@ import { POST_VALIDATION_LENGTH } from './validation-length';
 type PostValidationType = Record<Exclude<keyof PostType, 'id' | 'blogName'>, ValidationChain>;
 
 export const postValidator: PostValidationType = {
-  [PostFields.BLOG_ID]: body(PostFields.ID)
+  [PostFields.BLOG_ID]: body(PostFields.BLOG_ID)
     .exists()
-    .withMessage(ERROR_FIELD_MESSAGES.REQUIRED(PostFields.ID))
+    .withMessage(ERROR_FIELD_MESSAGES.REQUIRED(PostFields.BLOG_ID))
     .isString()
-    .withMessage(ERROR_FIELD_MESSAGES.IS_STRING(PostFields.ID))
+    .withMessage(ERROR_FIELD_MESSAGES.IS_STRING(PostFields.BLOG_ID))
     .trim()
     .notEmpty()
-    .withMessage(ERROR_FIELD_MESSAGES.NOT_EMPTY(PostFields.ID)),
+    .withMessage(ERROR_FIELD_MESSAGES.NOT_EMPTY(PostFields.BLOG_ID)),
   [PostFields.TITLE]: body(PostFields.TITLE)
     .exists()
     .withMessage(ERROR_FIELD_MESSAGES.REQUIRED(PostFields.TITLE))
