@@ -4,5 +4,5 @@ export const APP_ROUTES = {
   BLOGS: '/blogs',
   POSTS: '/posts',
   TESTING: '/testing',
-  CLEAR_DATA: 'all-data',
+  CLEAR_DATA: '/all-data',
 } as const;

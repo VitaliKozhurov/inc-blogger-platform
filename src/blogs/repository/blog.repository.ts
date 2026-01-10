@@ -16,7 +16,7 @@ export const blogRepository = {
     return newBlog;
   },
   updateBlogById: ({ id, body }: { id: string; body: BlogInputType }) => {
-    const blogIndex = db.posts.findIndex(p => p.id === id);
+    const blogIndex = db.blogs.findIndex(blog => blog.id === id);
 
     if (blogIndex !== -1) {
       db.blogs = db.blogs.map((blog, index) => (index === blogIndex ? { ...blog, ...body } : blog));
@@ -27,7 +27,7 @@ export const blogRepository = {
     return false;
   },
   deleteBlogById: (id: string) => {
-    const blogIndex = db.posts.findIndex(p => p.id === id);
+    const blogIndex = db.blogs.findIndex(blog => blog.id === id);
 
     if (blogIndex !== -1) {
       db.blogs = db.blogs.filter((_, index) => index !== blogIndex);

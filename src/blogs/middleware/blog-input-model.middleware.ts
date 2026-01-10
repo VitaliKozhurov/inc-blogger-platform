@@ -1,4 +1,4 @@
-import { checkValidationMiddleware } from '../../core/validation';
+import { checkValidationMiddleware } from '../../core/middleware';
 import { blogValidator } from '../validation/blog-validator';
 
 export const blogInputModelMiddleware = [

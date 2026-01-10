@@ -1,7 +1,8 @@
 import { param } from 'express-validator';
 
 import { PARAM_ID_ERROR_MESSAGES } from '../constants';
-import { checkValidationMiddleware } from '../validation';
+
+import { checkValidationMiddleware } from './check-validation.middleware';
 
 export const getUriParamValidatorMiddleware = (uriParam: string = 'id') => {
   return [

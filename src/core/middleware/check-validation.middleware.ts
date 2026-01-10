@@ -5,7 +5,9 @@ import { HTTP_STATUSES } from '../constants';
 import { formatExpressError } from '../utils';
 
 export const checkValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const errors = validationResult(req).formatWith(formatExpressError).array();
+  const errors = validationResult(req)
+    .formatWith(formatExpressError)
+    .array({ onlyFirstError: true });
 
   if (errors.length > 0) {
     return res.status(HTTP_STATUSES.BAD_REQUEST).send({

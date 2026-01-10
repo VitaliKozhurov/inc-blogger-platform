@@ -7,7 +7,8 @@
     "watch": "tsc -w",
     "dev": "nodemon dist/index.js",
     "format": "prettier --write .",
-    "lint": "eslint src --fix ."
+    "lint": "eslint src --fix .",
+    "jest": "jest"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +27,7 @@
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.52.0",
     "@typescript-eslint/parser": "^8.52.0",
+    "add": "^2.0.6",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",

@@ -1,26 +1,10 @@
 import dotenv from 'dotenv';
 import express from 'express';
 
-import { blogRouter } from './blogs/router/blog.router';
-import { APP_ROUTES } from './core/constants';
-import { bodyParserMiddleware } from './core/middleware';
-import { postRouter } from './posts/router/posts.router';
-import { testRouter } from './tests/router/test.router';
+import { initApp } from './init-app';
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5000;
-
-console.log(process.env.PORT);
-
 const app = express();
 
-app.use(bodyParserMiddleware);
-
-app.use(APP_ROUTES.BLOGS, blogRouter);
-app.use(APP_ROUTES.POSTS, postRouter);
-app.use(APP_ROUTES.TESTING, testRouter);
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+initApp(app);
