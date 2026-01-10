@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import express from 'express';
 
 import { blogRouter } from './blogs/router/blog.router';
@@ -6,7 +7,11 @@ import { bodyParserMiddleware } from './core/middleware';
 import { postRouter } from './posts/router/posts.router';
 import { testRouter } from './tests/router/test.router';
 
-const PORT = 5000;
+dotenv.config();
+
+const PORT = process.env.PORT || 5000;
+
+console.log(process.env.PORT);
 
 const app = express();
 

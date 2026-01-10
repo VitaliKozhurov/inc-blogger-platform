@@ -1,3 +1,4 @@
+export { authMiddleware } from './auth.middleware';
 export { bodyParserMiddleware } from './body-parser.middleware';
 export {
   getUriParamValidatorMiddleware,

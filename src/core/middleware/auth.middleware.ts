@@ -1,0 +1,13 @@
+import { NextFunction, Request, Response } from 'express';
+
+import { HTTP_STATUSES } from '../constants';
+
+export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  const authToken = req.headers.authorization;
+
+  if (authToken !== process.env.AUTH_TOKEN) {
+    return res.sendStatus(HTTP_STATUSES.UNAUTHORIZED);
+  }
+
+  next();
+};

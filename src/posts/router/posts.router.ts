@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { APP_ROUTES } from '../../core/constants';
-import { idUriParamValidatorMiddleware } from '../../core/middleware';
+import { authMiddleware, idUriParamValidatorMiddleware } from '../../core/middleware';
 import { postInputModelMiddleware } from '../middleware/post-input-model.middleware';
 
 import { createPostHandler } from './handlers/create-post.handler';
@@ -14,11 +14,12 @@ export const postRouter = Router();
 
 postRouter.get(APP_ROUTES.ROOT, getPostsHandler);
 postRouter.get(APP_ROUTES.ID, idUriParamValidatorMiddleware, getPostHandler);
-postRouter.post(APP_ROUTES.ROOT, postInputModelMiddleware, createPostHandler);
+postRouter.post(APP_ROUTES.ROOT, authMiddleware, postInputModelMiddleware, createPostHandler);
 postRouter.put(
   APP_ROUTES.ID,
+  authMiddleware,
   idUriParamValidatorMiddleware,
   postInputModelMiddleware,
   updatePostHandler
 );
-postRouter.delete(APP_ROUTES.ID, idUriParamValidatorMiddleware, deletePostHandler);
+postRouter.delete(APP_ROUTES.ID, authMiddleware, idUriParamValidatorMiddleware, deletePostHandler);

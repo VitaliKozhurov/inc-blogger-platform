@@ -1,6 +1,6 @@
 export const APP_ROUTES = {
   ROOT: '/',
-  ID: ':/id',
+  ID: '/:id',
   BLOGS: '/blogs',
   POSTS: '/posts',
   TESTING: '/testing',
