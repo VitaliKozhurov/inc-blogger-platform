@@ -9,5 +9,5 @@ testRouter.delete(APP_ROUTES.CLEAR_DATA, (_: Request, res: Response) => {
   db.blogs = [];
   db.posts = [];
 
-  res.sendStatus(HTTP_STATUSES.OK);
+  res.sendStatus(HTTP_STATUSES.NO_CONTENT);
 });
