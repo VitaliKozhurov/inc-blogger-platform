@@ -5,4 +5,5 @@ export const ERROR_FIELD_MESSAGES = {
   LENGTH_RANGE: ({ field, min, max }: { field: string; min: number; max: number }) =>
     `${field} must be between ${min} and ${max} symbols`,
   IS_URL: (field: string) => `${field} must be a valid URL`,
+  MUST_BE_OBJECT_ID: (field: string) => `${field} must be of mongo id format`,
 };

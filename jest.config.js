@@ -14,6 +14,8 @@ const config = {
   setupFiles: ['./__tests__/jest.setup.env.js'],
   testPathIgnorePatterns: ['/__tests__/jest.setup.env.js'],
   testMatch: ['**/__tests__/**/*.test.ts'],
+  verbose: true,
+  maxWorkers: 1,
 };
 
 export default config;

@@ -27,12 +27,17 @@ export const postRepository = {
   updatePostById: async (args: { id: string; body: UpdatePostDTOType }): Promise<boolean> => {
     const { id, body } = args;
 
-    const { modifiedCount } = await postCollection.updateOne({ _id: new Object(id) }, body);
+    const { modifiedCount } = await postCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: body }
+    );
+
+    console.log('modifiedCount', modifiedCount);
 
     return modifiedCount === 1 ? true : false;
   },
   deletePostById: async (id: string): Promise<boolean> => {
-    const { deletedCount } = await postCollection.deleteOne({ _id: new Object(id) });
+    const { deletedCount } = await postCollection.deleteOne({ _id: new ObjectId(id) });
 
     return deletedCount === 1 ? true : false;
   },

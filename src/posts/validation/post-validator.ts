@@ -15,7 +15,9 @@ export const postValidator: PostValidationType = {
     .withMessage(ERROR_FIELD_MESSAGES.IS_STRING(PostFields.BLOG_ID))
     .trim()
     .notEmpty()
-    .withMessage(ERROR_FIELD_MESSAGES.NOT_EMPTY(PostFields.BLOG_ID)),
+    .withMessage(ERROR_FIELD_MESSAGES.NOT_EMPTY(PostFields.BLOG_ID))
+    .isMongoId()
+    .withMessage(ERROR_FIELD_MESSAGES.MUST_BE_OBJECT_ID(PostFields.BLOG_ID)),
   [PostFields.TITLE]: body(PostFields.TITLE)
     .exists()
     .withMessage(ERROR_FIELD_MESSAGES.REQUIRED(PostFields.TITLE))
