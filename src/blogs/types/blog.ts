@@ -3,7 +3,7 @@ export type BlogEntityType = {
   description: string;
   websiteUrl: string;
   isMembership: boolean;
-  createdAt: Date;
+  createdAt: string;
 };
 export type BlogViewModelType = { id: string } & BlogEntityType;
 export type BlogInputDTO = Pick<BlogEntityType, 'name' | 'description' | 'websiteUrl'>;

@@ -1,16 +1,26 @@
 import { Response } from 'express';
 
-import { HTTP_STATUSES } from '../../../core/constants';
-import { RequestWithBodyType } from '../../../core/types';
-import { postRepository } from '../../repository/post.repository';
-import { PostInputModelType } from '../../types/post';
+import { postRepository } from '../../repository';
+import { CreatePostDTOType, PostInputDTO } from '../../types/post';
+import { mapToPostViewModel } from '../mappers/map-to-post-view-model';
 
-export const createPostHandler = (req: RequestWithBodyType<PostInputModelType>, res: Response) => {
-  const newPost = postRepository.createPost(req.body);
+import { HTTP_STATUSES } from '@/core/constants';
+import { RequestWithBodyType } from '@/core/types';
 
-  if (newPost) {
-    res.status(HTTP_STATUSES.CREATED).send(newPost);
+export const createPostHandler = async (req: RequestWithBodyType<PostInputDTO>, res: Response) => {
+  try {
+    const newPost: CreatePostDTOType = { ...req.body, createdAt: new Date().toISOString() };
+
+    const createdPost = await postRepository.createPost(newPost);
+
+    if (createdPost) {
+      const createdPostViewModel = mapToPostViewModel(createdPost);
+
+      return res.status(HTTP_STATUSES.CREATED).send(createdPostViewModel);
+    }
+
+    res.sendStatus(HTTP_STATUSES.BAD_REQUEST);
+  } catch {
+    res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
   }
-
-  res.sendStatus(HTTP_STATUSES.BAD_REQUEST);
 };

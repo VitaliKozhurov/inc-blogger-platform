@@ -1,15 +1,23 @@
 import { Response } from 'express';
 
-import { HTTP_STATUSES } from '../../../core/constants';
-import { RequestWithUriParamType } from '../../../core/types';
-import { postRepository } from '../../repository/post.repository';
+import { postRepository } from '../../repository';
+import { mapToPostViewModel } from '../mappers/map-to-post-view-model';
 
-export const getPostHandler = (req: RequestWithUriParamType, res: Response) => {
-  const post = postRepository.getPostById(req.params.id);
+import { HTTP_STATUSES } from '@/core/constants';
+import { RequestWithUriParamType } from '@/core/types';
 
-  if (post) {
-    return res.status(HTTP_STATUSES.OK).send(post);
+export const getPostHandler = async (req: RequestWithUriParamType, res: Response) => {
+  try {
+    const post = await postRepository.getPostById(req.params.id);
+
+    if (post) {
+      const postViewModel = mapToPostViewModel(post);
+
+      return res.status(HTTP_STATUSES.OK).send(postViewModel);
+    }
+
+    res.sendStatus(HTTP_STATUSES.NOT_FOUND);
+  } catch {
+    res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
   }
-
-  res.sendStatus(HTTP_STATUSES.NOT_FOUND);
 };

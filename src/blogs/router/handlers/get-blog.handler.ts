@@ -1,6 +1,7 @@
 import { Response } from 'express';
 
 import { blogRepository } from '../../repository';
+import { mapToBlogViewModel } from '../mappers/map-to-blog-view-model';
 
 import { HTTP_STATUSES } from '@/core/constants';
 import { RequestWithUriParamType } from '@/core/types';
@@ -12,7 +13,9 @@ export const getBlogByIdHandler = async (req: RequestWithUriParamType, res: Resp
     const blog = await blogRepository.getBlogById(blogId);
 
     if (blog) {
-      return res.status(HTTP_STATUSES.OK).send(blog);
+      const blogViewModel = mapToBlogViewModel(blog);
+
+      return res.status(HTTP_STATUSES.OK).send(blogViewModel);
     }
 
     res.sendStatus(HTTP_STATUSES.NOT_FOUND);

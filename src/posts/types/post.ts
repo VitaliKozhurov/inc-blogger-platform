@@ -4,8 +4,10 @@ export type PostEntityType = {
   content: string;
   blogId: string;
   blogName: string;
-  createdAt: Date;
+  createdAt: string;
 };
+
+export type PostInputDTO = Omit<PostEntityType, 'blogName' | 'createdAt'>;
 
 export type CreatePostDTOType = Omit<PostEntityType, 'blogName'>;
 
