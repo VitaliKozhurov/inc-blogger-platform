@@ -1,47 +1,40 @@
+import { ObjectId, WithId } from 'mongodb';
+
 import { Nullable } from '../../core/types';
-import { db } from '../../db/db';
-import { PostInputModelType, PostType } from '../types/post';
+import { CreatePostDTOType, PostEntityType, UpdatePostDTOType } from '../types/post';
+
+import { blogCollection, postCollection } from '@/db';
 
 export const postRepository = {
-  getPosts: () => {
-    return db.posts;
+  getPosts: async (): Promise<WithId<PostEntityType>[]> => {
+    return postCollection.find().toArray();
   },
-  getPostById: (id: string): Nullable<PostType> => {
-    return db.posts.find(post => post.id === id) ?? null;
+  getPostById: async (id: string): Promise<Nullable<WithId<PostEntityType>>> => {
+    return postCollection.findOne({ _id: new ObjectId(id) });
   },
-  createPost: (post: PostInputModelType) => {
-    const blog = db.blogs.find(blog => blog.id === post.blogId);
+  createPost: async (post: CreatePostDTOType): Promise<Nullable<WithId<PostEntityType>>> => {
+    const blog = await blogCollection.findOne({ _id: new ObjectId(post.blogId) });
 
     if (blog) {
-      const newPost: PostType = { id: String(db.posts.length + 1), blogName: blog.name, ...post };
+      const newPost: PostEntityType = { blogName: blog.name, ...post };
 
-      db.posts.push(newPost);
+      const { insertedId } = await postCollection.insertOne(newPost);
 
-      return newPost;
+      return { _id: insertedId, ...newPost };
     }
 
     return null;
   },
-  updatePostById: ({ id, body }: { id: string; body: PostInputModelType }) => {
-    const foundPost = db.posts.find(post => post.id === id);
+  updatePostById: async (args: { id: string; body: UpdatePostDTOType }): Promise<boolean> => {
+    const { id, body } = args;
 
-    if (foundPost) {
-      db.posts = db.posts.map(post => (post.id === foundPost.id ? { ...post, ...body } : post));
+    const { modifiedCount } = await postCollection.updateOne({ _id: new Object(id) }, body);
 
-      return true;
-    }
-
-    return false;
+    return modifiedCount === 1 ? true : false;
   },
-  deletePostById: (id: string) => {
-    const foundPost = db.posts.find(post => post.id === id);
+  deletePostById: async (id: string): Promise<boolean> => {
+    const { deletedCount } = await postCollection.deleteOne({ _id: new Object(id) });
 
-    if (foundPost) {
-      db.posts = db.posts.filter(post => post.id !== foundPost.id);
-
-      return true;
-    }
-
-    return false;
+    return deletedCount === 1 ? true : false;
   },
 };

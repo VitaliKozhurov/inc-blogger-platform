@@ -1,10 +1,20 @@
 import dotenv from 'dotenv';
 import express from 'express';
 
+import { SETTINGS } from './core/settings';
+import { runDB } from './db/mongo.db';
 import { initApp } from './init-app';
 
 dotenv.config();
 
-const app = express();
+const bootstrap = async () => {
+  const app = express();
 
-initApp(app);
+  await runDB(SETTINGS.MONGO_URL);
+
+  await initApp(app);
+
+  return app;
+};
+
+bootstrap();

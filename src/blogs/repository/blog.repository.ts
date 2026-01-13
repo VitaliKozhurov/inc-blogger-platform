@@ -1,40 +1,32 @@
-import { db } from '../../db/db';
-import { BlogInputModelType } from '../types/blog';
+import { ObjectId, WithId } from 'mongodb';
+
+import { BlogEntityType, CreateBlogDTOType, UpdateBlogDTOType } from '../types/blog';
+
+import { Nullable } from '@/core/types';
+import { blogCollection } from '@/db';
 
 export const blogRepository = {
-  getBlogs: () => {
-    return db.blogs;
+  getBlogs: async (): Promise<WithId<BlogEntityType>[]> => {
+    return blogCollection.find().toArray();
   },
-  getBlogById: (id: string) => {
-    return db.blogs.find(p => p.id === id) ?? null;
+  getBlogById: async (id: string): Promise<Nullable<WithId<BlogEntityType>>> => {
+    return blogCollection.findOne({ _id: new Object(id) });
   },
-  createBlog: (blog: BlogInputModelType) => {
-    const newBlog = { id: String(db.blogs.length + 1), ...blog };
+  createBlog: async (newBlog: CreateBlogDTOType): Promise<WithId<BlogEntityType>> => {
+    const { insertedId } = await blogCollection.insertOne(newBlog);
 
-    db.blogs.push(newBlog);
-
-    return newBlog;
+    return { _id: insertedId, ...newBlog };
   },
-  updateBlogById: ({ id, body }: { id: string; body: BlogInputModelType }) => {
-    const foundBlog = db.blogs.find(blog => blog.id === id);
+  updateBlogById: async (args: { id: string; body: UpdateBlogDTOType }): Promise<boolean> => {
+    const { id, body } = args;
 
-    if (foundBlog) {
-      db.blogs = db.blogs.map(blog => (blog.id === foundBlog.id ? { ...blog, ...body } : blog));
+    const { modifiedCount } = await blogCollection.updateOne({ _id: new ObjectId(id) }, body);
 
-      return true;
-    }
-
-    return false;
+    return modifiedCount === 1 ? true : false;
   },
-  deleteBlogById: (id: string) => {
-    const foundBlog = db.blogs.find(blog => blog.id === id);
+  deleteBlogById: async (id: string): Promise<boolean> => {
+    const { deletedCount } = await blogCollection.deleteOne({ _id: new ObjectId(id) });
 
-    if (foundBlog) {
-      db.blogs = db.blogs.filter(blog => blog.id !== foundBlog.id);
-
-      return true;
-    }
-
-    return false;
+    return deletedCount === 1 ? true : false;
   },
 };

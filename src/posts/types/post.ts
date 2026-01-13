@@ -1,4 +1,4 @@
-export type PostType = {
+export type PostEntityType = {
   title: string;
   shortDescription: string;
   content: string;
@@ -7,7 +7,12 @@ export type PostType = {
   createdAt: Date;
 };
 
-export type PostInputModelType = Omit<PostType, 'id' | 'blogName'>;
+export type CreatePostDTOType = Omit<PostEntityType, 'blogName'>;
+
+export type UpdatePostDTOType = Pick<
+  PostEntityType,
+  'title' | 'shortDescription' | 'content' | 'blogId'
+>;
 
 export enum PostFields {
   ID = 'id',

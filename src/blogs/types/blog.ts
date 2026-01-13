@@ -1,4 +1,4 @@
-export type BlogType = {
+export type BlogEntityType = {
   name: string;
   description: string;
   websiteUrl: string;
@@ -6,7 +6,9 @@ export type BlogType = {
   createdAt: Date;
 };
 
-export type BlogInputModelType = Omit<BlogType, 'id'>;
+export type CreateBlogDTOType = BlogEntityType;
+
+export type UpdateBlogDTOType = Pick<BlogEntityType, 'name' | 'description' | 'websiteUrl'>;
 
 export enum BlogFields {
   ID = 'id',
