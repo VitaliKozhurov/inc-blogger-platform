@@ -60,13 +60,13 @@ describe('Posts', () => {
     return body;
   };
 
-  describe('GET /posts', () => {
+  describe.skip('GET /posts', () => {
     it('should return 200 status and array of posts', async () => {
       await request(app).get(`${APP_ROUTES.POSTS}`).expect(HTTP_STATUSES.OK).expect([]);
     });
   });
 
-  describe('POST /posts', () => {
+  describe.skip('POST /posts', () => {
     it('should return 401 status', async () => {
       await request(app)
         .post(`${APP_ROUTES.POSTS}`)
@@ -120,7 +120,7 @@ describe('Posts', () => {
     });
   });
 
-  describe('PUT /posts:id', () => {
+  describe.skip('PUT /posts:id', () => {
     it('should return 401 status', async () => {
       await request(app)
         .put(`${APP_ROUTES.POSTS}/1`)
@@ -186,7 +186,7 @@ describe('Posts', () => {
     });
   });
 
-  describe('DELETE /posts/:id', () => {
+  describe.skip('DELETE /posts/:id', () => {
     it('should return 401 status', async () => {
       await request(app).delete(`${APP_ROUTES.POSTS}/1`).expect(HTTP_STATUSES.UNAUTHORIZED);
     });

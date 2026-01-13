@@ -9,7 +9,7 @@ export const blogRepository = {
     return blogCollection.find().toArray();
   },
   getBlogById: async (id: string): Promise<Nullable<WithId<BlogEntityType>>> => {
-    return blogCollection.findOne({ _id: new Object(id) });
+    return blogCollection.findOne({ _id: new ObjectId(id) });
   },
   createBlog: async (newBlog: CreateBlogDTOType): Promise<WithId<BlogEntityType>> => {
     const { insertedId } = await blogCollection.insertOne(newBlog);
@@ -19,7 +19,12 @@ export const blogRepository = {
   updateBlogById: async (args: { id: string; body: UpdateBlogDTOType }): Promise<boolean> => {
     const { id, body } = args;
 
-    const { modifiedCount } = await blogCollection.updateOne({ _id: new ObjectId(id) }, body);
+    const { modifiedCount } = await blogCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: body,
+      }
+    );
 
     return modifiedCount === 1 ? true : false;
   },

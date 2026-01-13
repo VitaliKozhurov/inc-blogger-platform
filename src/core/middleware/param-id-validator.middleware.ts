@@ -13,8 +13,8 @@ export const getUriParamValidatorMiddleware = (uriParam: string = 'id') => {
       .withMessage(PARAM_ID_ERROR_MESSAGES.NOT_EMPTY)
       .isString()
       .withMessage(PARAM_ID_ERROR_MESSAGES.MUST_BE_STRING)
-      .isNumeric({ no_symbols: true })
-      .withMessage(PARAM_ID_ERROR_MESSAGES.MUST_BE_NUMERIC),
+      .isMongoId()
+      .withMessage(PARAM_ID_ERROR_MESSAGES.MUST_BE_OBJECT_ID),
 
     checkValidationMiddleware,
   ];

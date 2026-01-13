@@ -1,27 +1,18 @@
 import { Server } from 'http';
 
 import express from 'express';
+import { ObjectId } from 'mongodb';
 import request from 'supertest';
 
-import { BlogInputDTO } from '../../../src/blogs/types/blog';
 import { APP_ROUTES, HTTP_STATUSES } from '../../../src/core/constants';
 import { SETTINGS } from '../../../src/core/settings';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
-import { initApp } from '../../../src/init-app';
+import { createBlog } from '../../utils/blogs/createBlog';
+import { clearDb } from '../../utils/clear-db';
+import { setupTestEnvironments } from '../../utils/setup-test-environment';
 
-import { runDB, stopDb } from './../../../src/db/mongo.db';
-
-const mockBlog: BlogInputDTO = {
-  name: 'New blog',
-  description: 'Blog description',
-  websiteUrl: 'https://google.com',
-};
-
-const mockUpdatedBlog: BlogInputDTO = {
-  name: 'Updated blog',
-  description: 'Updated description',
-  websiteUrl: 'https://updated-google.com',
-};
+import { stopDb } from './../../../src/db/mongo.db';
+import { mockBlog, mockUpdatedBlog } from './mock';
 
 describe('Blogs', () => {
   const app = express();
@@ -30,13 +21,11 @@ describe('Blogs', () => {
   const authToken = SETTINGS.AUTH_TOKEN ?? '';
 
   beforeAll(async () => {
-    await runDB(SETTINGS.MONGO_URL);
-    await request(app).delete(`${APP_ROUTES.TESTING}${APP_ROUTES.CLEAR_DATA}`);
-    server = await initApp(app);
+    server = await setupTestEnvironments(app);
   });
 
   beforeEach(async () => {
-    await request(app).delete(`${APP_ROUTES.TESTING}${APP_ROUTES.CLEAR_DATA}`);
+    await clearDb(app);
   });
 
   afterAll(async () => {
@@ -44,23 +33,25 @@ describe('Blogs', () => {
     await stopDb();
   });
 
-  const createBlog = async () => {
-    const { body } = await request(app)
-      .post(`${APP_ROUTES.BLOGS}`)
-      .set('Authorization', authToken)
-      .send(mockBlog);
-
-    return body;
-  };
-
   describe('GET /blogs', () => {
     it('should return 200 status and array of blogs', async () => {
       await request(app).get(`${APP_ROUTES.BLOGS}`).expect(HTTP_STATUSES.OK).expect([]);
     });
   });
 
+  describe('GET /blogs/:id', () => {
+    it('should return 200 status and blog', async () => {
+      const createdBlog = await createBlog(app);
+
+      await request(app)
+        .get(`${APP_ROUTES.BLOGS}/${createdBlog.id}`)
+        .expect(HTTP_STATUSES.OK)
+        .expect(createdBlog);
+    });
+  });
+
   describe('POST /blogs', () => {
-    it('should return 401 status', async () => {
+    it('should return 401 status code if token invalid', async () => {
       await request(app)
         .post(`${APP_ROUTES.BLOGS}`)
         .send(mockBlog)
@@ -69,19 +60,7 @@ describe('Blogs', () => {
       await request(app).get(`${APP_ROUTES.BLOGS}`).expect(HTTP_STATUSES.OK).expect([]);
     });
 
-    it('should return 201 status and created blog', async () => {
-      const { body: createdBlog } = await request(app)
-        .post(`${APP_ROUTES.BLOGS}`)
-        .set('Authorization', authToken)
-        .send(mockBlog)
-        .expect(HTTP_STATUSES.CREATED)
-        .expect({ id: '1', ...mockBlog });
-
-      await request(app).get(`${APP_ROUTES.BLOGS}`).expect(HTTP_STATUSES.OK).expect([createdBlog]);
-      await request(app).get(`${APP_ROUTES.BLOGS}/1`).expect(HTTP_STATUSES.OK).expect(createdBlog);
-    });
-
-    it('should return 400 status with errors', async () => {
+    it('should return 400 status with validation errors', async () => {
       await request(app)
         .post(`${APP_ROUTES.BLOGS}`)
         .set('Authorization', authToken)
@@ -97,17 +76,25 @@ describe('Blogs', () => {
 
       await request(app).get(`${APP_ROUTES.BLOGS}`).expect(HTTP_STATUSES.OK).expect([]);
     });
+
+    it('should return 201 status and created blog', async () => {
+      const createdBlog = await createBlog(app);
+
+      expect(createdBlog).toHaveProperty('id');
+
+      await request(app).get(`${APP_ROUTES.BLOGS}`).expect(HTTP_STATUSES.OK).expect([createdBlog]);
+    });
   });
 
   describe('PUT /blogs:id', () => {
-    it('should return 401 status', async () => {
+    it('should return 401 status code if token invalid', async () => {
       await request(app)
         .put(`${APP_ROUTES.BLOGS}/1`)
         .send(mockUpdatedBlog)
         .expect(HTTP_STATUSES.UNAUTHORIZED);
     });
 
-    it('should return 400 status send incorrect id', async () => {
+    it('should return 400 status code if uri :id incorrect ', async () => {
       await request(app)
         .put(`${APP_ROUTES.BLOGS}/null`)
         .set('Authorization', authToken)
@@ -117,9 +104,11 @@ describe('Blogs', () => {
       await request(app).get(`${APP_ROUTES.BLOGS}`).expect(HTTP_STATUSES.OK).expect([]);
     });
 
-    it('should return 404 status if blog not found', async () => {
+    it('should return 404 status code if blog not found', async () => {
+      const id = new ObjectId().toHexString();
+
       await request(app)
-        .put(`${APP_ROUTES.BLOGS}/100`)
+        .put(`${APP_ROUTES.BLOGS}/${id}`)
         .set('Authorization', authToken)
         .send(mockUpdatedBlog)
         .expect(HTTP_STATUSES.NOT_FOUND);
@@ -127,11 +116,11 @@ describe('Blogs', () => {
       await request(app).get(`${APP_ROUTES.BLOGS}`).expect(HTTP_STATUSES.OK).expect([]);
     });
 
-    it('should return 400 status if send incorrect data', async () => {
-      const createdBlog = await createBlog();
+    it('should return 400 status code if request data incorrect', async () => {
+      const createdBlog = await createBlog(app);
 
       await request(app)
-        .put(`${APP_ROUTES.BLOGS}/1`)
+        .put(`${APP_ROUTES.BLOGS}/${createdBlog.id}`)
         .set('Authorization', authToken)
         .send({})
         .expect(HTTP_STATUSES.BAD_REQUEST)
@@ -146,11 +135,11 @@ describe('Blogs', () => {
       await request(app).get(`${APP_ROUTES.BLOGS}`).expect(HTTP_STATUSES.OK).expect([createdBlog]);
     });
 
-    it('should return 204 status', async () => {
-      const createdBlog = await createBlog();
+    it('should return 204 status code after correct updating', async () => {
+      const createdBlog = await createBlog(app);
 
       await request(app)
-        .put(`${APP_ROUTES.BLOGS}/1`)
+        .put(`${APP_ROUTES.BLOGS}/${createdBlog.id}`)
         .set('Authorization', authToken)
         .send(mockUpdatedBlog)
         .expect(HTTP_STATUSES.NO_CONTENT);
@@ -162,12 +151,12 @@ describe('Blogs', () => {
   });
 
   describe('DELETE /blogs/:id', () => {
-    it('should return 401 status', async () => {
+    it('should return 401 status code if token invalid', async () => {
       await request(app).delete(`${APP_ROUTES.BLOGS}/1`).expect(HTTP_STATUSES.UNAUTHORIZED);
     });
 
-    it('should return 400 status if send incorrect id', async () => {
-      const createdBlog = await createBlog();
+    it('should return 400 status code if send incorrect id', async () => {
+      const createdBlog = await createBlog(app);
 
       await request(app)
         .delete(`${APP_ROUTES.BLOGS}/null`)
@@ -177,22 +166,24 @@ describe('Blogs', () => {
       await request(app).get(`${APP_ROUTES.BLOGS}`).expect(HTTP_STATUSES.OK).expect([createdBlog]);
     });
 
-    it('should return 404 status if blog id not exist', async () => {
+    it('should return 404 status code if blog id not exist', async () => {
+      const id = new ObjectId().toHexString();
+
       await request(app)
-        .delete(`${APP_ROUTES.BLOGS}/100`)
+        .delete(`${APP_ROUTES.BLOGS}/${id}`)
         .set('Authorization', authToken)
         .expect(HTTP_STATUSES.NOT_FOUND);
 
       await request(app).get(`${APP_ROUTES.BLOGS}`).expect(HTTP_STATUSES.OK).expect([]);
     });
 
-    it('should return 204 status', async () => {
-      const createdBlog = await createBlog();
+    it('should return 204 status code if :id correct', async () => {
+      const createdBlog = await createBlog(app);
 
       await request(app).get(`${APP_ROUTES.BLOGS}`).expect(HTTP_STATUSES.OK).expect([createdBlog]);
 
       await request(app)
-        .delete(`${APP_ROUTES.BLOGS}/1`)
+        .delete(`${APP_ROUTES.BLOGS}/${createdBlog.id}`)
         .set('Authorization', authToken)
         .expect(HTTP_STATUSES.NO_CONTENT);
 
