@@ -1,13 +1,9 @@
-import { Request, Response, Router } from 'express';
+import { Router } from 'express';
 
-import { APP_ROUTES, HTTP_STATUSES } from '../../core/constants';
-import { db } from '../../db/db';
+import { APP_ROUTES } from '../../core/constants';
+
+import { clearDBHandler } from './handlers/clear-db.handler';
 
 export const testRouter = Router();
 
-testRouter.delete(APP_ROUTES.CLEAR_DATA, (_: Request, res: Response) => {
-  db.blogs = [];
-  db.posts = [];
-
-  res.sendStatus(HTTP_STATUSES.NO_CONTENT);
-});
+testRouter.delete(APP_ROUTES.CLEAR_DATA, clearDBHandler);

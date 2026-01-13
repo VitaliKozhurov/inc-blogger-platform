@@ -1,10 +1,9 @@
 import { Response } from 'express';
 
+import { HTTP_STATUSES } from '../../../core/constants';
+import { RequestWithBodyAndParamType, IdParamType } from '../../../core/types';
 import { postRepository } from '../../repository';
 import { PostInputDTO } from '../../types/post';
-
-import { HTTP_STATUSES } from '@/core/constants';
-import { IdParamType, RequestWithBodyAndParamType } from '@/core/types';
 
 export const updatePostHandler = async (
   req: RequestWithBodyAndParamType<IdParamType, PostInputDTO>,

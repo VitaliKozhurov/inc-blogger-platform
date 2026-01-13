@@ -1,9 +1,8 @@
 import { Response } from 'express';
 
+import { HTTP_STATUSES } from '../../../core/constants';
+import { RequestWithUriParamType } from '../../../core/types';
 import { postRepository } from '../../repository';
-
-import { HTTP_STATUSES } from '@/core/constants';
-import { RequestWithUriParamType } from '@/core/types';
 
 export const deletePostHandler = async (req: RequestWithUriParamType, res: Response) => {
   try {

@@ -1,10 +1,9 @@
 import { Response } from 'express';
 
+import { HTTP_STATUSES } from '../../../core/constants';
+import { RequestWithUriParamType } from '../../../core/types';
 import { blogRepository } from '../../repository';
 import { mapToBlogViewModel } from '../mappers/map-to-blog-view-model';
-
-import { HTTP_STATUSES } from '@/core/constants';
-import { RequestWithUriParamType } from '@/core/types';
 
 export const getBlogByIdHandler = async (req: RequestWithUriParamType, res: Response) => {
   try {

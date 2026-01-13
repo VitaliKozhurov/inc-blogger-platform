@@ -1,9 +1,8 @@
 import { ObjectId, WithId } from 'mongodb';
 
+import { Nullable } from '../../core/types';
+import { blogCollection } from '../../db';
 import { BlogEntityType, CreateBlogDTOType, UpdateBlogDTOType } from '../types/blog';
-
-import { Nullable } from '@/core/types';
-import { blogCollection } from '@/db';
 
 export const blogRepository = {
   getBlogs: async (): Promise<WithId<BlogEntityType>[]> => {

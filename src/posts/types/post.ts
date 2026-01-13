@@ -8,13 +8,8 @@ export type PostEntityType = {
 };
 
 export type PostInputDTO = Omit<PostEntityType, 'blogName' | 'createdAt'>;
-
 export type CreatePostDTOType = Omit<PostEntityType, 'blogName'>;
-
-export type UpdatePostDTOType = Pick<
-  PostEntityType,
-  'title' | 'shortDescription' | 'content' | 'blogId'
->;
+export type UpdatePostDTOType = Omit<PostEntityType, 'blogName' | 'createdAt'>;
 
 export enum PostFields {
   ID = 'id',

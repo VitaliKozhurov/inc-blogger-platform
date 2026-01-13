@@ -3,18 +3,21 @@ import { Server } from 'http';
 import express from 'express';
 import request from 'supertest';
 
-import { BlogInputModelType } from '../../../src/blogs/types/blog';
+import { BlogInputDTO } from '../../../src/blogs/types/blog';
 import { APP_ROUTES, HTTP_STATUSES } from '../../../src/core/constants';
+import { SETTINGS } from '../../../src/core/settings';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { initApp } from '../../../src/init-app';
 
-const mockBlog: BlogInputModelType = {
+import { runDB, stopDb } from './../../../src/db/mongo.db';
+
+const mockBlog: BlogInputDTO = {
   name: 'New blog',
   description: 'Blog description',
   websiteUrl: 'https://google.com',
 };
 
-const mockUpdatedBlog: BlogInputModelType = {
+const mockUpdatedBlog: BlogInputDTO = {
   name: 'Updated blog',
   description: 'Updated description',
   websiteUrl: 'https://updated-google.com',
@@ -24,9 +27,11 @@ describe('Blogs', () => {
   const app = express();
   let server: Server;
 
-  const authToken = process.env.AUTH_TOKEN;
+  const authToken = SETTINGS.AUTH_TOKEN ?? '';
 
   beforeAll(async () => {
+    await runDB(SETTINGS.MONGO_URL);
+    await request(app).delete(`${APP_ROUTES.TESTING}${APP_ROUTES.CLEAR_DATA}`);
     server = await initApp(app);
   });
 
@@ -34,8 +39,9 @@ describe('Blogs', () => {
     await request(app).delete(`${APP_ROUTES.TESTING}${APP_ROUTES.CLEAR_DATA}`);
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     server.close();
+    await stopDb();
   });
 
   const createBlog = async () => {

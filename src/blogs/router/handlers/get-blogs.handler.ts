@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 
+import { HTTP_STATUSES } from '../../../core/constants';
 import { blogRepository } from '../../repository';
 import { mapToBlogViewModel } from '../mappers/map-to-blog-view-model';
-
-import { HTTP_STATUSES } from '@/core/constants';
 
 export const getBlogsHandler = async (_: Request, res: Response) => {
   try {

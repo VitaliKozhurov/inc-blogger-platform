@@ -4,26 +4,27 @@ import express from 'express';
 import request from 'supertest';
 
 import { APP_ROUTES, HTTP_STATUSES } from '../../../src/core/constants';
+import { SETTINGS } from '../../../src/core/settings';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { initApp } from '../../../src/init-app';
-import { PostInputModelType } from '../../../src/posts/types/post';
+import { PostInputDTO } from '../../../src/posts/types/post';
 
-import { BlogInputModelType } from './../../../src/blogs/types/blog';
+import { BlogInputDTO } from './../../../src/blogs/types/blog';
 
-const mockBlog: BlogInputModelType = {
+const mockBlog: BlogInputDTO = {
   name: 'New blog',
   description: 'Blog description',
   websiteUrl: 'https://google.com',
 };
 
-const mockPost: PostInputModelType = {
+const mockPost: PostInputDTO = {
   blogId: '1',
   title: 'New post',
   shortDescription: 'Short description',
   content: 'Post content',
 };
 
-const mockUpdatedPost: PostInputModelType = {
+const mockUpdatedPost: PostInputDTO = {
   blogId: '1',
   title: 'Updated post',
   shortDescription: 'Updated short description',
@@ -34,7 +35,7 @@ describe('Posts', () => {
   const app = express();
   let server: Server;
 
-  const authToken = process.env.AUTH_TOKEN;
+  const authToken = SETTINGS.AUTH_TOKEN ?? '';
 
   beforeAll(async () => {
     server = await initApp(app);

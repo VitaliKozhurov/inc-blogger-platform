@@ -1,9 +1,8 @@
 import { ObjectId, WithId } from 'mongodb';
 
 import { Nullable } from '../../core/types';
+import { postCollection, blogCollection } from '../../db';
 import { CreatePostDTOType, PostEntityType, UpdatePostDTOType } from '../types/post';
-
-import { blogCollection, postCollection } from '@/db';
 
 export const postRepository = {
   getPosts: async (): Promise<WithId<PostEntityType>[]> => {

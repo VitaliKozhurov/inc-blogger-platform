@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 
+import { HTTP_STATUSES } from '../../../core/constants';
 import { postRepository } from '../../repository';
 import { mapToPostViewModel } from '../mappers/map-to-post-view-model';
-
-import { HTTP_STATUSES } from '@/core/constants';
 
 export const getPostsHandler = async (_: Request, res: Response) => {
   try {

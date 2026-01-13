@@ -1,11 +1,10 @@
 import { Response } from 'express';
 
+import { HTTP_STATUSES } from '../../../core/constants';
+import { RequestWithBodyType } from '../../../core/types';
 import { postRepository } from '../../repository';
 import { CreatePostDTOType, PostInputDTO } from '../../types/post';
 import { mapToPostViewModel } from '../mappers/map-to-post-view-model';
-
-import { HTTP_STATUSES } from '@/core/constants';
-import { RequestWithBodyType } from '@/core/types';
 
 export const createPostHandler = async (req: RequestWithBodyType<PostInputDTO>, res: Response) => {
   try {

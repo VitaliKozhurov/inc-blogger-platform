@@ -1,10 +1,9 @@
 import { Response } from 'express';
 
+import { HTTP_STATUSES } from '../../../core/constants';
+import { RequestWithBodyAndParamType, IdParamType } from '../../../core/types';
 import { blogRepository } from '../../repository';
 import { BlogInputDTO } from '../../types/blog';
-
-import { HTTP_STATUSES } from '@/core/constants';
-import { IdParamType, RequestWithBodyAndParamType } from '@/core/types';
 
 export const updateBlogHandler = async (
   req: RequestWithBodyAndParamType<IdParamType, BlogInputDTO>,

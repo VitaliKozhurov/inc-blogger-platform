@@ -6,10 +6,9 @@ export type BlogEntityType = {
   createdAt: string;
 };
 export type BlogViewModelType = { id: string } & BlogEntityType;
-export type BlogInputDTO = Pick<BlogEntityType, 'name' | 'description' | 'websiteUrl'>;
+export type BlogInputDTO = Omit<BlogEntityType, 'isMembership' | 'createdAt'>;
 export type CreateBlogDTOType = BlogEntityType;
-
-export type UpdateBlogDTOType = Pick<BlogEntityType, 'name' | 'description' | 'websiteUrl'>;
+export type UpdateBlogDTOType = Omit<BlogEntityType, 'isMembership' | 'createdAt'>;
 
 export enum BlogFields {
   ID = 'id',

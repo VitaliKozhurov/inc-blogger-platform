@@ -1,10 +1,10 @@
 import { Collection, Db, MongoClient } from 'mongodb';
 
-import { COLLECTION_NAME } from './constants';
+import { BlogEntityType } from '../blogs/types/blog';
+import { SETTINGS } from '../core/settings';
+import { PostEntityType } from '../posts/types/post';
 
-import { BlogEntityType } from '@/blogs/types/blog';
-import { SETTINGS } from '@/core/settings';
-import { PostEntityType } from '@/posts/types/post';
+import { COLLECTION_NAME } from './constants';
 
 let client: MongoClient;
 
