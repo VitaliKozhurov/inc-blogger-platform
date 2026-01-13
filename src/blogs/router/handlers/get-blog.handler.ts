@@ -1,17 +1,22 @@
 import { Response } from 'express';
 
-import { HTTP_STATUSES } from '../../../core/constants';
-import { RequestWithUriParamType } from '../../../core/types';
-import { blogRepository } from '../../repository/blog.repository';
+import { blogRepository } from '../../repository';
 
-export const getBlogByIdHandler = (req: RequestWithUriParamType, res: Response) => {
-  const blogId = req.params.id;
+import { HTTP_STATUSES } from '@/core/constants';
+import { RequestWithUriParamType } from '@/core/types';
 
-  const blog = blogRepository.getBlogById(blogId);
+export const getBlogByIdHandler = async (req: RequestWithUriParamType, res: Response) => {
+  try {
+    const blogId = req.params.id;
 
-  if (blog) {
-    return res.status(HTTP_STATUSES.OK).send(blog);
+    const blog = await blogRepository.getBlogById(blogId);
+
+    if (blog) {
+      return res.status(HTTP_STATUSES.OK).send(blog);
+    }
+
+    res.sendStatus(HTTP_STATUSES.NOT_FOUND);
+  } catch {
+    res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
   }
-
-  res.sendStatus(HTTP_STATUSES.NOT_FOUND);
 };

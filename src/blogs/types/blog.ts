@@ -5,7 +5,8 @@ export type BlogEntityType = {
   isMembership: boolean;
   createdAt: Date;
 };
-
+export type BlogViewModelType = { id: string } & BlogEntityType;
+export type BlogInputDTO = Pick<BlogEntityType, 'name' | 'description' | 'websiteUrl'>;
 export type CreateBlogDTOType = BlogEntityType;
 
 export type UpdateBlogDTOType = Pick<BlogEntityType, 'name' | 'description' | 'websiteUrl'>;
