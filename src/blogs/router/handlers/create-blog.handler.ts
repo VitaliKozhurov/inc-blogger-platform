@@ -10,7 +10,7 @@ export const createBlogHandler = async (req: RequestWithBodyType<BlogInputDTO>, 
   try {
     const newBlog: CreateBlogDTOType = {
       ...req.body,
-      isMembership: true,
+      isMembership: false,
       createdAt: new Date().toISOString(),
     };
 
