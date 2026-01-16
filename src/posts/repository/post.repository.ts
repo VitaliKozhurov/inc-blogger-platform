@@ -1,44 +1,86 @@
 import { ObjectId, WithId } from 'mongodb';
 
-import { Nullable } from '../../core/types';
-import { postCollection, blogCollection } from '../../db';
-import { CreatePostDTOType, PostEntityType, UpdatePostDTOType } from '../types/post';
+import { RepositoryNotFoundError } from '../../core/errors';
+import { getPaginationParams } from '../../core/utils';
+import { postCollection } from '../../db';
+import {
+  CreatePostDTOType,
+  PostEntityType,
+  PostRequestQueryType,
+  UpdatePostDTOType,
+} from '../types';
 
 export const postRepository = {
-  getPosts: async (): Promise<WithId<PostEntityType>[]> => {
-    return postCollection.find().toArray();
+  getPosts: async (
+    args: PostRequestQueryType
+  ): Promise<{ items: WithId<PostEntityType>[]; totalCount: number }> => {
+    const { sort, limit, skip } = getPaginationParams(args);
+
+    const items = await postCollection.find({}).sort(sort).skip(skip).limit(limit).toArray();
+
+    const totalCount = await postCollection.countDocuments();
+
+    return { items, totalCount };
   },
-  getPostById: async (id: string): Promise<Nullable<WithId<PostEntityType>>> => {
-    return postCollection.findOne({ _id: new ObjectId(id) });
-  },
-  createPost: async (post: CreatePostDTOType): Promise<Nullable<WithId<PostEntityType>>> => {
-    const blog = await blogCollection.findOne({ _id: new ObjectId(post.blogId) });
 
-    if (blog) {
-      const newPost: PostEntityType = { blogName: blog.name, ...post };
+  getPostByIdOrFail: async (id: string): Promise<WithId<PostEntityType>> => {
+    const post = await postCollection.findOne({ _id: new ObjectId(id) });
 
-      const { insertedId } = await postCollection.insertOne(newPost);
-
-      return { _id: insertedId, ...newPost };
+    if (!post) {
+      throw new RepositoryNotFoundError('Post not exist');
     }
 
-    return null;
+    return post;
   },
-  updatePostById: async (args: { id: string; body: UpdatePostDTOType }): Promise<boolean> => {
-    const { id, body } = args;
+
+  createPost: async (post: CreatePostDTOType): Promise<string> => {
+    const { insertedId } = await postCollection.insertOne(post);
+
+    return insertedId.toString();
+  },
+
+  updatePostById: async (args: { id: string; postData: UpdatePostDTOType }): Promise<void> => {
+    const { id, postData } = args;
 
     const { modifiedCount } = await postCollection.updateOne(
       { _id: new ObjectId(id) },
-      { $set: body }
+      { $set: postData }
     );
 
-    console.log('modifiedCount', modifiedCount);
+    if (modifiedCount < 1) {
+      throw new RepositoryNotFoundError('Post not exist');
+    }
 
-    return modifiedCount === 1 ? true : false;
+    return;
   },
-  deletePostById: async (id: string): Promise<boolean> => {
+
+  deletePostById: async (id: string): Promise<void> => {
     const { deletedCount } = await postCollection.deleteOne({ _id: new ObjectId(id) });
 
-    return deletedCount === 1 ? true : false;
+    if (deletedCount < 1) {
+      throw new RepositoryNotFoundError('Post not exist');
+    }
+
+    return;
+  },
+  getPostsByBlogId: async ({
+    blogId,
+    query,
+  }: {
+    blogId: string;
+    query: PostRequestQueryType;
+  }): Promise<{ items: WithId<PostEntityType>[]; totalCount: number }> => {
+    const { sort, skip, limit } = getPaginationParams(query);
+
+    const items = await postCollection
+      .find({ blogId })
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+
+    const totalCount = await postCollection.countDocuments({ blogId });
+
+    return { items, totalCount };
   },
 };

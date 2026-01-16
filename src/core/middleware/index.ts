@@ -5,3 +5,4 @@ export {
   getUriParamValidatorMiddleware,
   idUriParamValidatorMiddleware,
 } from './param-id-validator.middleware';
+export { sortAndPaginationMiddleware } from './param-sort-pagination';

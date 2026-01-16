@@ -6,3 +6,8 @@ export enum BlogFields {
   CREATED_AT = 'createdAt',
   IS_MEMBERSHIP = 'isMembership',
 }
+
+export enum BlogSortFields {
+  CREATED_AT = 'createdAt',
+  NAME = 'name',
+}

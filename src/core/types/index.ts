@@ -8,3 +8,4 @@ export {
   RequestWithBodyType,
   RequestWithUriParamType,
 } from './util-types';
+export { QueryFields } from './query-fields';

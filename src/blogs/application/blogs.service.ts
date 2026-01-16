@@ -1,18 +1,23 @@
 import { blogRepository } from '../repository';
-import { BlogRequestQueryType, CreateBlogInputType, UpdateBlogInputType } from '../types';
+import {
+  BlogRequestQueryType,
+  CreateBlogDTOType,
+  CreateBlogInputType,
+  UpdateBlogInputType,
+} from '../types';
 
 export const blogsService = {
-  async getBlogs(args: BlogRequestQueryType) {
+  getBlogs: async (args: BlogRequestQueryType) => {
     const result = await blogRepository.getBlogs(args);
 
     return result;
   },
-  async getBlogById(id: string) {
+  getBlogById: async (id: string) => {
     return blogRepository.getBlogByIdOrFail(id);
   },
-  async createBlog(blogDto: CreateBlogInputType) {
-    const newBlog = {
-      ...blogDto,
+  createBlog: async (blogData: CreateBlogInputType) => {
+    const newBlog: CreateBlogDTOType = {
+      ...blogData,
       isMembership: false,
       createdAt: new Date().toISOString(),
     };
@@ -21,10 +26,10 @@ export const blogsService = {
 
     return blogId;
   },
-  async updateBlogById({ id, blogData }: { id: string; blogData: UpdateBlogInputType }) {
+  updateBlogById: async ({ id, blogData }: { id: string; blogData: UpdateBlogInputType }) => {
     return blogRepository.updateBlogById({ id, blogData });
   },
-  async deleteBlogById(id: string) {
+  deleteBlogById: async (id: string) => {
     return blogRepository.deleteBlogById(id);
   },
 };
