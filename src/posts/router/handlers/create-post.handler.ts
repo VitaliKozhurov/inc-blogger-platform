@@ -2,23 +2,24 @@ import { Response } from 'express';
 
 import { HTTP_STATUSES } from '../../../core/constants';
 import { RequestWithBodyType } from '../../../core/types';
-import { postRepository } from '../../repository';
-import { CreatePostDTOType, PostInputDTO } from '../../types/post';
+import { postService } from '../../application';
+import { CreatePostInputType } from '../../types';
 import { mapToPostViewModel } from '../mappers/map-to-post-view-model';
 
-export const createPostHandler = async (req: RequestWithBodyType<PostInputDTO>, res: Response) => {
+export const createPostHandler = async (
+  req: RequestWithBodyType<CreatePostInputType>,
+  res: Response
+) => {
   try {
-    const newPost: CreatePostDTOType = { ...req.body, createdAt: new Date().toISOString() };
+    // TODO что если пост создался но запрос за постом не прошел
 
-    const createdPost = await postRepository.createPost(newPost);
+    const postId = await postService.createPost(req.body);
 
-    if (createdPost) {
-      const createdPostViewModel = mapToPostViewModel(createdPost);
+    const createdPost = await postService.getPostById(postId);
 
-      return res.status(HTTP_STATUSES.CREATED).send(createdPostViewModel);
-    }
+    const createdPostViewModel = mapToPostViewModel(createdPost);
 
-    res.sendStatus(HTTP_STATUSES.BAD_REQUEST);
+    return res.status(HTTP_STATUSES.CREATED).send(createdPostViewModel);
   } catch {
     res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
   }

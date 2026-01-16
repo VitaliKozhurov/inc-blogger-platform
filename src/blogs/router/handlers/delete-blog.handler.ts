@@ -2,11 +2,11 @@ import { Response } from 'express';
 
 import { HTTP_STATUSES } from '../../../core/constants';
 import { RequestWithUriParamType } from '../../../core/types';
-import { blogRepository } from '../../repository';
+import { blogsService } from '../../application';
 
 export const deleteBlogHandler = async (req: RequestWithUriParamType, res: Response) => {
   try {
-    await blogRepository.deleteBlogById(req.params.id);
+    await blogsService.deleteBlogById(req.params.id);
 
     return res.sendStatus(HTTP_STATUSES.NO_CONTENT);
   } catch {

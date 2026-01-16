@@ -4,8 +4,10 @@ export { ResponseWithPaginationType } from './response-with-pagination';
 export {
   IdParamType,
   Nullable,
-  RequestWithBodyAndParamType,
+  RequestWithParamAndBodyType,
   RequestWithBodyType,
   RequestWithUriParamType,
+  RequestWithParamAndQueryType,
+  RequestWithQueryType,
 } from './util-types';
 export { QueryFields } from './query-fields';

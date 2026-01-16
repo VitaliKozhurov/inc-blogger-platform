@@ -11,8 +11,7 @@ export const createBlogHandler = async (
   res: Response
 ) => {
   try {
-    // TODO question !!!
-    // If get request to db failed, user view incorrect request (404)
+    // TODO что если блог создался но запрос за блогом не прошел
 
     const blogId = await blogsService.createBlog(req.body);
 

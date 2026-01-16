@@ -1,22 +1,19 @@
 import { Response } from 'express';
 
 import { HTTP_STATUSES } from '../../../core/constants';
-import { RequestWithBodyAndParamType, IdParamType } from '../../../core/types';
-import { postRepository } from '../../repository';
-import { PostInputDTO } from '../../types/post';
+import { RequestWithParamAndBodyType, IdParamType } from '../../../core/types';
+import { postService } from '../../application';
+
+import { UpdatePostInputType } from './../../types/post.input';
 
 export const updatePostHandler = async (
-  req: RequestWithBodyAndParamType<IdParamType, PostInputDTO>,
+  req: RequestWithParamAndBodyType<IdParamType, UpdatePostInputType>,
   res: Response
 ) => {
   try {
-    const isUpdated = await postRepository.updatePostById({ id: req.params.id, body: req.body });
+    await postService.updatePostById({ id: req.params.id, postData: req.body });
 
-    if (isUpdated) {
-      return res.sendStatus(HTTP_STATUSES.NO_CONTENT);
-    }
-
-    res.sendStatus(HTTP_STATUSES.NOT_FOUND);
+    return res.sendStatus(HTTP_STATUSES.NO_CONTENT);
   } catch {
     res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
   }

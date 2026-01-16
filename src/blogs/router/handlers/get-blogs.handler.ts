@@ -1,19 +1,30 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { matchedData } from 'express-validator';
 
 import { HTTP_STATUSES } from '../../../core/constants';
+import { RequestWithQueryType } from '../../../core/types/util-types';
 import { blogsService } from '../../application';
 import { BlogRequestQueryType } from '../../types';
 import { mapToBlogListViewModel } from '../mappers/map-to-blog-list-view-model';
 
-export const getBlogsHandler = async (req: Request<BlogRequestQueryType>, res: Response) => {
+export const getBlogsHandler = async (
+  req: RequestWithQueryType<BlogRequestQueryType>,
+  res: Response
+) => {
   try {
-    const queryParams: BlogRequestQueryType = req.params;
+    const sanitizedQuery = matchedData<BlogRequestQueryType>(req, {
+      locations: ['query'],
+      includeOptionals: true,
+    });
 
-    const { items, totalCount } = await blogsService.getBlogs(queryParams);
+    // TODO check value
+    console.log(req.query);
+
+    const { items, totalCount } = await blogsService.getBlogs(sanitizedQuery);
 
     const blogViewModels = mapToBlogListViewModel({
-      pageSize: queryParams.pageSize,
-      pageNumber: queryParams.pageNumber,
+      pageSize: sanitizedQuery.pageSize,
+      pageNumber: sanitizedQuery.pageNumber,
       items,
       totalCount,
     });
