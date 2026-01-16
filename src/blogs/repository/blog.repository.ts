@@ -1,36 +1,68 @@
-import { ObjectId, WithId } from 'mongodb';
+import { Filter, ObjectId, WithId } from 'mongodb';
 
-import { Nullable } from '../../core/types';
+import { RepositoryNotFoundError } from '../../core/errors';
+import { getPaginationParams } from '../../core/utils';
 import { blogCollection } from '../../db';
-import { BlogEntityType, CreateBlogDTOType, UpdateBlogDTOType } from '../types/blog';
+import { BlogFields, BlogRequestQueryType, CreateBlogDTOType, UpdateBlogDTOType } from '../types';
+import { BlogEntityType } from '../types/blog';
 
 export const blogRepository = {
-  getBlogs: async (): Promise<WithId<BlogEntityType>[]> => {
-    return blogCollection.find().toArray();
-  },
-  getBlogById: async (id: string): Promise<Nullable<WithId<BlogEntityType>>> => {
-    return blogCollection.findOne({ _id: new ObjectId(id) });
-  },
-  createBlog: async (newBlog: CreateBlogDTOType): Promise<WithId<BlogEntityType>> => {
-    const { insertedId } = await blogCollection.insertOne(newBlog);
+  getBlogs: async (
+    args: BlogRequestQueryType
+  ): Promise<{ items: WithId<BlogEntityType>[]; totalCount: number }> => {
+    const { searchNameTerm, ...restArgs } = args;
 
-    return { _id: insertedId, ...newBlog };
+    const filter: Filter<BlogEntityType> = {};
+
+    if (searchNameTerm) {
+      filter[BlogFields.NAME] = {
+        $regex: searchNameTerm,
+        $options: 'i',
+      };
+    }
+
+    const { sort, skip, limit } = getPaginationParams(restArgs);
+
+    const items = await blogCollection.find(filter).sort(sort).skip(skip).limit(limit).toArray();
+    const totalCount = await blogCollection.countDocuments(filter);
+
+    return { items, totalCount };
   },
-  updateBlogById: async (args: { id: string; body: UpdateBlogDTOType }): Promise<boolean> => {
-    const { id, body } = args;
+  getBlogByIdOrFail: async (id: string): Promise<WithId<BlogEntityType>> => {
+    const blog = await blogCollection.findOne({ _id: new ObjectId(id) });
+
+    if (!blog) {
+      throw new RepositoryNotFoundError('Blog not exist');
+    }
+
+    return blog;
+  },
+  createBlog: async (blogData: CreateBlogDTOType): Promise<string> => {
+    const { insertedId } = await blogCollection.insertOne(blogData);
+
+    return insertedId.toString();
+  },
+  updateBlogById: async (args: { id: string; blogData: UpdateBlogDTOType }): Promise<void> => {
+    const { id, blogData } = args;
 
     const { modifiedCount } = await blogCollection.updateOne(
       { _id: new ObjectId(id) },
-      {
-        $set: body,
-      }
+      { $set: blogData }
     );
 
-    return modifiedCount === 1 ? true : false;
+    if (modifiedCount < 1) {
+      throw new RepositoryNotFoundError('Blog not exist');
+    }
+
+    return;
   },
-  deleteBlogById: async (id: string): Promise<boolean> => {
+  deleteBlogById: async (id: string): Promise<void> => {
     const { deletedCount } = await blogCollection.deleteOne({ _id: new ObjectId(id) });
 
-    return deletedCount === 1 ? true : false;
+    if (deletedCount < 1) {
+      throw new RepositoryNotFoundError('Blog not exist');
+    }
+
+    return;
   },
 };

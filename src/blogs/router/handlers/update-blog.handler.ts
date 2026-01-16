@@ -1,22 +1,18 @@
 import { Response } from 'express';
 
 import { HTTP_STATUSES } from '../../../core/constants';
-import { RequestWithBodyAndParamType, IdParamType } from '../../../core/types';
+import { IdParamType, RequestWithBodyAndParamType } from '../../../core/types';
 import { blogRepository } from '../../repository';
-import { BlogInputDTO } from '../../types/blog';
+import { UpdateBlogInputType } from '../../types';
 
 export const updateBlogHandler = async (
-  req: RequestWithBodyAndParamType<IdParamType, BlogInputDTO>,
+  req: RequestWithBodyAndParamType<IdParamType, UpdateBlogInputType>,
   res: Response
 ) => {
   try {
-    const isUpdated = await blogRepository.updateBlogById({ id: req.params.id, body: req.body });
+    await blogRepository.updateBlogById({ id: req.params.id, blogData: req.body });
 
-    if (isUpdated) {
-      return res.sendStatus(HTTP_STATUSES.NO_CONTENT);
-    }
-
-    res.sendStatus(HTTP_STATUSES.NOT_FOUND);
+    return res.sendStatus(HTTP_STATUSES.NO_CONTENT);
   } catch {
     res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
   }

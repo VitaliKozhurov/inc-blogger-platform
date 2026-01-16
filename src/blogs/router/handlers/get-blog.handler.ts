@@ -2,22 +2,16 @@ import { Response } from 'express';
 
 import { HTTP_STATUSES } from '../../../core/constants';
 import { RequestWithUriParamType } from '../../../core/types';
-import { blogRepository } from '../../repository';
+import { blogsService } from '../../application';
 import { mapToBlogViewModel } from '../mappers/map-to-blog-view-model';
 
 export const getBlogByIdHandler = async (req: RequestWithUriParamType, res: Response) => {
   try {
-    const blogId = req.params.id;
+    const blog = await blogsService.getBlogById(req.params.id);
 
-    const blog = await blogRepository.getBlogById(blogId);
+    const blogViewModel = mapToBlogViewModel(blog);
 
-    if (blog) {
-      const blogViewModel = mapToBlogViewModel(blog);
-
-      return res.status(HTTP_STATUSES.OK).send(blogViewModel);
-    }
-
-    res.sendStatus(HTTP_STATUSES.NOT_FOUND);
+    return res.status(HTTP_STATUSES.OK).send(blogViewModel);
   } catch {
     res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
   }

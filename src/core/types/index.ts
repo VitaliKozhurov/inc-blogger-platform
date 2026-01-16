@@ -1,3 +1,6 @@
+export { ValidationErrorType } from './errors';
+export { PaginationWithSorting } from './pagination-with-sorting';
+export { ResponseWithPaginationType } from './response-with-pagination';
 export {
   IdParamType,
   Nullable,
@@ -5,4 +8,3 @@ export {
   RequestWithBodyType,
   RequestWithUriParamType,
 } from './util-types';
-export { ValidationErrorType } from './errors';
