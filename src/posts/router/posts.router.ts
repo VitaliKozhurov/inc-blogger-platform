@@ -13,8 +13,11 @@ import { updatePostHandler } from './handlers/update-post.handler';
 export const postRouter = Router();
 
 postRouter.get(APP_ROUTES.ROOT, getPostsHandler);
+
 postRouter.get(APP_ROUTES.ID, idUriParamValidatorMiddleware, getPostHandler);
+
 postRouter.post(APP_ROUTES.ROOT, authMiddleware, postInputModelMiddleware, createPostHandler);
+
 postRouter.put(
   APP_ROUTES.ID,
   authMiddleware,
@@ -22,4 +25,5 @@ postRouter.put(
   postInputModelMiddleware,
   updatePostHandler
 );
+
 postRouter.delete(APP_ROUTES.ID, authMiddleware, idUriParamValidatorMiddleware, deletePostHandler);

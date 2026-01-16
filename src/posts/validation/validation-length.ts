@@ -1,4 +1,4 @@
-import { PostFields } from '../types/post';
+import { PostFields } from '../types';
 
 export const POST_VALIDATION_LENGTH = {
   [PostFields.TITLE]: { min: 1, max: 30 },

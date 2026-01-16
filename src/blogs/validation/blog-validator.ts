@@ -2,11 +2,15 @@ import { body, ValidationChain } from 'express-validator';
 
 import { URL_REG_EXP } from '../../core/constants';
 import { ERROR_FIELD_MESSAGES } from '../../core/utils';
-import { BlogFields, BlogInputDTO } from '../types/blog';
+import { BlogFields } from '../types';
 
+import { BlogEntityType } from './../types/blog';
 import { BLOG_VALIDATION_LENGTH } from './validation-length';
 
-type BlogValidatorType = Record<keyof BlogInputDTO, ValidationChain>;
+type BlogValidatorType = Record<
+  keyof Omit<BlogEntityType, 'isMembership' | 'createdAt'>,
+  ValidationChain
+>;
 
 export const blogValidator: BlogValidatorType = {
   [BlogFields.NAME]: body(BlogFields.NAME)

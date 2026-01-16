@@ -1,11 +1,14 @@
 import { body, ValidationChain } from 'express-validator';
 
 import { ERROR_FIELD_MESSAGES } from '../../core/utils';
-import { PostFields, PostInputDTO } from '../types/post';
+import { PostEntityType, PostFields } from '../types';
 
 import { POST_VALIDATION_LENGTH } from './validation-length';
 
-type PostValidationType = Record<keyof PostInputDTO, ValidationChain>;
+type PostValidationType = Record<
+  keyof Pick<PostEntityType, 'blogId' | 'title' | 'shortDescription' | 'content'>,
+  ValidationChain
+>;
 
 export const postValidator: PostValidationType = {
   [PostFields.BLOG_ID]: body(PostFields.BLOG_ID)

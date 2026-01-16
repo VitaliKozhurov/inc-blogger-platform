@@ -4,6 +4,7 @@ import { matchedData } from 'express-validator';
 import { HTTP_STATUSES } from '../../../core/constants';
 import { IdParamType, RequestWithParamAndQueryType } from '../../../core/types/util-types';
 import { postService } from '../../../posts/application';
+import { mapToPostListViewModel } from '../../../posts/router/mappers/map-to-post-list-view-model';
 import { PostRequestQueryType } from '../../../posts/types';
 
 export const getPostsByBlogIdHandler = async (
@@ -18,7 +19,16 @@ export const getPostsByBlogIdHandler = async (
       includeOptionals: true,
     });
 
-    const posts = await postService.getPostByBlogId({ blogId, query });
+    const { items, totalCount } = await postService.getPostByBlogId({ blogId, query });
+
+    const postsViewMode = mapToPostListViewModel({
+      items,
+      totalCount,
+      pageNumber: query.pageNumber,
+      pageSize: query.pageSize,
+    });
+
+    return res.status(HTTP_STATUSES.OK).send(postsViewMode);
   } catch {
     res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
   }

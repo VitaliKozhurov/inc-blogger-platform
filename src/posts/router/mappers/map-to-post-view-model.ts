@@ -1,6 +1,7 @@
 import { WithId } from 'mongodb';
 
-import { PostEntityType, PostViewModelType } from '../../types/post';
+import { PostViewModelType } from '../../types';
+import { PostEntityType } from '../../types/post';
 
 export const mapToPostViewModel = (post: WithId<PostEntityType>): PostViewModelType => {
   const { _id, ...restPost } = post;

@@ -5,9 +5,7 @@ import { QueryFields } from '../types';
 import { SortDirection } from '../types/sort';
 import { ERROR_FIELD_MESSAGES } from '../utils';
 
-export const sortAndPaginationMiddleware = <T extends string>(
-  sortFields: Record<string, T>
-) => {
+export const sortAndPaginationMiddleware = <T extends string>(sortFields: Record<string, T>) => {
   const allowedSortFields = Object.values(sortFields);
 
   return [
@@ -17,6 +15,7 @@ export const sortAndPaginationMiddleware = <T extends string>(
       .withMessage(ERROR_FIELD_MESSAGES.PAGE_NUMBER())
       .toInt(),
     query(QueryFields.PAGE_SIZE)
+      .default(DEFAULT_QUERY_PARAMS.PAGE_SIZE)
       .isInt({ min: 1, max: 100 })
       .withMessage(ERROR_FIELD_MESSAGES.PAGE_SIZE({ min: 1, max: 100 }))
       .toInt(),

@@ -20,6 +20,9 @@ export const getBlogsHandler = async (
     // TODO check value
     console.log(req.query);
 
+    // !! TODO check this case
+    // const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
+
     const { items, totalCount } = await blogsService.getBlogs(sanitizedQuery);
 
     const blogViewModels = mapToBlogListViewModel({
