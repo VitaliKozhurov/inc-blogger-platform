@@ -8,8 +8,9 @@ export enum PostFields {
   CREATED_AT = 'createdAt',
 }
 
+// TODO в доке только по createdAt
 export enum PostSortFields {
+  CREATED_AT = 'createdAt',
   TITLE = 'title',
   BLOG_NAME = 'blogName',
-  CREATED_AT = 'createdAt',
 }
