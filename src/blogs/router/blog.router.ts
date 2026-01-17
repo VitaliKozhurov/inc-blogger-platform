@@ -9,6 +9,7 @@ import {
 import { postByBlogIdInputModelMiddleware } from '../../posts/middleware/post-input-model.middleware';
 import { PostSortFields } from '../../posts/types';
 import { blogInputModelMiddleware } from '../middleware/blog-input-model.middleware';
+import { blogInputQueryMiddleware } from '../middleware/blog-input-query.middleware';
 import { BlogSortFields } from '../types';
 
 import { createBlogHandler } from './handlers/create-blog.handler';
@@ -21,7 +22,12 @@ import { updateBlogHandler } from './handlers/update-blog.handler';
 
 export const blogRouter = Router();
 
-blogRouter.get(APP_ROUTES.ROOT, sortAndPaginationMiddleware(BlogSortFields), getBlogsHandler);
+blogRouter.get(
+  APP_ROUTES.ROOT,
+  blogInputQueryMiddleware,
+  sortAndPaginationMiddleware(BlogSortFields),
+  getBlogsHandler
+);
 
 blogRouter.get(APP_ROUTES.ID, idUriParamValidatorMiddleware, getBlogByIdHandler);
 

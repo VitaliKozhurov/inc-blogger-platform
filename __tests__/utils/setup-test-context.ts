@@ -18,6 +18,7 @@ export const setupTestContext = async () => {
     await request().delete(`${APP_ROUTES.TESTING}${APP_ROUTES.CLEAR_DATA}`);
 
   const closeSession = async () => {
+    await clearDb();
     server.close();
     await stopDb();
   };

@@ -7,6 +7,8 @@ import { ERROR_FIELD_MESSAGES } from '../utils';
 
 import { checkValidationMiddleware } from './check-validation.middleware';
 
+// TODO в доке pageSize 10
+
 export const sortAndPaginationMiddleware = <T extends string>(sortFields: Record<string, T>) => {
   const allowedSortFields = Object.values(sortFields);
 
