@@ -5,8 +5,11 @@ import { ObjectId } from 'mongodb';
 import { BlogsResponseType } from '../../../src/blogs/router/mappers/map-to-blog-list-view-model';
 import { APP_ROUTES, HTTP_STATUSES, PARAM_ID_ERROR_MESSAGES } from '../../../src/core/constants';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
+import { PostsResponseType } from '../../../src/posts/router/mappers/map-to-post-list-view-model';
 import { createBlog } from '../../utils/blogs/create-blog';
+import { createPost } from '../../utils/posts/createPost';
 import { TestManager } from '../../utils/test-manager';
+import { mockPost } from '../posts/mock';
 
 import { mockBlog, mockUpdatedBlog } from './mock';
 
@@ -229,6 +232,82 @@ describe('Blogs test', () => {
         .request()
         .get(`${APP_ROUTES.BLOGS}/${createdBlog.id}`)
         .expect(HTTP_STATUSES.NOT_FOUND);
+    });
+  });
+
+  describe('GET /blogs/:id/posts', () => {
+    it('should return 200 status code with created blog', async () => {
+      const createdPost = await createPost(testManager);
+
+      const { body }: { body: PostsResponseType } = await testManager.context
+        .request()
+        .get(`${APP_ROUTES.BLOGS}/${createdPost.blogId}${APP_ROUTES.POSTS}`)
+        .expect(HTTP_STATUSES.OK);
+
+      expect(body.items).toHaveLength(1);
+      expect(body.items[0]).toEqual(createdPost);
+    });
+
+    it('should return 404 status code if request with not existing blog id', async () => {
+      const id = new ObjectId().toHexString();
+
+      await testManager.context
+        .request()
+        .get(`${APP_ROUTES.BLOGS}/${id}${APP_ROUTES.POSTS}`)
+        .expect(HTTP_STATUSES.NOT_FOUND);
+    });
+
+    it('should return 400 status code if request with incorrect blog id', async () => {
+      await testManager.context
+        .request()
+        .get(`${APP_ROUTES.BLOGS}/${null}${APP_ROUTES.POSTS}`)
+        .expect(HTTP_STATUSES.BAD_REQUEST)
+        .expect({
+          errorsMessages: [{ field: 'id', message: PARAM_ID_ERROR_MESSAGES.MUST_BE_OBJECT_ID }],
+        });
+    });
+  });
+
+  describe('POST /blogs/:id/posts', () => {
+    it('should return 200 status code with created post', async () => {
+      const createdBlog = await createBlog(testManager);
+
+      await testManager.context
+        .request()
+        .post(`${APP_ROUTES.BLOGS}/${createdBlog.id}${APP_ROUTES.POSTS}`)
+        .set('Authorization', testManager.authToken)
+        .send(mockPost)
+        .expect(HTTP_STATUSES.CREATED);
+
+      const { body }: { body: PostsResponseType } = await testManager.context
+        .request()
+        .get(`${APP_ROUTES.BLOGS}/${createdBlog.id}${APP_ROUTES.POSTS}`)
+        .expect(HTTP_STATUSES.OK);
+
+      expect(body.items).toHaveLength(1);
+    });
+
+    it('should return 404 status code if request with not existing blog id', async () => {
+      const id = new ObjectId().toHexString();
+
+      await testManager.context
+        .request()
+        .post(`${APP_ROUTES.BLOGS}/${id}${APP_ROUTES.POSTS}`)
+        .set('Authorization', testManager.authToken)
+        .send(mockPost)
+        .expect(HTTP_STATUSES.NOT_FOUND);
+    });
+
+    it('should return 400 status code if request with incorrect blog id', async () => {
+      await testManager.context
+        .request()
+        .post(`${APP_ROUTES.BLOGS}/${null}${APP_ROUTES.POSTS}`)
+        .set('Authorization', testManager.authToken)
+        .expect(HTTP_STATUSES.BAD_REQUEST)
+        .send(mockPost)
+        .expect({
+          errorsMessages: [{ field: 'id', message: PARAM_ID_ERROR_MESSAGES.MUST_BE_OBJECT_ID }],
+        });
     });
   });
 });

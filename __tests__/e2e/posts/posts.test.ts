@@ -239,8 +239,6 @@ describe('Posts', () => {
     it('should return 204 status code if request with correct post id', async () => {
       const createdPost = await createPost(testManager);
 
-      console.log('createPost: ', createdPost);
-
       await testManager.context
         .request()
         .delete(`${APP_ROUTES.POSTS}/${createdPost.id}`)

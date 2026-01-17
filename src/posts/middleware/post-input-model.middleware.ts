@@ -8,3 +8,10 @@ export const postInputModelMiddleware = [
   postValidator.content,
   checkValidationMiddleware,
 ];
+
+export const postByBlogIdInputModelMiddleware = [
+  postValidator.title,
+  postValidator.shortDescription,
+  postValidator.content,
+  checkValidationMiddleware,
+];

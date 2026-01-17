@@ -6,7 +6,7 @@ import {
   sortAndPaginationMiddleware,
   idUriParamValidatorMiddleware,
 } from '../../core/middleware';
-import { postInputModelMiddleware } from '../../posts/middleware/post-input-model.middleware';
+import { postByBlogIdInputModelMiddleware } from '../../posts/middleware/post-input-model.middleware';
 import { PostSortFields } from '../../posts/types';
 import { blogInputModelMiddleware } from '../middleware/blog-input-model.middleware';
 import { BlogSortFields } from '../types';
@@ -38,16 +38,16 @@ blogRouter.put(
 blogRouter.delete(APP_ROUTES.ID, authMiddleware, idUriParamValidatorMiddleware, deleteBlogHandler);
 
 blogRouter.get(
-  `${APP_ROUTES.ID}/${APP_ROUTES.POSTS}`,
+  `${APP_ROUTES.ID}${APP_ROUTES.POSTS}`,
   idUriParamValidatorMiddleware,
   sortAndPaginationMiddleware(PostSortFields),
   getPostsByBlogIdHandler
 );
 
 blogRouter.post(
-  `${APP_ROUTES.ID}/${APP_ROUTES.POSTS}`,
+  `${APP_ROUTES.ID}${APP_ROUTES.POSTS}`,
   authMiddleware,
   idUriParamValidatorMiddleware,
-  postInputModelMiddleware,
+  postByBlogIdInputModelMiddleware,
   createPostByBlogIdHandler
 );
