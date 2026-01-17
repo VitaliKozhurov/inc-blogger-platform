@@ -1,77 +1,125 @@
-import { Server } from 'http';
-
-import express from 'express';
 import { ObjectId } from 'mongodb';
-import request from 'supertest';
 
-import { APP_ROUTES, HTTP_STATUSES } from '../../../src/core/constants';
+import { APP_ROUTES, HTTP_STATUSES, PARAM_ID_ERROR_MESSAGES } from '../../../src/core/constants';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
-import { stopDb } from '../../../src/db';
-import { clearDb } from '../../utils/clear-db';
-import { getAuthToken } from '../../utils/get-auth-token';
+import { PostsResponseType } from '../../../src/posts/router/mappers/map-to-post-list-view-model';
 import { createPost } from '../../utils/posts/createPost';
-import { setupTestEnvironments } from '../../utils/setup-test-environment';
+import { TestManager } from '../../utils/test-manager';
 
 import { mockPost, mockUpdatedPost } from './mock';
 
-describe.skip('Posts', () => {
-  const app = express();
-  let server: Server;
-
-  const authToken = getAuthToken();
+describe('Posts', () => {
+  const testManager = new TestManager();
 
   beforeAll(async () => {
-    server = await setupTestEnvironments(app);
+    await testManager.init();
   });
 
   beforeEach(async () => {
-    await clearDb(app);
+    await testManager.clearDb();
   });
 
   afterAll(async () => {
-    server.close();
-    await stopDb();
+    await testManager.close();
   });
 
   describe('GET /posts', () => {
-    it('should return 200 status code and array of posts', async () => {
-      await request(app).get(`${APP_ROUTES.POSTS}`).expect(HTTP_STATUSES.OK);
+    it('should return a 200 status code with an empty array when no posts are available', async () => {
+      const { body }: { body: PostsResponseType } = await testManager.context
+        .request()
+        .get(`${APP_ROUTES.POSTS}`)
+        .expect(HTTP_STATUSES.OK);
+
+      expect(body.items).toHaveLength(0);
+      expect(body.totalCount).toBe(0);
+    });
+
+    it('should return a 200 status code with the created post after a successful creation', async () => {
+      await createPost(testManager);
+
+      const { body }: { body: PostsResponseType } = await testManager.context
+        .request()
+        .get(`${APP_ROUTES.POSTS}`)
+        .expect(HTTP_STATUSES.OK);
+
+      expect(body.items).toHaveLength(1);
+      expect(body.pagesCount).toBe(1);
+      expect(body.totalCount).toBe(1);
+    });
+
+    it('should return a 400 status code with errors if query params is incorrect', async () => {
+      const { body } = await testManager.context
+        .request()
+        .get(`${APP_ROUTES.POSTS}?sortBy=price&sortDirection=ASC&pageNumber=o&pageSize=o`)
+        .expect(HTTP_STATUSES.BAD_REQUEST);
+
+      expect(body.errorsMessages).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ field: 'pageNumber', message: expect.any(String) }),
+          expect.objectContaining({ field: 'pageSize', message: expect.any(String) }),
+          expect.objectContaining({ field: 'sortBy', message: expect.any(String) }),
+          expect.objectContaining({ field: 'sortDirection', message: expect.any(String) }),
+        ])
+      );
     });
   });
 
   describe('GET /posts/:id', () => {
-    it('should return 200 status and post', async () => {
-      const createdPost = await createPost(app);
+    it('should return 200 status code with created post', async () => {
+      const createdPost = await createPost(testManager);
 
-      await request(app)
+      await testManager.context
+        .request()
         .get(`${APP_ROUTES.POSTS}/${createdPost.id}`)
         .expect(HTTP_STATUSES.OK)
         .expect(createdPost);
     });
+
+    it('should return 404 status code if request with not existing post id', async () => {
+      const id = new ObjectId().toHexString();
+
+      await testManager.context
+        .request()
+        .get(`${APP_ROUTES.POSTS}/${id}`)
+        .expect(HTTP_STATUSES.NOT_FOUND);
+    });
+
+    it('should return 400 status code if request with incorrect post id', async () => {
+      await testManager.context
+        .request()
+        .get(`${APP_ROUTES.POSTS}/${null}`)
+        .expect(HTTP_STATUSES.BAD_REQUEST)
+        .expect({
+          errorsMessages: [{ field: 'id', message: PARAM_ID_ERROR_MESSAGES.MUST_BE_OBJECT_ID }],
+        });
+    });
   });
 
   describe('POST /posts', () => {
-    it('should return 401 status', async () => {
-      await request(app)
+    it('should return 401 status code if token invalid', async () => {
+      await testManager.context
+        .request()
         .post(`${APP_ROUTES.POSTS}`)
         .send(mockPost)
         .expect(HTTP_STATUSES.UNAUTHORIZED);
     });
 
-    it('should return 400 status code if blog id not exist', async () => {
+    it('should return 400 status code if blog not exist', async () => {
       const blogId = new ObjectId().toHexString();
 
-      await request(app)
+      await testManager.context
+        .request()
         .post(`${APP_ROUTES.POSTS}`)
-        .set('Authorization', authToken)
+        .set('Authorization', testManager.authToken)
         .send({ ...mockPost, blogId })
-        .expect(HTTP_STATUSES.BAD_REQUEST);
+        .expect(HTTP_STATUSES.NOT_FOUND);
     });
 
-    it('should return 400 status with errors', async () => {
-      await request(app)
+    it('should return 400 status code with validation errors', async () => {
+      await testManager.context
+        .request()
         .post(`${APP_ROUTES.POSTS}`)
-        .set('Authorization', authToken)
+        .set('Authorization', testManager.authToken)
         .send({})
         .expect(HTTP_STATUSES.BAD_REQUEST)
         .expect({
@@ -87,10 +135,11 @@ describe.skip('Posts', () => {
         });
     });
 
-    it('should return 201 status and created post', async () => {
-      const createdPost = await createPost(app);
+    it('should return 201 status code and created post', async () => {
+      const createdPost = await createPost(testManager);
 
-      await request(app)
+      await testManager.context
+        .request()
         .get(`${APP_ROUTES.POSTS}/${createdPost.id}`)
         .expect(HTTP_STATUSES.OK)
         .expect(createdPost);
@@ -98,38 +147,42 @@ describe.skip('Posts', () => {
   });
 
   describe('PUT /posts:id', () => {
-    it('should return 401 status', async () => {
-      await request(app)
+    it('should return 401 status code if token invalid', async () => {
+      await testManager.context
+        .request()
         .put(`${APP_ROUTES.POSTS}/1`)
         .send(mockPost)
         .expect(HTTP_STATUSES.UNAUTHORIZED);
     });
 
-    it('should return 400 status send incorrect id', async () => {
-      await request(app)
+    it('should return 400 status code if post id incorrect', async () => {
+      await testManager.context
+        .request()
         .put(`${APP_ROUTES.POSTS}/null`)
-        .set('Authorization', authToken)
+        .set('Authorization', testManager.authToken)
         .send(mockUpdatedPost)
         .expect(HTTP_STATUSES.BAD_REQUEST);
     });
 
-    it('should return 404 status if post not found', async () => {
+    it('should return 404 status if post not exist', async () => {
       const id = new ObjectId().toHexString();
       const blogId = new ObjectId().toHexString();
 
-      await request(app)
+      await testManager.context
+        .request()
         .put(`${APP_ROUTES.POSTS}/${id}`)
-        .set('Authorization', authToken)
+        .set('Authorization', testManager.authToken)
         .send({ ...mockUpdatedPost, blogId })
         .expect(HTTP_STATUSES.NOT_FOUND);
     });
 
-    it('should return 400 status if send incorrect data', async () => {
-      const createdPost = await createPost(app);
+    it('should return 400 status code if request data incorrect', async () => {
+      const createdPost = await createPost(testManager);
 
-      await request(app)
+      await testManager.context
+        .request()
         .put(`${APP_ROUTES.POSTS}/${createdPost.id}`)
-        .set('Authorization', authToken)
+        .set('Authorization', testManager.authToken)
         .send({})
         .expect(HTTP_STATUSES.BAD_REQUEST)
         .expect({
@@ -145,47 +198,57 @@ describe.skip('Posts', () => {
         });
     });
 
-    it('should return 204 status', async () => {
-      const createdPost = await createPost(app);
+    it('should return 204 status code after request with correct post data', async () => {
+      const createdPost = await createPost(testManager);
 
-      await request(app)
+      await testManager.context
+        .request()
         .put(`${APP_ROUTES.POSTS}/${createdPost.id}`)
-        .set('Authorization', authToken)
+        .set('Authorization', testManager.authToken)
         .send({ ...mockUpdatedPost, blogId: createdPost.blogId })
         .expect(HTTP_STATUSES.NO_CONTENT);
     });
   });
 
   describe('DELETE /posts/:id', () => {
-    it('should return 401 status code', async () => {
-      await request(app).delete(`${APP_ROUTES.POSTS}/1`).expect(HTTP_STATUSES.UNAUTHORIZED);
+    it('should return 401 status code if token invalid', async () => {
+      await testManager.context
+        .request()
+        .delete(`${APP_ROUTES.POSTS}/1`)
+        .expect(HTTP_STATUSES.UNAUTHORIZED);
     });
 
-    it('should return 400 status code if send incorrect id', async () => {
-      await request(app)
+    it('should return 400 status code if incorrect post id', async () => {
+      await testManager.context
+        .request()
         .delete(`${APP_ROUTES.POSTS}/null`)
-        .set('Authorization', authToken)
+        .set('Authorization', testManager.authToken)
         .expect(HTTP_STATUSES.BAD_REQUEST);
     });
 
-    it('should return 404 status code if post id not exist', async () => {
+    it('should return 404 status code if post not exist', async () => {
       const id = new ObjectId().toHexString();
 
-      await request(app)
+      await testManager.context
+        .request()
         .delete(`${APP_ROUTES.POSTS}/${id}`)
-        .set('Authorization', authToken)
+        .set('Authorization', testManager.authToken)
         .expect(HTTP_STATUSES.NOT_FOUND);
     });
 
-    it('should return 204 status', async () => {
-      const createdPost = await createPost(app);
+    it('should return 204 status code if request with correct post id', async () => {
+      const createdPost = await createPost(testManager);
 
-      await request(app)
+      console.log('createPost: ', createdPost);
+
+      await testManager.context
+        .request()
         .delete(`${APP_ROUTES.POSTS}/${createdPost.id}`)
-        .set('Authorization', authToken)
+        .set('Authorization', testManager.authToken)
         .expect(HTTP_STATUSES.NO_CONTENT);
 
-      await request(app)
+      await testManager.context
+        .request()
         .get(`${APP_ROUTES.POSTS}/${createdPost.id}`)
         .expect(HTTP_STATUSES.NOT_FOUND);
     });

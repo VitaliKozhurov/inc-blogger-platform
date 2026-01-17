@@ -1,6 +1,7 @@
 import { Response } from 'express';
 
 import { HTTP_STATUSES } from '../../../core/constants';
+import { errorsHandler } from '../../../core/errors';
 import { RequestWithBodyType } from '../../../core/types';
 import { postService } from '../../application';
 import { CreatePostInputType } from '../../types';
@@ -20,7 +21,7 @@ export const createPostHandler = async (
     const createdPostViewModel = mapToPostViewModel(createdPost);
 
     return res.status(HTTP_STATUSES.CREATED).send(createdPostViewModel);
-  } catch {
-    res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
+  } catch (e) {
+    errorsHandler(e, res);
   }
 };

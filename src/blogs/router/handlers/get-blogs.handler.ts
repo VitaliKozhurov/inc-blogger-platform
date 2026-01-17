@@ -13,19 +13,19 @@ export const getBlogsHandler = async (
   res: Response
 ) => {
   try {
-    const sanitizedQuery = matchedData<BlogRequestQueryType>(req, {
+    const query = matchedData<BlogRequestQueryType>(req, {
       locations: ['query'],
       includeOptionals: true,
     });
 
     // !! TODO check this case
-    // const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
+    // const queryInput = setDefaultSortAndPaginationIfNotExist(query);
 
-    const { items, totalCount } = await blogsService.getBlogs(sanitizedQuery);
+    const { items, totalCount } = await blogsService.getBlogs(query);
 
     const blogViewModels = mapToBlogListViewModel({
-      pageSize: sanitizedQuery.pageSize,
-      pageNumber: sanitizedQuery.pageNumber,
+      pageSize: query.pageSize,
+      pageNumber: query.pageNumber,
       items,
       totalCount,
     });

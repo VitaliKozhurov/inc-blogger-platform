@@ -1,8 +1,13 @@
 import { Router } from 'express';
 
 import { APP_ROUTES } from '../../core/constants';
-import { authMiddleware, idUriParamValidatorMiddleware } from '../../core/middleware';
+import {
+  authMiddleware,
+  idUriParamValidatorMiddleware,
+  sortAndPaginationMiddleware,
+} from '../../core/middleware';
 import { postInputModelMiddleware } from '../middleware/post-input-model.middleware';
+import { PostSortFields } from '../types';
 
 import { createPostHandler } from './handlers/create-post.handler';
 import { deletePostHandler } from './handlers/delete-post.handler';
@@ -12,7 +17,7 @@ import { updatePostHandler } from './handlers/update-post.handler';
 
 export const postRouter = Router();
 
-postRouter.get(APP_ROUTES.ROOT, getPostsHandler);
+postRouter.get(APP_ROUTES.ROOT, sortAndPaginationMiddleware(PostSortFields), getPostsHandler);
 
 postRouter.get(APP_ROUTES.ID, idUriParamValidatorMiddleware, getPostHandler);
 

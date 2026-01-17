@@ -63,8 +63,6 @@ describe('Blogs test', () => {
           expect.objectContaining({ field: 'sortDirection', message: expect.any(String) }),
         ])
       );
-
-      console.log(body);
     });
   });
 
@@ -142,7 +140,7 @@ describe('Blogs test', () => {
         .expect(HTTP_STATUSES.UNAUTHORIZED);
     });
 
-    it('should return 400 status code if blog id incorrect ', async () => {
+    it('should return 400 status code if blog id incorrect', async () => {
       await testManager.context
         .request()
         .put(`${APP_ROUTES.BLOGS}/null`)
@@ -218,7 +216,7 @@ describe('Blogs test', () => {
         .expect(HTTP_STATUSES.NOT_FOUND);
     });
 
-    it('should return 204 status code request with correct blogId', async () => {
+    it('should return 204 status code if request with correct blog id', async () => {
       const createdBlog = await createBlog(testManager);
 
       await testManager.context

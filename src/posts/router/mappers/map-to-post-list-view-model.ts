@@ -22,3 +22,5 @@ export const mapToPostListViewModel = (args: Args) => {
     items: items.map(mapToPostViewModel),
   };
 };
+
+export type PostsResponseType = ReturnType<typeof mapToPostListViewModel>;

@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { matchedData } from 'express-validator';
 
 import { HTTP_STATUSES } from '../../../core/constants';
+import { errorsHandler } from '../../../core/errors';
 import { RequestWithQueryType } from '../../../core/types';
 import { postService } from '../../application';
 import { PostRequestQueryType } from '../../types';
@@ -27,7 +28,7 @@ export const getPostsHandler = async (
     });
 
     res.status(HTTP_STATUSES.OK).send(postsViewModels);
-  } catch {
-    res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
+  } catch (e) {
+    errorsHandler(e, res);
   }
 };
