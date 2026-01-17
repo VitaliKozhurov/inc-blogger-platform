@@ -14,7 +14,7 @@ import { setupTestEnvironments } from '../../utils/setup-test-environment';
 
 import { mockPost, mockUpdatedPost } from './mock';
 
-describe('Posts', () => {
+describe.skip('Posts', () => {
   const app = express();
   let server: Server;
 

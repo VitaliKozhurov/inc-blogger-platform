@@ -22,3 +22,5 @@ export const mapToBlogListViewModel = (args: Args) => {
     items: items.map(mapToBlogViewModel),
   };
 };
+
+export type BlogsResponseType = ReturnType<typeof mapToBlogListViewModel>;

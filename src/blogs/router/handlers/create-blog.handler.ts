@@ -1,6 +1,7 @@
 import { Response } from 'express';
 
 import { HTTP_STATUSES } from '../../../core/constants';
+import { errorsHandler } from '../../../core/errors';
 import { RequestWithBodyType } from '../../../core/types';
 import { blogsService } from '../../application/blogs.service';
 import { CreateBlogInputType } from '../../types';
@@ -20,7 +21,7 @@ export const createBlogHandler = async (
     const createdBlogViewModel = mapToBlogViewModel(createdBlog);
 
     res.status(HTTP_STATUSES.CREATED).send(createdBlogViewModel);
-  } catch {
-    res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
+  } catch (e) {
+    errorsHandler(e, res);
   }
 };

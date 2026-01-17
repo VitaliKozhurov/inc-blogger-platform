@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { matchedData } from 'express-validator';
 
 import { HTTP_STATUSES } from '../../../core/constants';
+import { errorsHandler } from '../../../core/errors';
 import { RequestWithQueryType } from '../../../core/types/util-types';
 import { blogsService } from '../../application';
 import { BlogRequestQueryType } from '../../types';
@@ -17,9 +18,6 @@ export const getBlogsHandler = async (
       includeOptionals: true,
     });
 
-    // TODO check value
-    console.log(req.query);
-
     // !! TODO check this case
     // const queryInput = setDefaultSortAndPaginationIfNotExist(sanitizedQuery);
 
@@ -33,7 +31,7 @@ export const getBlogsHandler = async (
     });
 
     res.status(HTTP_STATUSES.OK).send(blogViewModels);
-  } catch {
-    res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
+  } catch (e) {
+    errorsHandler(e, res);
   }
 };

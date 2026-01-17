@@ -1,6 +1,7 @@
 import { Response } from 'express';
 
 import { HTTP_STATUSES } from '../../../core/constants';
+import { errorsHandler } from '../../../core/errors';
 import { RequestWithParamAndBodyType } from '../../../core/types';
 import { postService } from '../../../posts/application';
 import { mapToPostViewModel } from '../../../posts/router/mappers/map-to-post-view-model';
@@ -22,7 +23,7 @@ export const createPostByBlogIdHandler = async (
     const createdPostViewModel = mapToPostViewModel(createdPost);
 
     res.status(HTTP_STATUSES.CREATED).send(createdPostViewModel);
-  } catch {
-    res.sendStatus(HTTP_STATUSES.INTERNAL_SERVER_ERROR);
+  } catch (e) {
+    errorsHandler(e, res);
   }
 };

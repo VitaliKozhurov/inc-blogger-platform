@@ -12,14 +12,14 @@ export let blogCollection: Collection<BlogEntityType>;
 export let postCollection: Collection<PostEntityType>;
 
 export const runDB = async (dbUrl: string) => {
-  client = new MongoClient(dbUrl);
-
-  const db: Db = client.db(SETTINGS.DB_NAME);
-
-  blogCollection = db.collection<BlogEntityType>(COLLECTION_NAME.BLOGS);
-  postCollection = db.collection<PostEntityType>(COLLECTION_NAME.POSTS);
-
   try {
+    client = new MongoClient(dbUrl);
+
+    const db: Db = client.db(SETTINGS.DB_NAME);
+
+    blogCollection = db.collection<BlogEntityType>(COLLECTION_NAME.BLOGS);
+    postCollection = db.collection<PostEntityType>(COLLECTION_NAME.POSTS);
+
     await client.connect();
     await db.command({ ping: 1 });
     console.log('✅ Connected to DB');
