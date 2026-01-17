@@ -9,5 +9,7 @@ export enum PostFields {
 }
 
 export enum PostSortFields {
+  TITLE = 'title',
+  BLOG_NAME = 'blogName',
   CREATED_AT = 'createdAt',
 }
