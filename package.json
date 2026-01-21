@@ -8,7 +8,7 @@
     "dev": "nodemon dist/index.js",
     "format": "prettier --write .",
     "lint": "eslint src --fix .",
-    "jest": "jest -i",
+    "jest": "jest --runInBand",
     "jest:coverage": "jest --coverage"
   },
   "keywords": [],

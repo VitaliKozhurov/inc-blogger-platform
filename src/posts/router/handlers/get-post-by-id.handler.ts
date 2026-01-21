@@ -6,7 +6,7 @@ import { RequestWithUriParamType } from '../../../core/types';
 import { postsQWRepository } from '../../repository';
 import { mapToPostViewModel } from '../mappers';
 
-export const getPostHandler = async (req: RequestWithUriParamType, res: Response) => {
+export const getPostByIdHandler = async (req: RequestWithUriParamType, res: Response) => {
   try {
     const post = await postsQWRepository.getPostByIdOrFail(req.params.id);
 
