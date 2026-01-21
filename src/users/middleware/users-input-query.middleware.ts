@@ -8,7 +8,7 @@ const USER_QUERY_FIELDS = {
   SEARCH_EMAIL_TERM: 'searchEmailTerm',
 };
 
-export const userInputQueryMiddleware = [
+export const usersInputQueryMiddleware = [
   query(USER_QUERY_FIELDS.SEARCH_LOGIN_TERM).optional().isString().trim(),
   query(USER_QUERY_FIELDS.SEARCH_EMAIL_TERM).optional().isString().trim(),
   ...sortAndPaginationMiddleware(UserSortFields),

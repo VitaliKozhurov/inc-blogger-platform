@@ -1,2 +1,5 @@
-export { UserEntityType } from './user';
-export { UserRequestQueryType } from './user-request-query';
+export { UsersRequestQueryType } from './users-request.query';
+export { UserDBType } from './user.db';
+export { UserViewModelType } from './user.view-model';
+export { UserFields, UserSortFields } from './user-fields';
+export { CreateUserInputType } from './user.input';
