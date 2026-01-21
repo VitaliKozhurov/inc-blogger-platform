@@ -3,8 +3,9 @@ import { Response } from 'express';
 import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
 import { RequestWithParamAndBodyType } from '../../../core/types';
-import { postService } from '../../../posts/application';
-import { mapToPostViewModel } from '../../../posts/router/mappers/map-to-post-view-model';
+import { postsService } from '../../../posts/application';
+import { postsQWRepository } from '../../../posts/repository';
+import { mapToPostViewModel } from '../../../posts/router/mappers';
 import { CreatePostInputType } from '../../../posts/types';
 
 export const createPostByBlogIdHandler = async (
@@ -16,9 +17,9 @@ export const createPostByBlogIdHandler = async (
 
     const blogId = req.params.id;
 
-    const postId = await postService.createPost({ blogId, ...req.body });
+    const postId = await postsService.createPost({ blogId, ...req.body });
 
-    const createdPost = await postService.getPostById(postId);
+    const createdPost = await postsQWRepository.getPostByIdOrFail(postId);
 
     const createdPostViewModel = mapToPostViewModel(createdPost);
 

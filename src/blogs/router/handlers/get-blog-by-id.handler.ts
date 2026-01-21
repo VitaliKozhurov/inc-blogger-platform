@@ -3,12 +3,12 @@ import { Response } from 'express';
 import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
 import { RequestWithUriParamType } from '../../../core/types';
-import { blogsService } from '../../application';
-import { mapToBlogViewModel } from '../mappers/map-to-blog-view-model';
+import { blogsQWRepository } from '../../repository';
+import { mapToBlogViewModel } from '../mappers';
 
 export const getBlogByIdHandler = async (req: RequestWithUriParamType, res: Response) => {
   try {
-    const blog = await blogsService.getBlogById(req.params.id);
+    const blog = await blogsQWRepository.getBlogByIdOrFail(req.params.id);
 
     const blogViewModel = mapToBlogViewModel(blog);
 

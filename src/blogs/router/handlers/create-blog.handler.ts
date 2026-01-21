@@ -3,9 +3,10 @@ import { Response } from 'express';
 import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
 import { RequestWithBodyType } from '../../../core/types';
-import { blogsService } from '../../application/blogs.service';
+import { blogsService } from '../../application';
+import { blogsQWRepository } from '../../repository';
 import { CreateBlogInputType } from '../../types';
-import { mapToBlogViewModel } from '../mappers/map-to-blog-view-model';
+import { mapToBlogViewModel } from '../mappers';
 
 export const createBlogHandler = async (
   req: RequestWithBodyType<CreateBlogInputType>,
@@ -16,7 +17,7 @@ export const createBlogHandler = async (
 
     const blogId = await blogsService.createBlog(req.body);
 
-    const createdBlog = await blogsService.getBlogById(blogId);
+    const createdBlog = await blogsQWRepository.getBlogByIdOrFail(blogId);
 
     const createdBlogViewModel = mapToBlogViewModel(createdBlog);
 

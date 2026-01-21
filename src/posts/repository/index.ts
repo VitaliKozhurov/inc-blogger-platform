@@ -1,1 +1,2 @@
-export { postRepository } from './post.repository';
+export { postsQWRepository } from './posts-query.repository';
+export { postsRepository } from './posts.repository';

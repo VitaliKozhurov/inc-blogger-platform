@@ -3,10 +3,11 @@ import { matchedData } from 'express-validator';
 
 import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
-import { IdParamType, RequestWithParamAndQueryType } from '../../../core/types/util-types';
-import { postService } from '../../../posts/application';
-import { mapToPostListViewModel } from '../../../posts/router/mappers/map-to-post-list-view-model';
+import { IdParamType, RequestWithParamAndQueryType } from '../../../core/types';
+import { postsQWRepository } from '../../../posts/repository';
+import { mapToPostListViewModel } from '../../../posts/router/mappers';
 import { PostRequestQueryType } from '../../../posts/types';
+import { blogsQWRepository } from '../../repository';
 
 export const getPostsByBlogIdHandler = async (
   req: RequestWithParamAndQueryType<IdParamType, PostRequestQueryType>,
@@ -20,7 +21,9 @@ export const getPostsByBlogIdHandler = async (
       includeOptionals: true,
     });
 
-    const { items, totalCount } = await postService.getPostByBlogId({ blogId, query });
+    await blogsQWRepository.getBlogByIdOrFail(blogId);
+
+    const { items, totalCount } = await postsQWRepository.getPostsByBlogId({ blogId, query });
 
     const postsViewMode = mapToPostListViewModel({
       items,

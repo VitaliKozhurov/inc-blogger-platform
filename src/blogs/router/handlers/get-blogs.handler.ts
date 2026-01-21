@@ -3,10 +3,10 @@ import { matchedData } from 'express-validator';
 
 import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
-import { RequestWithQueryType } from '../../../core/types/util-types';
-import { blogsService } from '../../application';
+import { RequestWithQueryType } from '../../../core/types';
+import { blogsQWRepository } from '../../repository';
 import { BlogRequestQueryType } from '../../types';
-import { mapToBlogListViewModel } from '../mappers/map-to-blog-list-view-model';
+import { mapToBlogListViewModel } from '../mappers';
 
 export const getBlogsHandler = async (
   req: RequestWithQueryType<BlogRequestQueryType>,
@@ -21,7 +21,7 @@ export const getBlogsHandler = async (
     // !! TODO check this case
     // const queryInput = setDefaultSortAndPaginationIfNotExist(query);
 
-    const { items, totalCount } = await blogsService.getBlogs(query);
+    const { items, totalCount } = await blogsQWRepository.getBlogs(query);
 
     const blogViewModels = mapToBlogListViewModel({
       pageSize: query.pageSize,

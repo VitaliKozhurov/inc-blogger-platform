@@ -3,14 +3,9 @@ import { ObjectId, WithId } from 'mongodb';
 import { RepositoryNotFoundError } from '../../core/errors';
 import { getPaginationParams } from '../../core/utils';
 import { postCollection } from '../../db';
-import {
-  CreatePostDTOType,
-  PostEntityType,
-  PostRequestQueryType,
-  UpdatePostDTOType,
-} from '../types';
+import { PostEntityType, PostRequestQueryType } from '../types';
 
-export const postRepository = {
+export const postsQWRepository = {
   getPosts: async (
     args: PostRequestQueryType
   ): Promise<{ items: WithId<PostEntityType>[]; totalCount: number }> => {
@@ -22,7 +17,6 @@ export const postRepository = {
 
     return { items, totalCount };
   },
-
   getPostByIdOrFail: async (id: string): Promise<WithId<PostEntityType>> => {
     const post = await postCollection.findOne({ _id: new ObjectId(id) });
 
@@ -31,37 +25,6 @@ export const postRepository = {
     }
 
     return post;
-  },
-
-  createPost: async (post: CreatePostDTOType): Promise<string> => {
-    const { insertedId } = await postCollection.insertOne(post);
-
-    return insertedId.toString();
-  },
-
-  updatePostById: async (args: { id: string; postData: UpdatePostDTOType }): Promise<void> => {
-    const { id, postData } = args;
-
-    const { modifiedCount } = await postCollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: postData }
-    );
-
-    if (modifiedCount < 1) {
-      throw new RepositoryNotFoundError('Post not exist');
-    }
-
-    return;
-  },
-
-  deletePostById: async (id: string): Promise<void> => {
-    const { deletedCount } = await postCollection.deleteOne({ _id: new ObjectId(id) });
-
-    if (deletedCount < 1) {
-      throw new RepositoryNotFoundError('Post not exist');
-    }
-
-    return;
   },
   getPostsByBlogId: async ({
     blogId,
