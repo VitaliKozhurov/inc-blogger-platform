@@ -10,6 +10,7 @@ export const blogsRepository = {
 
     return insertedId.toString();
   },
+
   updateBlogById: async (args: { id: string; blogData: UpdateBlogDTOType }): Promise<void> => {
     const { id, blogData } = args;
 
@@ -24,6 +25,7 @@ export const blogsRepository = {
 
     return;
   },
+
   deleteBlogById: async (id: string): Promise<void> => {
     const { deletedCount } = await blogCollection.deleteOne({ _id: new ObjectId(id) });
 

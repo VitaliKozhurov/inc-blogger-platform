@@ -13,9 +13,11 @@ export const blogsService = {
 
     return blogId;
   },
+
   updateBlogById: async ({ id, blogData }: { id: string; blogData: UpdateBlogInputType }) => {
     return blogsRepository.updateBlogById({ id, blogData });
   },
+
   deleteBlogById: async (id: string) => {
     return blogsRepository.deleteBlogById(id);
   },

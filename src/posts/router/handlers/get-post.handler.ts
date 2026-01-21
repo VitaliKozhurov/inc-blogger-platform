@@ -3,12 +3,12 @@ import { Response } from 'express';
 import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
 import { RequestWithUriParamType } from '../../../core/types';
-import { postService } from '../../application';
-import { mapToPostViewModel } from '../mappers/map-to-post-view-model';
+import { postsQWRepository } from '../../repository';
+import { mapToPostViewModel } from '../mappers';
 
 export const getPostHandler = async (req: RequestWithUriParamType, res: Response) => {
   try {
-    const post = await postService.getPostById(req.params.id);
+    const post = await postsQWRepository.getPostByIdOrFail(req.params.id);
 
     const postViewModel = mapToPostViewModel(post);
 

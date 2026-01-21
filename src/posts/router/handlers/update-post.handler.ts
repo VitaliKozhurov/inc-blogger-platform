@@ -2,8 +2,8 @@ import { Response } from 'express';
 
 import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
-import { RequestWithParamAndBodyType, IdParamType } from '../../../core/types';
-import { postService } from '../../application';
+import { IdParamType, RequestWithParamAndBodyType } from '../../../core/types';
+import { postsService } from '../../application';
 
 import { UpdatePostInputType } from './../../types/post.input';
 
@@ -12,7 +12,7 @@ export const updatePostHandler = async (
   res: Response
 ) => {
   try {
-    await postService.updatePostById({ id: req.params.id, postData: req.body });
+    await postsService.updatePostById({ id: req.params.id, postData: req.body });
 
     return res.sendStatus(HTTP_STATUSES.NO_CONTENT);
   } catch (e) {

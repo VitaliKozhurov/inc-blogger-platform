@@ -17,6 +17,7 @@ export const postsQWRepository = {
 
     return { items, totalCount };
   },
+
   getPostByIdOrFail: async (id: string): Promise<WithId<PostEntityType>> => {
     const post = await postCollection.findOne({ _id: new ObjectId(id) });
 
@@ -26,6 +27,7 @@ export const postsQWRepository = {
 
     return post;
   },
+
   getPostsByBlogId: async ({
     blogId,
     query,

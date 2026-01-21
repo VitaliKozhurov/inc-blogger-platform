@@ -4,9 +4,9 @@ import { matchedData } from 'express-validator';
 import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
 import { RequestWithQueryType } from '../../../core/types';
-import { postService } from '../../application';
+import { postsQWRepository } from '../../repository';
 import { PostRequestQueryType } from '../../types';
-import { mapToPostListViewModel } from '../mappers/map-to-post-list-view-model';
+import { mapToPostListViewModel } from '../mappers';
 
 export const getPostsHandler = async (
   req: RequestWithQueryType<PostRequestQueryType>,
@@ -18,7 +18,7 @@ export const getPostsHandler = async (
       includeOptionals: true,
     });
 
-    const { items, totalCount } = await postService.getPosts(query);
+    const { items, totalCount } = await postsQWRepository.getPosts(query);
 
     const postsViewModels = mapToPostListViewModel({
       pageSize: query.pageSize,

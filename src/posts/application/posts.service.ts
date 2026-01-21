@@ -1,12 +1,10 @@
-import { blogsRepository } from '../../blogs/repository';
+import { blogsQWRepository } from '../../blogs/repository';
 import { postsRepository } from '../repository';
 import { CreatePostDTOType, CreatePostInputType, UpdatePostInputType } from '../types';
 
 export const postsService = {
   createPost: async (postData: CreatePostInputType) => {
-    // TODO что тут лучше дергать репозиторий или сервис ?
-
-    const { name } = await blogRepository.getBlogByIdOrFail(postData.blogId);
+    const { name } = await blogsQWRepository.getBlogByIdOrFail(postData.blogId);
 
     const newPost: CreatePostDTOType = {
       ...postData,
@@ -14,27 +12,31 @@ export const postsService = {
       createdAt: new Date().toISOString(),
     };
 
-    const postId = await postRepository.createPost(newPost);
+    const postId = await postsRepository.createPost(newPost);
 
     return postId;
   },
+
   updatePostById: async ({ id, postData }: { id: string; postData: UpdatePostInputType }) => {
-    return postRepository.updatePostById({ id, postData });
+    return postsRepository.updatePostById({ id, postData });
   },
+
   deletePostById: async (blogId: string) => {
-    return postRepository.deletePostById(blogId);
+    return postsRepository.deletePostById(blogId);
   },
+
   createPostForBlogById: async ({
     blogId,
     postData,
   }: {
     blogId: string;
-    postData: CreatePostInputType;
+    postData: Omit<CreatePostInputType, 'blogId'>;
   }) => {
-    const { name } = await blogsRepository.getBlogByIdOrFail(blogId);
+    const { name } = await blogsQWRepository.getBlogByIdOrFail(blogId);
 
     const newPost: CreatePostDTOType = {
       ...postData,
+      blogId,
       blogName: name,
       createdAt: new Date().toISOString(),
     };

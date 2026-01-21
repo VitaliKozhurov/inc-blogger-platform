@@ -3,9 +3,10 @@ import { Response } from 'express';
 import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
 import { RequestWithBodyType } from '../../../core/types';
-import { postService } from '../../application';
+import { postsService } from '../../application';
+import { postsQWRepository } from '../../repository';
 import { CreatePostInputType } from '../../types';
-import { mapToPostViewModel } from '../mappers/map-to-post-view-model';
+import { mapToPostViewModel } from '../mappers';
 
 export const createPostHandler = async (
   req: RequestWithBodyType<CreatePostInputType>,
@@ -14,9 +15,9 @@ export const createPostHandler = async (
   try {
     // TODO что если пост создался но запрос за постом не прошел
 
-    const postId = await postService.createPost(req.body);
+    const postId = await postsService.createPost(req.body);
 
-    const createdPost = await postService.getPostById(postId);
+    const createdPost = await postsQWRepository.getPostByIdOrFail(postId);
 
     const createdPostViewModel = mapToPostViewModel(createdPost);
 

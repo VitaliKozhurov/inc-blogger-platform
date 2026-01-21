@@ -27,6 +27,7 @@ export const blogsQWRepository = {
 
     return { items, totalCount };
   },
+
   getBlogByIdOrFail: async (id: string): Promise<WithId<BlogEntityType>> => {
     const blog = await blogCollection.findOne({ _id: new ObjectId(id) });
 

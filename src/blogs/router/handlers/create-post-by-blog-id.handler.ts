@@ -17,7 +17,7 @@ export const createPostByBlogIdHandler = async (
 
     const blogId = req.params.id;
 
-    const postId = await postsService.createPost({ blogId, ...req.body });
+    const postId = await postsService.createPostForBlogById({ blogId, postData: req.body });
 
     const createdPost = await postsQWRepository.getPostByIdOrFail(postId);
 
