@@ -1,8 +1,9 @@
 import { Collection, Db, MongoClient } from 'mongodb';
 
-import { BlogEntityType } from '../blogs/types/blog';
+import { BlogEntityType } from '../blogs/types';
 import { SETTINGS } from '../core/settings';
-import { PostEntityType } from '../posts/types/post';
+import { PostEntityType } from '../posts/types';
+import { UserEntityType } from '../users/types';
 
 import { COLLECTION_NAME } from './constants';
 
@@ -10,6 +11,7 @@ let client: MongoClient;
 
 export let blogCollection: Collection<BlogEntityType>;
 export let postCollection: Collection<PostEntityType>;
+export let userCollection: Collection<UserEntityType>;
 
 export const runDB = async (dbUrl: string) => {
   try {
@@ -19,6 +21,7 @@ export const runDB = async (dbUrl: string) => {
 
     blogCollection = db.collection<BlogEntityType>(COLLECTION_NAME.BLOGS);
     postCollection = db.collection<PostEntityType>(COLLECTION_NAME.POSTS);
+    userCollection = db.collection<UserEntityType>(COLLECTION_NAME.USERS);
 
     await client.connect();
     await db.command({ ping: 1 });
