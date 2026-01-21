@@ -1,16 +1,10 @@
 import { Router } from 'express';
 
 import { APP_ROUTES } from '../../core/constants';
-import {
-  authMiddleware,
-  sortAndPaginationMiddleware,
-  idUriParamValidatorMiddleware,
-} from '../../core/middleware';
-import { postByBlogIdInputModelMiddleware } from '../../posts/middleware/post-input-model.middleware';
-import { PostSortFields } from '../../posts/types';
+import { authMiddleware, idUriParamMiddleware } from '../../core/middleware';
+import { postByBlogIdInputModelMiddleware, postInputQueryMiddleware } from '../../posts/middleware';
 import { blogInputModelMiddleware } from '../middleware/blog-input-model.middleware';
 import { blogInputQueryMiddleware } from '../middleware/blog-input-query.middleware';
-import { BlogSortFields } from '../types';
 
 import { createBlogHandler } from './handlers/create-blog.handler';
 import { createPostByBlogIdHandler } from './handlers/create-post-by-blog-id.handler';
@@ -22,38 +16,33 @@ import { updateBlogHandler } from './handlers/update-blog.handler';
 
 export const blogRouter = Router();
 
-blogRouter.get(
-  APP_ROUTES.ROOT,
-  blogInputQueryMiddleware,
-  sortAndPaginationMiddleware(BlogSortFields),
-  getBlogsHandler
-);
+blogRouter.get(APP_ROUTES.ROOT, blogInputQueryMiddleware, getBlogsHandler);
 
-blogRouter.get(APP_ROUTES.ID, idUriParamValidatorMiddleware, getBlogByIdHandler);
+blogRouter.get(APP_ROUTES.ID, idUriParamMiddleware, getBlogByIdHandler);
 
 blogRouter.post(APP_ROUTES.ROOT, authMiddleware, blogInputModelMiddleware, createBlogHandler);
 
 blogRouter.put(
   APP_ROUTES.ID,
   authMiddleware,
-  idUriParamValidatorMiddleware,
+  idUriParamMiddleware,
   blogInputModelMiddleware,
   updateBlogHandler
 );
 
-blogRouter.delete(APP_ROUTES.ID, authMiddleware, idUriParamValidatorMiddleware, deleteBlogHandler);
+blogRouter.delete(APP_ROUTES.ID, authMiddleware, idUriParamMiddleware, deleteBlogHandler);
 
 blogRouter.get(
   `${APP_ROUTES.ID}${APP_ROUTES.POSTS}`,
-  idUriParamValidatorMiddleware,
-  sortAndPaginationMiddleware(PostSortFields),
+  idUriParamMiddleware,
+  postInputQueryMiddleware,
   getPostsByBlogIdHandler
 );
 
 blogRouter.post(
   `${APP_ROUTES.ID}${APP_ROUTES.POSTS}`,
   authMiddleware,
-  idUriParamValidatorMiddleware,
+  idUriParamMiddleware,
   postByBlogIdInputModelMiddleware,
   createPostByBlogIdHandler
 );

@@ -5,8 +5,6 @@ import { QueryFields } from '../types';
 import { SortDirection } from '../types/sort';
 import { ERROR_FIELD_MESSAGES } from '../utils';
 
-import { checkValidationMiddleware } from './check-validation.middleware';
-
 // TODO в доке pageSize 10
 
 export const sortAndPaginationMiddleware = <T extends string>(sortFields: Record<string, T>) => {
@@ -31,7 +29,5 @@ export const sortAndPaginationMiddleware = <T extends string>(sortFields: Record
       .default(DEFAULT_QUERY_PARAMS.SORT_DIRECTION)
       .isIn(Object.values(SortDirection))
       .withMessage(ERROR_FIELD_MESSAGES.SORT_DIRECTION(Object.values(SortDirection))),
-
-    checkValidationMiddleware,
   ];
 };

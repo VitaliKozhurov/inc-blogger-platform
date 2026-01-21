@@ -20,4 +20,4 @@ export const getUriParamValidatorMiddleware = (uriParam: string = 'id') => {
   ];
 };
 
-export const idUriParamValidatorMiddleware = getUriParamValidatorMiddleware();
+export const idUriParamMiddleware = getUriParamValidatorMiddleware();

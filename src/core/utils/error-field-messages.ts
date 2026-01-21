@@ -14,5 +14,5 @@ export const ERROR_FIELD_MESSAGES = {
   SORT_BY: (correctFields: string[]) =>
     `Invalid sort field. Sort fields must be from list of ${correctFields.join(', ')} values`,
   SORT_DIRECTION: (correctSortDirection: SortDirection[]) =>
-    `Invalid sort direction value. Sort  direction value must be from ${Object.values(correctSortDirection).join(', ')}`,
+    `Invalid sort direction. Sort  direction must be from ${Object.values(correctSortDirection).join(', ')} values`,
 };
