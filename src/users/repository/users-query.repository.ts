@@ -58,6 +58,17 @@ export const usersQWRepository = {
       createdAt: user.createdAt,
     };
   },
+  async getUserByLoginOrEmail(loginOrEmail: string): Promise<UserViewModelType> {
+    const user = await userCollection.findOne({
+      $or: [{ login: loginOrEmail }, { email: loginOrEmail }],
+    });
+
+    if (!user) {
+      throw new RepositoryNotFoundError('User not exist');
+    }
+
+    return this._mapToViewModel(user);
+  },
   _mapToViewModel(user: WithId<UserDBType>): UserViewModelType {
     const { _id, passwordHash: _, ...restUserData } = user;
 
