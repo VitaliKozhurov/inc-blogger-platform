@@ -16,7 +16,7 @@ export const createUserHandler = async (
 
     const createdUser = await usersQWRepository.getUserByIdOrFail(userId);
 
-    res.status(HTTP_STATUSES.OK).send(createdUser);
+    res.status(HTTP_STATUSES.CREATED).send(createdUser);
   } catch (e) {
     errorsHandler(e, res);
   }

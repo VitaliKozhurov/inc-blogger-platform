@@ -5,9 +5,8 @@ import { ResponseWithPaginationType } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { PostViewModelType } from '../../../src/posts/types';
 import { createPost } from '../../utils/posts/createPost';
+import { mockPost, mockUpdatedPost } from '../../utils/posts/mock';
 import { TestManager } from '../../utils/test-manager';
-
-import { mockPost, mockUpdatedPost } from './mock';
 
 type PostsResponseType = ResponseWithPaginationType<PostViewModelType>;
 

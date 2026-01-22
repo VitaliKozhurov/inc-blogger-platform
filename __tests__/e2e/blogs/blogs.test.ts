@@ -1,5 +1,3 @@
-import { describe } from 'node:test';
-
 import { ObjectId } from 'mongodb';
 
 import { BlogViewModelType } from '../../../src/blogs/types';
@@ -8,11 +6,10 @@ import { ResponseWithPaginationType } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { PostViewModelType } from '../../../src/posts/types';
 import { createBlog } from '../../utils/blogs/create-blog';
+import { mockBlog, mockUpdatedBlog } from '../../utils/blogs/mock';
 import { createPost } from '../../utils/posts/createPost';
+import { mockPost } from '../../utils/posts/mock';
 import { TestManager } from '../../utils/test-manager';
-import { mockPost } from '../posts/mock';
-
-import { mockBlog, mockUpdatedBlog } from './mock';
 
 type BlogsResponseType = ResponseWithPaginationType<BlogViewModelType>;
 type PostsResponseType = ResponseWithPaginationType<PostViewModelType>;
