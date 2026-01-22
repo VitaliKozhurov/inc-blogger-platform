@@ -1,12 +1,15 @@
 import { ObjectId } from 'mongodb';
 
 import { APP_ROUTES, HTTP_STATUSES, PARAM_ID_ERROR_MESSAGES } from '../../../src/core/constants';
+import { ResponseWithPaginationType } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
-import { PostsResponseType } from '../../../src/posts/router/mappers/map-to-post-list-view-model';
+import { PostViewModelType } from '../../../src/posts/types';
 import { createPost } from '../../utils/posts/createPost';
 import { TestManager } from '../../utils/test-manager';
 
 import { mockPost, mockUpdatedPost } from './mock';
+
+type PostsResponseType = ResponseWithPaginationType<PostViewModelType>;
 
 describe('Posts', () => {
   const testManager = new TestManager();

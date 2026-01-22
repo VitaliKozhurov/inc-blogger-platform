@@ -1,3 +1,3 @@
-import { PostEntityType } from './post';
+import { PostDBType } from './post.db';
 
-export type PostViewModelType = { id: string } & PostEntityType;
+export type PostViewModelType = { id: string } & PostDBType;

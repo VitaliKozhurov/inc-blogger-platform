@@ -1,4 +1,4 @@
-export type PostEntityType = {
+export type PostDBType = {
   title: string;
   shortDescription: string;
   content: string;
@@ -6,4 +6,3 @@ export type PostEntityType = {
   blogName: string;
   createdAt: string;
 };
-

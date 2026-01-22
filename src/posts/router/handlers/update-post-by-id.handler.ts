@@ -7,7 +7,7 @@ import { postsService } from '../../application';
 
 import { UpdatePostInputType } from './../../types/post.input';
 
-export const updatePostHandler = async (
+export const updatePostByIdHandler = async (
   req: RequestWithParamAndBodyType<IdParamType, UpdatePostInputType>,
   res: Response
 ) => {

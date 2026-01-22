@@ -6,10 +6,10 @@ import { postInputQueryMiddleware } from '../middleware';
 import { postInputModelMiddleware } from '../middleware/post-input-model.middleware';
 
 import { createPostHandler } from './handlers/create-post.handler';
-import { deletePostHandler } from './handlers/delete-post.handler';
+import { deletePostByIdHandler } from './handlers/delete-post-by-id.handler';
 import { getPostByIdHandler } from './handlers/get-post-by-id.handler';
 import { getPostsHandler } from './handlers/get-posts.handler';
-import { updatePostHandler } from './handlers/update-post.handler';
+import { updatePostByIdHandler } from './handlers/update-post-by-id.handler';
 
 export const postRouter = Router();
 
@@ -24,7 +24,7 @@ postRouter.put(
   authMiddleware,
   idUriParamMiddleware,
   postInputModelMiddleware,
-  updatePostHandler
+  updatePostByIdHandler
 );
 
-postRouter.delete(APP_ROUTES.ID, authMiddleware, idUriParamMiddleware, deletePostHandler);
+postRouter.delete(APP_ROUTES.ID, authMiddleware, idUriParamMiddleware, deletePostByIdHandler);

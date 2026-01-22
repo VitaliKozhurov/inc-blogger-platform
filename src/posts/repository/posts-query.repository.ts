@@ -1,40 +1,50 @@
 import { ObjectId, WithId } from 'mongodb';
 
 import { RepositoryNotFoundError } from '../../core/errors';
+import { ResponseWithPaginationType } from '../../core/types';
 import { getPaginationParams } from '../../core/utils';
 import { postCollection } from '../../db';
-import { PostEntityType, PostRequestQueryType } from '../types';
+import { PostDBType, PostsRequestQueryType, PostViewModelType } from '../types';
+
+import { getPaginationData } from './../../core/utils/get-pagination-data';
 
 export const postsQWRepository = {
-  getPosts: async (
-    args: PostRequestQueryType
-  ): Promise<{ items: WithId<PostEntityType>[]; totalCount: number }> => {
+  async getPosts(
+    args: PostsRequestQueryType
+  ): Promise<ResponseWithPaginationType<PostViewModelType>> {
     const { sort, limit, skip } = getPaginationParams(args);
 
     const items = await postCollection.find({}).sort(sort).skip(skip).limit(limit).toArray();
 
     const totalCount = await postCollection.countDocuments();
 
-    return { items, totalCount };
+    const paginationData = getPaginationData({
+      items: items.map(this._mapToViewModel),
+      pageNumber: args.pageNumber,
+      pageSize: args.pageSize,
+      totalCount,
+    });
+
+    return paginationData;
   },
 
-  getPostByIdOrFail: async (id: string): Promise<WithId<PostEntityType>> => {
+  async getPostByIdOrFail(id: string): Promise<PostViewModelType> {
     const post = await postCollection.findOne({ _id: new ObjectId(id) });
 
     if (!post) {
       throw new RepositoryNotFoundError('Post not exist');
     }
 
-    return post;
+    return this._mapToViewModel(post);
   },
 
-  getPostsByBlogId: async ({
+  async getPostsByBlogId({
     blogId,
     query,
   }: {
     blogId: string;
-    query: PostRequestQueryType;
-  }): Promise<{ items: WithId<PostEntityType>[]; totalCount: number }> => {
+    query: PostsRequestQueryType;
+  }): Promise<ResponseWithPaginationType<PostViewModelType>> {
     const { sort, skip, limit } = getPaginationParams(query);
 
     const items = await postCollection
@@ -46,6 +56,20 @@ export const postsQWRepository = {
 
     const totalCount = await postCollection.countDocuments({ blogId });
 
-    return { items, totalCount };
+    const paginationData = getPaginationData({
+      items: items.map(this._mapToViewModel),
+      pageNumber: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount,
+    });
+
+    return paginationData;
+  },
+
+  _mapToViewModel({ _id, ...restPost }: WithId<PostDBType>): PostViewModelType {
+    return {
+      id: _id.toString(),
+      ...restPost,
+    };
   },
 };

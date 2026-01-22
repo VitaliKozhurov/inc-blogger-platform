@@ -6,7 +6,7 @@ import { BlogViewModelType } from '../../../src/blogs/types';
 import { APP_ROUTES, HTTP_STATUSES, PARAM_ID_ERROR_MESSAGES } from '../../../src/core/constants';
 import { ResponseWithPaginationType } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
-import { PostsResponseType } from '../../../src/posts/router/mappers/map-to-post-list-view-model';
+import { PostViewModelType } from '../../../src/posts/types';
 import { createBlog } from '../../utils/blogs/create-blog';
 import { createPost } from '../../utils/posts/createPost';
 import { TestManager } from '../../utils/test-manager';
@@ -15,6 +15,7 @@ import { mockPost } from '../posts/mock';
 import { mockBlog, mockUpdatedBlog } from './mock';
 
 type BlogsResponseType = ResponseWithPaginationType<BlogViewModelType>;
+type PostsResponseType = ResponseWithPaginationType<PostViewModelType>;
 
 describe('Blogs test', () => {
   const testManager = new TestManager();

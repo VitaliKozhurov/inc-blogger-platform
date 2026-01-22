@@ -1,12 +1,12 @@
 import { blogsQWRepository } from '../../blogs/repository';
 import { postsRepository } from '../repository';
-import { CreatePostDTOType, CreatePostInputType, UpdatePostInputType } from '../types';
+import { CreatePostInputType, PostDBType, UpdatePostInputType } from '../types';
 
 export const postsService = {
   createPost: async (postData: CreatePostInputType) => {
     const { name } = await blogsQWRepository.getBlogByIdOrFail(postData.blogId);
 
-    const newPost: CreatePostDTOType = {
+    const newPost: PostDBType = {
       ...postData,
       blogName: name,
       createdAt: new Date().toISOString(),
@@ -34,7 +34,7 @@ export const postsService = {
   }) => {
     const { name } = await blogsQWRepository.getBlogByIdOrFail(blogId);
 
-    const newPost: CreatePostDTOType = {
+    const newPost: PostDBType = {
       ...postData,
       blogId,
       blogName: name,

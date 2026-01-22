@@ -5,27 +5,19 @@ import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
 import { RequestWithQueryType } from '../../../core/types';
 import { postsQWRepository } from '../../repository';
-import { PostRequestQueryType } from '../../types';
-import { mapToPostListViewModel } from '../mappers';
+import { PostsRequestQueryType } from '../../types';
 
 export const getPostsHandler = async (
-  req: RequestWithQueryType<PostRequestQueryType>,
+  req: RequestWithQueryType<PostsRequestQueryType>,
   res: Response
 ) => {
   try {
-    const query = matchedData<PostRequestQueryType>(req, {
+    const query = matchedData<PostsRequestQueryType>(req, {
       locations: ['query'],
       includeOptionals: true,
     });
 
-    const { items, totalCount } = await postsQWRepository.getPosts(query);
-
-    const postsViewModels = mapToPostListViewModel({
-      pageSize: query.pageSize,
-      pageNumber: query.pageNumber,
-      items,
-      totalCount,
-    });
+    const postsViewModels = await postsQWRepository.getPosts(query);
 
     res.status(HTTP_STATUSES.OK).send(postsViewModels);
   } catch (e) {
