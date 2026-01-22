@@ -2,6 +2,7 @@ import { Server } from 'http';
 
 import { Express } from 'express';
 
+import { authRouter } from './auth/router/auth.router';
 import { blogRouter } from './blogs/router/blog.router';
 import { APP_ROUTES } from './core/constants';
 import { bodyParserMiddleware } from './core/middleware';
@@ -17,6 +18,7 @@ export const initApp = (app: Express): Promise<Server> => {
   app.use(APP_ROUTES.BLOGS, blogRouter);
   app.use(APP_ROUTES.POSTS, postRouter);
   app.use(APP_ROUTES.USERS, userRouter);
+  app.use(APP_ROUTES.AUTH, authRouter);
   app.use(APP_ROUTES.TESTING, testRouter);
 
   return new Promise((resolve, reject) => {
