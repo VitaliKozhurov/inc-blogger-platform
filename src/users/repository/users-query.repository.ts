@@ -4,12 +4,12 @@ import { RepositoryNotFoundError } from '../../core/errors';
 import { ResponseWithPaginationType } from '../../core/types';
 import { getPaginationData, getPaginationParams } from '../../core/utils';
 import { userCollection } from '../../db/mongo.db';
-import { UserDBType, UserRequestQueryType, UserViewModelType } from '../types';
+import { UserDBType, UsersRequestQueryType, UserViewModelType } from '../types';
 import { UserFields } from '../types/user-fields';
 
 export const usersQWRepository = {
   async getUsers(
-    args: UserRequestQueryType
+    args: UsersRequestQueryType
   ): Promise<ResponseWithPaginationType<UserViewModelType>> {
     const { searchLoginTerm, searchEmailTerm, ...restArgs } = args;
 

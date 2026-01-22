@@ -7,6 +7,7 @@ import { APP_ROUTES } from './core/constants';
 import { bodyParserMiddleware } from './core/middleware';
 import { postRouter } from './posts/router/posts.router';
 import { testRouter } from './tests/router/test.router';
+import { userRouter } from './users/router/user.router';
 
 const PORT = process.env.PORT || 5000;
 
@@ -15,6 +16,7 @@ export const initApp = (app: Express): Promise<Server> => {
 
   app.use(APP_ROUTES.BLOGS, blogRouter);
   app.use(APP_ROUTES.POSTS, postRouter);
+  app.use(APP_ROUTES.USERS, userRouter);
   app.use(APP_ROUTES.TESTING, testRouter);
 
   return new Promise((resolve, reject) => {

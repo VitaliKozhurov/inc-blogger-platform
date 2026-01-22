@@ -13,9 +13,9 @@ export const getUsersHandler = async (req: Request, res: Response) => {
       includeOptionals: true,
     });
 
-    const postsViewModel = await usersQWRepository.getUsers(query);
+    const usersViewModel = await usersQWRepository.getUsers(query);
 
-    res.status(HTTP_STATUSES.OK).send(postsViewModel);
+    res.status(HTTP_STATUSES.OK).send(usersViewModel);
   } catch (e) {
     errorsHandler(e, res);
   }
