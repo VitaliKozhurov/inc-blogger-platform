@@ -1,9 +1,9 @@
 import { blogsRepository } from '../repository';
-import { CreateBlogDTOType, CreateBlogInputType, UpdateBlogInputType } from '../types';
+import { BlogDBType, CreateBlogInputType, UpdateBlogInputType } from '../types';
 
 export const blogsService = {
   createBlog: async (blogData: CreateBlogInputType) => {
-    const newBlog: CreateBlogDTOType = {
+    const newBlog: BlogDBType = {
       ...blogData,
       isMembership: false,
       createdAt: new Date().toISOString(),

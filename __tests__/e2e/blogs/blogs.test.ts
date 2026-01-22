@@ -2,8 +2,9 @@ import { describe } from 'node:test';
 
 import { ObjectId } from 'mongodb';
 
-import { BlogsResponseType } from '../../../src/blogs/router/mappers/map-to-blog-list-view-model';
+import { BlogViewModelType } from '../../../src/blogs/types';
 import { APP_ROUTES, HTTP_STATUSES, PARAM_ID_ERROR_MESSAGES } from '../../../src/core/constants';
+import { ResponseWithPaginationType } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { PostsResponseType } from '../../../src/posts/router/mappers/map-to-post-list-view-model';
 import { createBlog } from '../../utils/blogs/create-blog';
@@ -12,6 +13,8 @@ import { TestManager } from '../../utils/test-manager';
 import { mockPost } from '../posts/mock';
 
 import { mockBlog, mockUpdatedBlog } from './mock';
+
+type BlogsResponseType = ResponseWithPaginationType<BlogViewModelType>;
 
 describe('Blogs test', () => {
   const testManager = new TestManager();

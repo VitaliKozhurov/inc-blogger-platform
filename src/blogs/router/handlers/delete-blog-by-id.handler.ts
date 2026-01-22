@@ -5,7 +5,7 @@ import { errorsHandler } from '../../../core/errors';
 import { RequestWithUriParamType } from '../../../core/types';
 import { blogsService } from '../../application';
 
-export const deleteBlogHandler = async (req: RequestWithUriParamType, res: Response) => {
+export const deleteBlogByIdHandler = async (req: RequestWithUriParamType, res: Response) => {
   try {
     await blogsService.deleteBlogById(req.params.id);
 

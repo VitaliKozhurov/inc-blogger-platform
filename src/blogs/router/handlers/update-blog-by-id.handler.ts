@@ -6,7 +6,7 @@ import { IdParamType, RequestWithParamAndBodyType } from '../../../core/types';
 import { blogsService } from '../../application';
 import { UpdateBlogInputType } from '../../types';
 
-export const updateBlogHandler = async (
+export const updateBlogByIdHandler = async (
   req: RequestWithParamAndBodyType<IdParamType, UpdateBlogInputType>,
   res: Response
 ) => {

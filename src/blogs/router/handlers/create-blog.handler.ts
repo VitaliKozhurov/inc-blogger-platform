@@ -6,7 +6,6 @@ import { RequestWithBodyType } from '../../../core/types';
 import { blogsService } from '../../application';
 import { blogsQWRepository } from '../../repository';
 import { CreateBlogInputType } from '../../types';
-import { mapToBlogViewModel } from '../mappers';
 
 export const createBlogHandler = async (
   req: RequestWithBodyType<CreateBlogInputType>,
@@ -17,9 +16,7 @@ export const createBlogHandler = async (
 
     const blogId = await blogsService.createBlog(req.body);
 
-    const createdBlog = await blogsQWRepository.getBlogByIdOrFail(blogId);
-
-    const createdBlogViewModel = mapToBlogViewModel(createdBlog);
+    const createdBlogViewModel = await blogsQWRepository.getBlogByIdOrFail(blogId);
 
     res.status(HTTP_STATUSES.CREATED).send(createdBlogViewModel);
   } catch (e) {

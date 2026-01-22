@@ -1,5 +1,5 @@
 export type ResponseWithPaginationType<T> = {
-  pageCount: number;
+  pagesCount: number;
   page: number;
   pageSize: number;
   totalCount: number;

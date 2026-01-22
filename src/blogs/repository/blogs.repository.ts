@@ -2,16 +2,16 @@ import { ObjectId } from 'mongodb';
 
 import { RepositoryNotFoundError } from '../../core/errors';
 import { blogCollection } from '../../db';
-import { CreateBlogDTOType, UpdateBlogDTOType } from '../types';
+import { BlogDBType, UpdateBlogInputType } from '../types';
 
 export const blogsRepository = {
-  createBlog: async (blogData: CreateBlogDTOType): Promise<string> => {
+  createBlog: async (blogData: BlogDBType): Promise<string> => {
     const { insertedId } = await blogCollection.insertOne(blogData);
 
     return insertedId.toString();
   },
 
-  updateBlogById: async (args: { id: string; blogData: UpdateBlogDTOType }): Promise<void> => {
+  updateBlogById: async (args: { id: string; blogData: UpdateBlogInputType }): Promise<void> => {
     const { id, blogData } = args;
 
     const { modifiedCount } = await blogCollection.updateOne(

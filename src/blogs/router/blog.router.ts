@@ -8,11 +8,11 @@ import { blogInputQueryMiddleware } from '../middleware/blog-input-query.middlew
 
 import { createBlogHandler } from './handlers/create-blog.handler';
 import { createPostByBlogIdHandler } from './handlers/create-post-by-blog-id.handler';
-import { deleteBlogHandler } from './handlers/delete-blog.handler';
+import { deleteBlogByIdHandler } from './handlers/delete-blog-by-id.handler';
 import { getBlogByIdHandler } from './handlers/get-blog-by-id.handler';
 import { getBlogsHandler } from './handlers/get-blogs.handler';
 import { getPostsByBlogIdHandler } from './handlers/get-posts-by-blog-id.handler';
-import { updateBlogHandler } from './handlers/update-blog.handler';
+import { updateBlogByIdHandler } from './handlers/update-blog-by-id.handler';
 
 export const blogRouter = Router();
 
@@ -27,10 +27,10 @@ blogRouter.put(
   authMiddleware,
   idUriParamMiddleware,
   blogInputModelMiddleware,
-  updateBlogHandler
+  updateBlogByIdHandler
 );
 
-blogRouter.delete(APP_ROUTES.ID, authMiddleware, idUriParamMiddleware, deleteBlogHandler);
+blogRouter.delete(APP_ROUTES.ID, authMiddleware, idUriParamMiddleware, deleteBlogByIdHandler);
 
 blogRouter.get(
   `${APP_ROUTES.ID}${APP_ROUTES.POSTS}`,

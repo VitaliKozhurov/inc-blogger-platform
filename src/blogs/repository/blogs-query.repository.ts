@@ -1,17 +1,18 @@
 import { Filter, ObjectId, WithId } from 'mongodb';
 
 import { RepositoryNotFoundError } from '../../core/errors';
-import { getPaginationParams } from '../../core/utils';
+import { ResponseWithPaginationType } from '../../core/types';
+import { getPaginationData, getPaginationParams } from '../../core/utils';
 import { blogCollection } from '../../db';
-import { BlogEntityType, BlogFields, BlogRequestQueryType } from '../types';
+import { BlogDBType, BlogFields, BlogsRequestQueryType, BlogViewModelType } from '../types';
 
 export const blogsQWRepository = {
-  getBlogs: async (
-    args: BlogRequestQueryType
-  ): Promise<{ items: WithId<BlogEntityType>[]; totalCount: number }> => {
+  async getBlogs(
+    args: BlogsRequestQueryType
+  ): Promise<ResponseWithPaginationType<BlogViewModelType>> {
     const { searchNameTerm, ...restArgs } = args;
 
-    const filter: Filter<BlogEntityType> = {};
+    const filter: Filter<BlogDBType> = {};
 
     if (searchNameTerm) {
       filter[BlogFields.NAME] = {
@@ -25,16 +26,27 @@ export const blogsQWRepository = {
     const items = await blogCollection.find(filter).sort(sort).skip(skip).limit(limit).toArray();
     const totalCount = await blogCollection.countDocuments(filter);
 
-    return { items, totalCount };
+    const paginationData = getPaginationData({
+      items: items.map(this._mapToViewModel),
+      pageNumber: restArgs.pageNumber,
+      pageSize: restArgs.pageSize,
+      totalCount,
+    });
+
+    return paginationData;
   },
 
-  getBlogByIdOrFail: async (id: string): Promise<WithId<BlogEntityType>> => {
+  async getBlogByIdOrFail(id: string): Promise<BlogViewModelType> {
     const blog = await blogCollection.findOne({ _id: new ObjectId(id) });
 
     if (!blog) {
       throw new RepositoryNotFoundError('Blog not exist');
     }
 
-    return blog;
+    return this._mapToViewModel(blog);
+  },
+
+  _mapToViewModel({ _id, ...restBlog }: WithId<BlogDBType>) {
+    return { id: _id.toString(), ...restBlog };
   },
 };

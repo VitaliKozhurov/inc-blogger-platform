@@ -5,30 +5,19 @@ import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
 import { RequestWithQueryType } from '../../../core/types';
 import { blogsQWRepository } from '../../repository';
-import { BlogRequestQueryType } from '../../types';
-import { mapToBlogListViewModel } from '../mappers';
+import { BlogsRequestQueryType } from '../../types';
 
 export const getBlogsHandler = async (
-  req: RequestWithQueryType<BlogRequestQueryType>,
+  req: RequestWithQueryType<BlogsRequestQueryType>,
   res: Response
 ) => {
   try {
-    const query = matchedData<BlogRequestQueryType>(req, {
+    const query = matchedData<BlogsRequestQueryType>(req, {
       locations: ['query'],
       includeOptionals: true,
     });
 
-    // !! TODO check this case
-    // const queryInput = setDefaultSortAndPaginationIfNotExist(query);
-
-    const { items, totalCount } = await blogsQWRepository.getBlogs(query);
-
-    const blogViewModels = mapToBlogListViewModel({
-      pageSize: query.pageSize,
-      pageNumber: query.pageNumber,
-      items,
-      totalCount,
-    });
+    const blogViewModels = await blogsQWRepository.getBlogs(query);
 
     res.status(HTTP_STATUSES.OK).send(blogViewModels);
   } catch (e) {

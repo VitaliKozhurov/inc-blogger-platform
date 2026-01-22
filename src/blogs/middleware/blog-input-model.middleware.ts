@@ -1,9 +1,9 @@
 import { checkValidationMiddleware } from '../../core/middleware';
-import { blogValidator } from '../validation/blog-validator';
+import { blogFieldsValidation } from '../validation/blog-fields-validation';
 
 export const blogInputModelMiddleware = [
-  blogValidator.name,
-  blogValidator.description,
-  blogValidator.websiteUrl,
+  blogFieldsValidation.name,
+  blogFieldsValidation.description,
+  blogFieldsValidation.websiteUrl,
   checkValidationMiddleware,
 ];

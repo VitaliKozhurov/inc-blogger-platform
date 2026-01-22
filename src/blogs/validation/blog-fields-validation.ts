@@ -2,17 +2,17 @@ import { body, ValidationChain } from 'express-validator';
 
 import { URL_REG_EXP } from '../../core/constants';
 import { ERROR_FIELD_MESSAGES } from '../../core/utils';
-import { BlogFields } from '../types';
+import { BlogFields, CreateBlogInputType } from '../types';
 
-import { BlogEntityType } from './../types/blog';
-import { BLOG_VALIDATION_LENGTH } from './validation-length';
+type BlogValidatorType = Record<keyof CreateBlogInputType, ValidationChain>;
 
-type BlogValidatorType = Record<
-  keyof Omit<BlogEntityType, 'isMembership' | 'createdAt'>,
-  ValidationChain
->;
+export const BLOG_VALIDATION_LENGTH = {
+  [BlogFields.NAME]: { min: 1, max: 15 },
+  [BlogFields.DESCRIPTION]: { min: 1, max: 500 },
+  [BlogFields.WEBSITE_URL]: { min: 1, max: 100 },
+};
 
-export const blogValidator: BlogValidatorType = {
+export const blogFieldsValidation: BlogValidatorType = {
   [BlogFields.NAME]: body(BlogFields.NAME)
     .exists()
     .withMessage(ERROR_FIELD_MESSAGES.REQUIRED(BlogFields.NAME))
