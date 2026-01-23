@@ -1,7 +1,8 @@
 import { Router } from 'express';
 
+import { authMiddleware } from '../../auth/middleware';
 import { APP_ROUTES } from '../../core/constants';
-import { authMiddleware, idUriParamMiddleware } from '../../core/middleware';
+import { idUriParamMiddleware } from '../../core/middleware';
 import { userInputModelMiddleware, usersInputQueryMiddleware } from '../middleware';
 
 import { createUserHandler } from './handlers/create-user-handler';

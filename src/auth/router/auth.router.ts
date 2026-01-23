@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { APP_ROUTES } from '../../core/constants';
-import { loginInputModelMiddleware } from '../middleware/login-input-model.middleware';
+import { loginInputModelMiddleware } from '../middleware';
 
 import { loginHandler } from './handlers/login.handler';
 

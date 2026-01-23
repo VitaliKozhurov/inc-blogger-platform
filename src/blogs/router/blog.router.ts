@@ -1,7 +1,8 @@
 import { Router } from 'express';
 
+import { authMiddleware } from '../../auth/middleware';
 import { APP_ROUTES } from '../../core/constants';
-import { authMiddleware, idUriParamMiddleware } from '../../core/middleware';
+import { idUriParamMiddleware } from '../../core/middleware';
 import { postByBlogIdInputModelMiddleware, postInputQueryMiddleware } from '../../posts/middleware';
 import { blogInputModelMiddleware } from '../middleware/blog-input-model.middleware';
 import { blogInputQueryMiddleware } from '../middleware/blog-input-query.middleware';

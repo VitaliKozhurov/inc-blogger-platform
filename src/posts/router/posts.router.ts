@@ -1,7 +1,8 @@
 import { Router } from 'express';
 
+import { authMiddleware } from '../../auth/middleware';
 import { APP_ROUTES } from '../../core/constants';
-import { authMiddleware, idUriParamMiddleware } from '../../core/middleware';
+import { idUriParamMiddleware } from '../../core/middleware';
 import { postInputQueryMiddleware } from '../middleware';
 import { postInputModelMiddleware } from '../middleware/post-input-model.middleware';
 
