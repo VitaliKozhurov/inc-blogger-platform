@@ -55,10 +55,12 @@ describe('Auth test', () => {
     });
 
     it('should return 401 status code if incorrect credentials', async () => {
+      const createdUser = await createUser(testManager);
+
       await testManager.context
         .request()
         .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGIN}`)
-        .send({ loginOrEmail: 'incorrect', password: 'incorrect' })
+        .send({ loginOrEmail: createdUser.login, password: 'incorrect' })
         .expect(HTTP_STATUSES.UNAUTHORIZED);
     });
   });

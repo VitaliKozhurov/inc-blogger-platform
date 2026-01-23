@@ -3,7 +3,7 @@ import { ObjectId, WithId } from 'mongodb';
 import { RepositoryNotFoundError } from '../../core/errors';
 import { ResponseWithPaginationType } from '../../core/types';
 import { getPaginationParams } from '../../core/utils';
-import { postCollection } from '../../db';
+import { postsCollection } from '../../db';
 import { PostDBType, PostsRequestQueryType, PostViewModelType } from '../types';
 
 import { getPaginationData } from './../../core/utils/get-pagination-data';
@@ -14,9 +14,9 @@ export const postsQWRepository = {
   ): Promise<ResponseWithPaginationType<PostViewModelType>> {
     const { sort, limit, skip } = getPaginationParams(args);
 
-    const items = await postCollection.find({}).sort(sort).skip(skip).limit(limit).toArray();
+    const items = await postsCollection.find({}).sort(sort).skip(skip).limit(limit).toArray();
 
-    const totalCount = await postCollection.countDocuments();
+    const totalCount = await postsCollection.countDocuments();
 
     const paginationData = getPaginationData({
       items: items.map(this._mapToViewModel),
@@ -29,7 +29,7 @@ export const postsQWRepository = {
   },
 
   async getPostByIdOrFail(id: string): Promise<PostViewModelType> {
-    const post = await postCollection.findOne({ _id: new ObjectId(id) });
+    const post = await postsCollection.findOne({ _id: new ObjectId(id) });
 
     if (!post) {
       throw new RepositoryNotFoundError('Post not exist');
@@ -47,14 +47,14 @@ export const postsQWRepository = {
   }): Promise<ResponseWithPaginationType<PostViewModelType>> {
     const { sort, skip, limit } = getPaginationParams(query);
 
-    const items = await postCollection
+    const items = await postsCollection
       .find({ blogId })
       .sort(sort)
       .skip(skip)
       .limit(limit)
       .toArray();
 
-    const totalCount = await postCollection.countDocuments({ blogId });
+    const totalCount = await postsCollection.countDocuments({ blogId });
 
     const paginationData = getPaginationData({
       items: items.map(this._mapToViewModel),

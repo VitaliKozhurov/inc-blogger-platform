@@ -11,7 +11,7 @@ export const POST_VALIDATION_LENGTH = {
   [PostFields.CONTENT]: { min: 1, max: 1000 },
 };
 
-export const postValidator: PostValidationType = {
+export const postFieldsValidation: PostValidationType = {
   [PostFields.BLOG_ID]: body(PostFields.BLOG_ID)
     .exists()
     .withMessage(ERROR_FIELD_MESSAGES.REQUIRED(PostFields.BLOG_ID))

@@ -1,17 +1,17 @@
 import { checkValidationMiddleware } from '../../core/middleware';
-import { postValidator } from '../validation/post-validator';
+import { postFieldsValidation } from '../validation/post-fields-validation';
 
 export const postInputModelMiddleware = [
-  postValidator.blogId,
-  postValidator.title,
-  postValidator.shortDescription,
-  postValidator.content,
+  postFieldsValidation.blogId,
+  postFieldsValidation.title,
+  postFieldsValidation.shortDescription,
+  postFieldsValidation.content,
   checkValidationMiddleware,
 ];
 
 export const postByBlogIdInputModelMiddleware = [
-  postValidator.title,
-  postValidator.shortDescription,
-  postValidator.content,
+  postFieldsValidation.title,
+  postFieldsValidation.shortDescription,
+  postFieldsValidation.content,
   checkValidationMiddleware,
 ];

@@ -1,1 +1,1 @@
-export { blogCollection, postCollection, runDB, stopDb } from './mongo.db';
+export { blogsCollection, postsCollection, runDB, stopDb } from './mongo.db';

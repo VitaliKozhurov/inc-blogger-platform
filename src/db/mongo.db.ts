@@ -9,9 +9,9 @@ import { COLLECTION_NAME } from './constants';
 
 let client: MongoClient;
 
-export let blogCollection: Collection<BlogDBType>;
-export let postCollection: Collection<PostDBType>;
-export let userCollection: Collection<UserDBType>;
+export let blogsCollection: Collection<BlogDBType>;
+export let postsCollection: Collection<PostDBType>;
+export let usersCollection: Collection<UserDBType>;
 
 export const runDB = async (dbUrl: string) => {
   try {
@@ -19,9 +19,9 @@ export const runDB = async (dbUrl: string) => {
 
     const db: Db = client.db(SETTINGS.DB_NAME);
 
-    blogCollection = db.collection<BlogDBType>(COLLECTION_NAME.BLOGS);
-    postCollection = db.collection<PostDBType>(COLLECTION_NAME.POSTS);
-    userCollection = db.collection<UserDBType>(COLLECTION_NAME.USERS);
+    blogsCollection = db.collection<BlogDBType>(COLLECTION_NAME.BLOGS);
+    postsCollection = db.collection<PostDBType>(COLLECTION_NAME.POSTS);
+    usersCollection = db.collection<UserDBType>(COLLECTION_NAME.USERS);
 
     await client.connect();
     await db.command({ ping: 1 });

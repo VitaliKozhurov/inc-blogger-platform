@@ -3,7 +3,7 @@ import { Filter, ObjectId, WithId } from 'mongodb';
 import { RepositoryNotFoundError } from '../../core/errors';
 import { ResponseWithPaginationType } from '../../core/types';
 import { getPaginationData, getPaginationParams } from '../../core/utils';
-import { userCollection } from '../../db/mongo.db';
+import { usersCollection } from '../../db/mongo.db';
 import { UserDBType, UsersRequestQueryType, UserViewModelType } from '../types';
 import { UserFields } from '../types/user-fields';
 
@@ -31,9 +31,9 @@ export const usersQWRepository = {
 
     const { sort, skip, limit } = getPaginationParams(restArgs);
 
-    const items = await userCollection.find(filter).sort(sort).skip(skip).limit(limit).toArray();
+    const items = await usersCollection.find(filter).sort(sort).skip(skip).limit(limit).toArray();
 
-    const totalCount = await userCollection.countDocuments(filter);
+    const totalCount = await usersCollection.countDocuments(filter);
 
     const paginationData = getPaginationData({
       totalCount,
@@ -45,10 +45,10 @@ export const usersQWRepository = {
     return paginationData;
   },
   async getUserByIdOrFail(id: string): Promise<UserViewModelType> {
-    const user = await userCollection.findOne({ _id: new ObjectId(id) });
+    const user = await usersCollection.findOne({ _id: new ObjectId(id) });
 
     if (!user) {
-      throw new RepositoryNotFoundError('Blog not exist');
+      throw new RepositoryNotFoundError('User not exist');
     }
 
     return {
@@ -58,8 +58,8 @@ export const usersQWRepository = {
       createdAt: user.createdAt,
     };
   },
-  async getUserByLoginOrEmail(loginOrEmail: string): Promise<UserViewModelType> {
-    const user = await userCollection.findOne({
+  async getUserByLoginOrEmail(loginOrEmail: string): Promise<WithId<UserDBType>> {
+    const user = await usersCollection.findOne({
       $or: [{ login: loginOrEmail }, { email: loginOrEmail }],
     });
 
@@ -67,7 +67,7 @@ export const usersQWRepository = {
       throw new RepositoryNotFoundError('User not exist');
     }
 
-    return this._mapToViewModel(user);
+    return user;
   },
   _mapToViewModel(user: WithId<UserDBType>): UserViewModelType {
     const { _id, passwordHash: _, ...restUserData } = user;

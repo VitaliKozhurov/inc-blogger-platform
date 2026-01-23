@@ -3,7 +3,7 @@ import { Filter, ObjectId, WithId } from 'mongodb';
 import { RepositoryNotFoundError } from '../../core/errors';
 import { ResponseWithPaginationType } from '../../core/types';
 import { getPaginationData, getPaginationParams } from '../../core/utils';
-import { blogCollection } from '../../db';
+import { blogsCollection } from '../../db';
 import { BlogDBType, BlogFields, BlogsRequestQueryType, BlogViewModelType } from '../types';
 
 export const blogsQWRepository = {
@@ -23,8 +23,8 @@ export const blogsQWRepository = {
 
     const { sort, skip, limit } = getPaginationParams(restArgs);
 
-    const items = await blogCollection.find(filter).sort(sort).skip(skip).limit(limit).toArray();
-    const totalCount = await blogCollection.countDocuments(filter);
+    const items = await blogsCollection.find(filter).sort(sort).skip(skip).limit(limit).toArray();
+    const totalCount = await blogsCollection.countDocuments(filter);
 
     const paginationData = getPaginationData({
       items: items.map(this._mapToViewModel),
@@ -37,7 +37,7 @@ export const blogsQWRepository = {
   },
 
   async getBlogByIdOrFail(id: string): Promise<BlogViewModelType> {
-    const blog = await blogCollection.findOne({ _id: new ObjectId(id) });
+    const blog = await blogsCollection.findOne({ _id: new ObjectId(id) });
 
     if (!blog) {
       throw new RepositoryNotFoundError('Blog not exist');
