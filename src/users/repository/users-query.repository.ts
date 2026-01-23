@@ -74,6 +74,8 @@ export const usersQWRepository = {
       $or: [{ login: loginOrEmail }, { email: loginOrEmail }],
     });
 
+    // TODO should return null?? Process null case on service layer?
+
     if (!user) {
       throw new UnAuthorizedError('User not exist');
     }

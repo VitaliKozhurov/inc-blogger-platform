@@ -5,6 +5,8 @@ import { CreateUserInputType, UserDBType } from '../types';
 
 export const usersService = {
   async createUser(user: CreateUserInputType) {
+    // TODO process case is user exist with the same login or email
+
     const { login, email, password } = user;
 
     const passwordHash = await argon2.hash(password);
