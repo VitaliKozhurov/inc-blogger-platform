@@ -1,6 +1,7 @@
 import { Filter, ObjectId, WithId } from 'mongodb';
 
 import { RepositoryNotFoundError } from '../../core/errors';
+import { UnAuthorizedError } from '../../core/errors/unauthorized-error';
 import { ResponseWithPaginationType } from '../../core/types';
 import { getPaginationData, getPaginationParams } from '../../core/utils';
 import { usersCollection } from '../../db/mongo.db';
@@ -15,18 +16,28 @@ export const usersQWRepository = {
 
     const filter: Filter<UserDBType> = {};
 
+    const searchFilter: Filter<UserDBType>[] = [];
+
     if (searchLoginTerm) {
-      filter[UserFields.LOGIN] = {
-        $regex: searchLoginTerm,
-        $options: 'i',
-      };
+      searchFilter.push({
+        [UserFields.LOGIN]: {
+          $regex: searchLoginTerm,
+          $options: 'i',
+        },
+      });
     }
 
     if (searchEmailTerm) {
-      filter[UserFields.EMAIL] = {
-        $regex: searchEmailTerm,
-        $options: 'i',
-      };
+      searchFilter.push({
+        [UserFields.EMAIL]: {
+          $regex: searchEmailTerm,
+          $options: 'i',
+        },
+      });
+    }
+
+    if (searchFilter.length > 0) {
+      filter.$or = searchFilter;
     }
 
     const { sort, skip, limit } = getPaginationParams(restArgs);
@@ -64,7 +75,7 @@ export const usersQWRepository = {
     });
 
     if (!user) {
-      throw new RepositoryNotFoundError('User not exist');
+      throw new UnAuthorizedError('User not exist');
     }
 
     return user;
