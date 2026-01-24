@@ -1,7 +1,6 @@
 import { Filter, ObjectId, WithId } from 'mongodb';
 
 import { RepositoryNotFoundError } from '../../core/errors';
-import { UnAuthorizedError } from '../../core/errors/unauthorized-error';
 import { ResponseWithPaginationType } from '../../core/types';
 import { getPaginationData, getPaginationParams } from '../../core/utils';
 import { usersCollection } from '../../db/mongo.db';
@@ -69,16 +68,10 @@ export const usersQWRepository = {
       createdAt: user.createdAt,
     };
   },
-  async getUserByLoginOrEmail(loginOrEmail: string): Promise<WithId<UserDBType>> {
+  async getUserByLoginOrEmail(loginOrEmail: string): Promise<WithId<UserDBType> | null> {
     const user = await usersCollection.findOne({
       $or: [{ login: loginOrEmail }, { email: loginOrEmail }],
     });
-
-    // TODO should return null?? Process null case on service layer?
-
-    if (!user) {
-      throw new UnAuthorizedError('User not exist');
-    }
 
     return user;
   },

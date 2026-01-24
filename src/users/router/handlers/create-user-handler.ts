@@ -12,11 +12,15 @@ export const createUserHandler = async (
   res: Response
 ) => {
   try {
-    const userId = await usersService.createUser(req.body);
+    const result = await usersService.createUser(req.body);
 
-    const createdUser = await usersQWRepository.getUserByIdOrFail(userId);
+    if (typeof result === 'string') {
+      const createdUser = await usersQWRepository.getUserByIdOrFail(result);
 
-    res.status(HTTP_STATUSES.CREATED).send(createdUser);
+      return res.status(HTTP_STATUSES.CREATED).send(createdUser);
+    }
+
+    res.status(HTTP_STATUSES.BAD_REQUEST).send(result);
   } catch (e) {
     errorsHandler(e, res);
   }

@@ -8,14 +8,16 @@ export const authService = {
   async login(credentials: LoginInputType) {
     const { loginOrEmail, password } = credentials;
 
-    const { passwordHash } = await usersQWRepository.getUserByLoginOrEmail(loginOrEmail);
+    const user = await usersQWRepository.getUserByLoginOrEmail(loginOrEmail);
 
-    const isVerified = await argon2.verify(passwordHash, password);
+    if (!user) {
+      throw new UnAuthorizedError('Unauthorized user');
+    }
+
+    const isVerified = await argon2.verify(user.passwordHash, password);
 
     if (!isVerified) {
       throw new UnAuthorizedError('Unauthorized user');
     }
-
-    return;
   },
 };
