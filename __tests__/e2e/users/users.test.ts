@@ -85,6 +85,33 @@ describe('Users test', () => {
         .expect(HTTP_STATUSES.UNAUTHORIZED);
     });
 
+    it('should return 400 status code if create user with same login', async () => {
+      await createUser(testManager);
+
+      await testManager.context
+        .request()
+        .post(`${APP_ROUTES.USERS}`)
+        .set('Authorization', testManager.authToken)
+        .send(mockUser)
+        .expect(HTTP_STATUSES.BAD_REQUEST)
+        .expect({
+          errorMessages: [{ field: 'login', messages: 'User with the same login already exists' }],
+        });
+    });
+
+    it('should return 400 status code if create user with same email', async () => {
+      await createUser(testManager);
+
+      const response = await testManager.context
+        .request()
+        .post(`${APP_ROUTES.USERS}`)
+        .set('Authorization', testManager.authToken)
+        .send({ ...mockUser, login: 'login2' })
+        .expect(HTTP_STATUSES.BAD_REQUEST);
+
+      expect(response.body.errorMessages[0].field).toBe('email');
+    });
+
     it('should return 400 status code with validation errors', async () => {
       await testManager.context
         .request()
