@@ -10,6 +10,6 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "types/*.d.ts"],
   "exclude": ["dist", "__tests__/**/*", "node_modules"]
 }
