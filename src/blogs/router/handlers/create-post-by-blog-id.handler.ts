@@ -1,8 +1,7 @@
 import { Response } from 'express';
 
-import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
-import { RequestWithParamAndBodyType } from '../../../core/types';
+import { HTTP_STATUSES, RequestWithParamAndBodyType } from '../../../core/types';
 import { postsService } from '../../../posts/application';
 import { postsQWRepository } from '../../../posts/repository';
 import { CreatePostInputType } from '../../../posts/types';

@@ -1,8 +1,8 @@
 import { ObjectId } from 'mongodb';
 
 import { BlogViewModelType } from '../../../src/blogs/types';
-import { APP_ROUTES, HTTP_STATUSES, PARAM_ID_ERROR_MESSAGES } from '../../../src/core/constants';
-import { ResponseWithPaginationType } from '../../../src/core/types';
+import { APP_ROUTES, PARAM_ID_ERROR_MESSAGES } from '../../../src/core/constants';
+import { HTTP_STATUSES, ResponseWithPaginationType } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { PostViewModelType } from '../../../src/posts/types';
 import { createBlog } from '../../utils/blogs/create-blog';

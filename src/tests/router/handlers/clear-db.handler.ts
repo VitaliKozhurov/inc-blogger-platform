@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { HTTP_STATUSES } from '../../../core/constants';
+import { HTTP_STATUSES } from '../../../core/types';
 import { blogsCollection, postsCollection } from '../../../db';
 import { usersCollection } from '../../../db/mongo.db';
 

@@ -1,8 +1,9 @@
-import argon2 from 'argon2';
-
-import { UnAuthorizedError } from '../../core/errors/unauthorized-error';
+import { HTTP_STATUSES, ResultType } from '../../core/types';
 import { usersQWRepository } from '../../users/repository';
 import { LoginInputType } from '../types';
+
+import { argonService } from './argon.service';
+import { jwtService } from './jwt.service';
 
 export const authService = {
   async login(credentials: LoginInputType) {
@@ -11,13 +12,31 @@ export const authService = {
     const user = await usersQWRepository.getUserByLoginOrEmail(loginOrEmail);
 
     if (!user) {
-      throw new UnAuthorizedError('Unauthorized user');
+      return this._buildErrorResult();
     }
 
-    const isVerified = await argon2.verify(user.passwordHash, password);
+    const isVerified = await argonService.verifyPassword({ password, hash: user.passwordHash });
 
     if (!isVerified) {
-      throw new UnAuthorizedError('Unauthorized user');
+      return this._buildErrorResult();
     }
+
+    const accessToken = jwtService.createJWT({ userId: user._id.toString() });
+
+    return {
+      data: { accessToken },
+      status: HTTP_STATUSES.OK,
+      extensions: [],
+    };
+  },
+  _buildErrorResult() {
+    const result: ResultType = {
+      data: null,
+      status: HTTP_STATUSES.UNAUTHORIZED,
+      extensions: [{ field: 'loginOrEmail', message: 'Wrong credentials' }],
+      errorMessage: 'Unauthorized error',
+    };
+
+    return result;
   },
 };

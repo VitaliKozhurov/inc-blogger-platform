@@ -1,8 +1,7 @@
 import { Response } from 'express';
 
-import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
-import { RequestWithBodyType } from '../../../core/types';
+import { HTTP_STATUSES, RequestWithBodyType } from '../../../core/types';
 import { blogsService } from '../../application';
 import { blogsQWRepository } from '../../repository';
 import { CreateBlogInputType } from '../../types';
@@ -12,8 +11,6 @@ export const createBlogHandler = async (
   res: Response
 ) => {
   try {
-    // TODO что если блог создался но запрос за блогом не прошел
-
     const blogId = await blogsService.createBlog(req.body);
 
     const createdBlogViewModel = await blogsQWRepository.getBlogByIdOrFail(blogId);

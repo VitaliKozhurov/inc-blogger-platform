@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 
-import { APP_ROUTES, HTTP_STATUSES } from '../../../src/core/constants';
-import { ResponseWithPaginationType } from '../../../src/core/types';
+import { APP_ROUTES } from '../../../src/core/constants';
+import { HTTP_STATUSES, ResponseWithPaginationType } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { UserViewModelType } from '../../../src/users/types';
 import { TestManager } from '../../utils/test-manager';

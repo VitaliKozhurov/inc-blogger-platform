@@ -1,9 +1,8 @@
 import { Response } from 'express';
 import { matchedData } from 'express-validator';
 
-import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
-import { RequestWithQueryType } from '../../../core/types';
+import { HTTP_STATUSES, RequestWithQueryType } from '../../../core/types';
 import { postsQWRepository } from '../../repository';
 import { PostsRequestQueryType } from '../../types';
 

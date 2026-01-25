@@ -1,8 +1,8 @@
 import { Response } from 'express';
 
-import { HTTP_STATUSES } from '../../../core/constants';
+
 import { errorsHandler } from '../../../core/errors';
-import { IdParamType, RequestWithParamAndBodyType } from '../../../core/types';
+import { HTTP_STATUSES, IdParamType, RequestWithParamAndBodyType } from '../../../core/types';
 import { blogsService } from '../../application';
 import { UpdateBlogInputType } from '../../types';
 

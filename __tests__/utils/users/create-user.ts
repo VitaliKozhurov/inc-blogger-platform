@@ -1,4 +1,5 @@
-import { APP_ROUTES, HTTP_STATUSES } from '../../../src/core/constants';
+import { APP_ROUTES } from '../../../src/core/constants';
+import { HTTP_STATUSES } from '../../../src/core/types';
 import { UserViewModelType } from '../../../src/users/types';
 import { TestManager } from '../test-manager';
 

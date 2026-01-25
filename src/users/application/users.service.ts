@@ -1,5 +1,4 @@
-import argon2 from 'argon2';
-
+import { argonService } from '../../auth/application';
 import { createErrorMessages } from '../../core/utils';
 import { usersQWRepository } from '../repository';
 import { usersRepository } from '../repository/users.repository';
@@ -15,7 +14,7 @@ export const usersService = {
 
     const { login, email, password } = user;
 
-    const passwordHash = await argon2.hash(password);
+    const passwordHash = await argonService.createHash(password);
 
     const newUser: UserDBType = {
       login,

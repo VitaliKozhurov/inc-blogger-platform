@@ -1,7 +1,6 @@
 import { Filter, ObjectId, WithId } from 'mongodb';
 
-import { RepositoryNotFoundError } from '../../core/errors';
-import { ResponseWithPaginationType } from '../../core/types';
+import { Nullable, ResponseWithPaginationType } from '../../core/types';
 import { getPaginationData, getPaginationParams } from '../../core/utils';
 import { usersCollection } from '../../db/mongo.db';
 import { UserDBType, UsersRequestQueryType, UserViewModelType } from '../types';
@@ -54,11 +53,11 @@ export const usersQWRepository = {
 
     return paginationData;
   },
-  async getUserByIdOrFail(id: string): Promise<UserViewModelType> {
+  async getUserByIdOrFail(id: string): Promise<Nullable<UserViewModelType>> {
     const user = await usersCollection.findOne({ _id: new ObjectId(id) });
 
     if (!user) {
-      throw new RepositoryNotFoundError('User not exist');
+      return null;
     }
 
     return {

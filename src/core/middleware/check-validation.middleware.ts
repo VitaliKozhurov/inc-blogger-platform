@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 
-import { HTTP_STATUSES } from '../constants';
+import { HTTP_STATUSES } from '../types';
 import { formatExpressError } from '../utils';
 
 export const checkValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {

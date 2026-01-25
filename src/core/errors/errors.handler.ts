@@ -1,6 +1,6 @@
 import { Response } from 'express';
 
-import { HTTP_STATUSES } from '../constants';
+import { HTTP_STATUSES } from '../types';
 
 import { RepositoryNotFoundError } from './repository-not-found-error';
 import { UnAuthorizedError } from './unauthorized-error';

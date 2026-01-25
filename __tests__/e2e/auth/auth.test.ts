@@ -1,4 +1,6 @@
-import { APP_ROUTES, HTTP_STATUSES } from '../../../src/core/constants';
+import { jwtService } from '../../../src/auth/application';
+import { APP_ROUTES } from '../../../src/core/constants';
+import { HTTP_STATUSES } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { TestManager } from '../../utils/test-manager';
 import { createUser } from '../../utils/users/create-user';
@@ -23,21 +25,29 @@ describe('Auth test', () => {
     it('should return a 204 status code with correct user login', async () => {
       const createdUser = await createUser(testManager);
 
-      await testManager.context
+      const { body } = await testManager.context
         .request()
         .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGIN}`)
         .send({ loginOrEmail: createdUser.login, password: mockUser.password })
-        .expect(HTTP_STATUSES.NO_CONTENT);
+        .expect(HTTP_STATUSES.OK);
+
+      const token = jwtService.decodeJWT(body.accessToken);
+
+      expect(token?.userId).toBe(createdUser.id);
     });
 
     it('should return a 204 status code with correct user email', async () => {
       const createdUser = await createUser(testManager);
 
-      await testManager.context
+      const { body } = await testManager.context
         .request()
         .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGIN}`)
         .send({ loginOrEmail: createdUser.email, password: mockUser.password })
-        .expect(HTTP_STATUSES.NO_CONTENT);
+        .expect(HTTP_STATUSES.OK);
+
+      const token = jwtService.decodeJWT(body.accessToken);
+
+      expect(token?.userId).toBe(createdUser.id);
     });
 
     it('should return 400 status code with validation errors', async () => {

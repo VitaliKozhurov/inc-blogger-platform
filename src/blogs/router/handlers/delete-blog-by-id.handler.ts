@@ -1,8 +1,7 @@
 import { Response } from 'express';
 
-import { HTTP_STATUSES } from '../../../core/constants';
 import { errorsHandler } from '../../../core/errors';
-import { RequestWithUriParamType } from '../../../core/types';
+import { HTTP_STATUSES, RequestWithUriParamType } from '../../../core/types';
 import { blogsService } from '../../application';
 
 export const deleteBlogByIdHandler = async (req: RequestWithUriParamType, res: Response) => {

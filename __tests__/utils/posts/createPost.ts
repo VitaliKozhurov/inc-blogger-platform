@@ -1,7 +1,9 @@
-import { APP_ROUTES, HTTP_STATUSES } from '../../../src/core/constants';
+import { APP_ROUTES } from '../../../src/core/constants';
+import { HTTP_STATUSES } from '../../../src/core/types';
 import { PostViewModelType } from '../../../src/posts/types';
 import { createBlog } from '../blogs/create-blog';
 import { TestManager } from '../test-manager';
+
 import { mockPost } from './mock';
 
 export const createPost = async (testManager: TestManager): Promise<PostViewModelType> => {

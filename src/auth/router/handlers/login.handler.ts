@@ -1,17 +1,15 @@
 import { Response } from 'express';
 
-import { HTTP_STATUSES } from '../../../core/constants';
-import { errorsHandler } from '../../../core/errors';
-import { RequestWithBodyType } from '../../../core/types';
+import { HTTP_STATUSES, RequestWithBodyType } from '../../../core/types';
 import { authService } from '../../application';
 import { LoginInputType } from '../../types';
 
 export const loginHandler = async (req: RequestWithBodyType<LoginInputType>, res: Response) => {
-  try {
-    await authService.login(req.body);
+  const result = await authService.login(req.body);
 
-    res.sendStatus(HTTP_STATUSES.NO_CONTENT);
-  } catch (e) {
-    errorsHandler(e, res);
+  if (result.status !== HTTP_STATUSES.OK) {
+    return res.sendStatus(HTTP_STATUSES.UNAUTHORIZED);
   }
+
+  res.status(HTTP_STATUSES.OK).send({ accessToken: result.data!.accessToken });
 };

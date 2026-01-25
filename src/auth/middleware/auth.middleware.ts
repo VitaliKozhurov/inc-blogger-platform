@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { HTTP_STATUSES } from '../../core/constants';
+import { HTTP_STATUSES } from '../../core/types';
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const authToken = req.headers.authorization;
