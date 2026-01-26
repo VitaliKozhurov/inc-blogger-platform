@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-import { RepositoryNotFoundError } from '../../core/errors';
 import { usersCollection } from '../../db/mongo.db';
 import { UserDBType } from '../types';
 
@@ -13,10 +12,6 @@ export const usersRepository = {
   deleteUserById: async (id: string) => {
     const { deletedCount } = await usersCollection.deleteOne({ _id: new ObjectId(id) });
 
-    if (deletedCount < 1) {
-      throw new RepositoryNotFoundError('Blog not exist');
-    }
-
-    return;
+    return deletedCount > 0;
   },
 };

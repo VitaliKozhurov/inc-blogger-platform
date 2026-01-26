@@ -1,6 +1,5 @@
 import { Response } from 'express';
 
-import { errorsHandler } from '../../../core/errors';
 import { HTTP_STATUSES, RequestWithBodyType } from '../../../core/types';
 import { usersService } from '../../application';
 import { usersQWRepository } from '../../repository';
@@ -10,17 +9,13 @@ export const createUserHandler = async (
   req: RequestWithBodyType<CreateUserInputType>,
   res: Response
 ) => {
-  try {
-    const result = await usersService.createUser(req.body);
+  const result = await usersService.createUser(req.body);
 
-    if (typeof result === 'string') {
-      const createdUser = await usersQWRepository.getUserByIdOrFail(result);
-
-      return res.status(HTTP_STATUSES.CREATED).send(createdUser);
-    }
-
-    res.status(HTTP_STATUSES.BAD_REQUEST).send(result);
-  } catch (e) {
-    errorsHandler(e, res);
+  if (result.status !== HTTP_STATUSES.OK) {
+    return res.status(HTTP_STATUSES.BAD_REQUEST).send({ errorMessages: result.extensions });
   }
+
+  const createdUser = await usersQWRepository.getUserByIdOrFail(result.data!.id);
+
+  return res.status(HTTP_STATUSES.CREATED).send(createdUser);
 };

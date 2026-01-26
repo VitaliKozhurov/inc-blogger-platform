@@ -1,7 +1,4 @@
-import { checkValidationMiddleware, sortAndPaginationMiddleware } from '../../core/middleware';
+import { sortAndPaginationMiddleware } from '../../core/middleware';
 import { PostSortFields } from '../types';
 
-export const postInputQueryMiddleware = [
-  ...sortAndPaginationMiddleware(PostSortFields),
-  checkValidationMiddleware,
-];
+export const postInputQueryMiddleware = [...sortAndPaginationMiddleware(PostSortFields)];

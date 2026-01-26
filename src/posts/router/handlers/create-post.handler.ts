@@ -1,7 +1,5 @@
 import { Response } from 'express';
 
-
-import { errorsHandler } from '../../../core/errors';
 import { HTTP_STATUSES, RequestWithBodyType } from '../../../core/types';
 import { postsService } from '../../application';
 import { postsQWRepository } from '../../repository';
@@ -11,13 +9,17 @@ export const createPostHandler = async (
   req: RequestWithBodyType<CreatePostInputType>,
   res: Response
 ) => {
-  try {
-    const postId = await postsService.createPost(req.body);
+  const result = await postsService.createPost(req.body);
 
-    const createdPostViewModel = await postsQWRepository.getPostByIdOrFail(postId);
-
-    return res.status(HTTP_STATUSES.CREATED).send(createdPostViewModel);
-  } catch (e) {
-    errorsHandler(e, res);
+  if (result.status !== HTTP_STATUSES.OK) {
+    return res.status(HTTP_STATUSES.NOT_FOUND).send({ errorsMessages: result.extensions });
   }
+
+  const createdPostViewModel = await postsQWRepository.getPostById(result.data!.id);
+
+  if (!createdPostViewModel) {
+    return res.sendStatus(HTTP_STATUSES.NOT_FOUND);
+  }
+
+  return res.status(HTTP_STATUSES.CREATED).send(createdPostViewModel);
 };

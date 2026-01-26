@@ -1,4 +1,5 @@
 import { argonService } from '../../auth/application';
+import { HTTP_STATUSES } from '../../core/types';
 import { createErrorMessages } from '../../core/utils';
 import { usersQWRepository } from '../repository';
 import { usersRepository } from '../repository/users.repository';
@@ -9,7 +10,12 @@ export const usersService = {
     const availabilityErrors = await this._validateLoginEmailAvailability(user.login, user.email);
 
     if (availabilityErrors) {
-      return availabilityErrors;
+      return {
+        status: HTTP_STATUSES.BAD_REQUEST,
+        data: null,
+        extensions: availabilityErrors.errorMessages,
+        errorMessage: 'Invalid credentials',
+      };
     }
 
     const { login, email, password } = user;
@@ -23,9 +29,13 @@ export const usersService = {
       createdAt: new Date().toISOString(),
     };
 
-    const userId = await usersRepository.createUser(newUser);
+    const id = await usersRepository.createUser(newUser);
 
-    return userId;
+    return {
+      status: HTTP_STATUSES.OK,
+      data: { id },
+      extensions: [],
+    };
   },
 
   async deleteUserById(id: string) {
@@ -38,7 +48,7 @@ export const usersService = {
       return createErrorMessages([
         {
           field: 'login',
-          messages: 'User with the same login already exists',
+          message: 'User with the same login already exists',
         },
       ]);
     }
@@ -49,7 +59,7 @@ export const usersService = {
       return createErrorMessages([
         {
           field: 'email',
-          messages: 'User with the same email already exists',
+          message: 'User with the same email already exists',
         },
       ]);
     }

@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-import { RepositoryNotFoundError } from '../../core/errors';
 import { blogsCollection } from '../../db';
 import { BlogDBType, UpdateBlogInputType } from '../types';
 
@@ -11,7 +10,7 @@ export const blogsRepository = {
     return insertedId.toString();
   },
 
-  updateBlogById: async (args: { id: string; blogData: UpdateBlogInputType }): Promise<void> => {
+  updateBlogById: async (args: { id: string; blogData: UpdateBlogInputType }): Promise<boolean> => {
     const { id, blogData } = args;
 
     const { modifiedCount } = await blogsCollection.updateOne(
@@ -19,20 +18,12 @@ export const blogsRepository = {
       { $set: blogData }
     );
 
-    if (modifiedCount < 1) {
-      throw new RepositoryNotFoundError('Blog not exist');
-    }
-
-    return;
+    return modifiedCount > 0;
   },
 
-  deleteBlogById: async (id: string): Promise<void> => {
+  deleteBlogById: async (id: string): Promise<boolean> => {
     const { deletedCount } = await blogsCollection.deleteOne({ _id: new ObjectId(id) });
 
-    if (deletedCount < 1) {
-      throw new RepositoryNotFoundError('Blog not exist');
-    }
-
-    return;
+    return deletedCount > 0;
   },
 };

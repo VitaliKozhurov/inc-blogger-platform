@@ -1,4 +1,3 @@
-import { checkValidationMiddleware } from '../../core/middleware';
 import { postFieldsValidation } from '../validation/post-fields-validation';
 
 export const postInputModelMiddleware = [
@@ -6,12 +5,10 @@ export const postInputModelMiddleware = [
   postFieldsValidation.title,
   postFieldsValidation.shortDescription,
   postFieldsValidation.content,
-  checkValidationMiddleware,
 ];
 
 export const postByBlogIdInputModelMiddleware = [
   postFieldsValidation.title,
   postFieldsValidation.shortDescription,
   postFieldsValidation.content,
-  checkValidationMiddleware,
 ];

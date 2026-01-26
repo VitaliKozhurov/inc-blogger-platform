@@ -1,7 +1,6 @@
 import { ObjectId, WithId } from 'mongodb';
 
-import { RepositoryNotFoundError } from '../../core/errors';
-import { ResponseWithPaginationType } from '../../core/types';
+import { Nullable, ResponseWithPaginationType } from '../../core/types';
 import { getPaginationParams } from '../../core/utils';
 import { postsCollection } from '../../db';
 import { PostDBType, PostsRequestQueryType, PostViewModelType } from '../types';
@@ -28,14 +27,10 @@ export const postsQWRepository = {
     return paginationData;
   },
 
-  async getPostByIdOrFail(id: string): Promise<PostViewModelType> {
+  async getPostById(id: string): Promise<Nullable<PostViewModelType>> {
     const post = await postsCollection.findOne({ _id: new ObjectId(id) });
 
-    if (!post) {
-      throw new RepositoryNotFoundError('Post not exist');
-    }
-
-    return this._mapToViewModel(post);
+    return post ? this._mapToViewModel(post) : post;
   },
 
   async getPostsByBlogId({

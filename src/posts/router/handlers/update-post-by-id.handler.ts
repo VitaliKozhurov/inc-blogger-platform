@@ -1,6 +1,5 @@
 import { Response } from 'express';
 
-import { errorsHandler } from '../../../core/errors';
 import { HTTP_STATUSES, IdParamType, RequestWithParamAndBodyType } from '../../../core/types';
 import { postsService } from '../../application';
 
@@ -10,11 +9,11 @@ export const updatePostByIdHandler = async (
   req: RequestWithParamAndBodyType<IdParamType, UpdatePostInputType>,
   res: Response
 ) => {
-  try {
-    await postsService.updatePostById({ id: req.params.id, postData: req.body });
+  const isUpdated = await postsService.updatePostById({ id: req.params.id, postData: req.body });
 
-    return res.sendStatus(HTTP_STATUSES.NO_CONTENT);
-  } catch (e) {
-    errorsHandler(e, res);
+  if (!isUpdated) {
+    return res.sendStatus(HTTP_STATUSES.NOT_FOUND);
   }
+
+  return res.sendStatus(HTTP_STATUSES.NO_CONTENT);
 };

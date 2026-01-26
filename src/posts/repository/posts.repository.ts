@@ -1,6 +1,5 @@
 import { ObjectId } from 'mongodb';
 
-import { RepositoryNotFoundError } from '../../core/errors';
 import { postsCollection } from '../../db';
 import { PostDBType, UpdatePostInputType } from '../types';
 
@@ -11,7 +10,7 @@ export const postsRepository = {
     return insertedId.toString();
   },
 
-  updatePostById: async (args: { id: string; postData: UpdatePostInputType }): Promise<void> => {
+  updatePostById: async (args: { id: string; postData: UpdatePostInputType }): Promise<boolean> => {
     const { id, postData } = args;
 
     const { modifiedCount } = await postsCollection.updateOne(
@@ -19,20 +18,12 @@ export const postsRepository = {
       { $set: postData }
     );
 
-    if (modifiedCount < 1) {
-      throw new RepositoryNotFoundError('Post not exist');
-    }
-
-    return;
+    return modifiedCount > 0;
   },
 
-  deletePostById: async (id: string): Promise<void> => {
+  deletePostById: async (id: string): Promise<boolean> => {
     const { deletedCount } = await postsCollection.deleteOne({ _id: new ObjectId(id) });
 
-    if (deletedCount < 1) {
-      throw new RepositoryNotFoundError('Post not exist');
-    }
-
-    return;
+    return deletedCount > 0;
   },
 };

@@ -5,8 +5,6 @@ import { QueryFields } from '../types';
 import { SortDirection } from '../types/sort';
 import { ERROR_FIELD_MESSAGES } from '../utils';
 
-// TODO в доке pageSize 10
-
 export const sortAndPaginationMiddleware = <T extends string>(sortFields: Record<string, T>) => {
   const allowedSortFields = Object.values(sortFields);
 

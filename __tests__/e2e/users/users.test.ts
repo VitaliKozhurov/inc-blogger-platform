@@ -95,7 +95,7 @@ describe('Users test', () => {
         .send(mockUser)
         .expect(HTTP_STATUSES.BAD_REQUEST)
         .expect({
-          errorMessages: [{ field: 'login', messages: 'User with the same login already exists' }],
+          errorMessages: [{ field: 'login', message: 'User with the same login already exists' }],
         });
     });
 
