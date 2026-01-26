@@ -1,0 +1,25 @@
+import { ObjectId } from 'mongodb';
+
+import { commentsCollection } from '../../db/mongo.db';
+import { CommentDbType } from '../types';
+
+export const commentsRepository = {
+  async createComment(comment: CommentDbType) {
+    const { insertedId } = await commentsCollection.insertOne(comment);
+
+    return insertedId.toString();
+  },
+  async updateComment({ id, content }: { id: string; content: string }) {
+    const { modifiedCount } = await commentsCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { content } }
+    );
+
+    return modifiedCount > 0;
+  },
+  async deleteComment(id: string) {
+    const { deletedCount } = await commentsCollection.deleteOne({ _id: new ObjectId(id) });
+
+    return deletedCount > 0;
+  },
+};

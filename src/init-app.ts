@@ -4,6 +4,7 @@ import { Express } from 'express';
 
 import { authRouter } from './auth/router/auth.router';
 import { blogRouter } from './blogs/router/blog.router';
+import { commentRouter } from './comments/router/comment.router';
 import { APP_ROUTES } from './core/constants';
 import { bodyParserMiddleware, globalErrorMiddleware } from './core/middleware';
 import { postRouter } from './posts/router/posts.router';
@@ -17,6 +18,7 @@ export const initApp = (app: Express): Promise<Server> => {
 
   app.use(APP_ROUTES.BLOGS, blogRouter);
   app.use(APP_ROUTES.POSTS, postRouter);
+  app.use(APP_ROUTES.COMMENTS, commentRouter);
   app.use(APP_ROUTES.USERS, userRouter);
   app.use(APP_ROUTES.AUTH, authRouter);
   app.use(APP_ROUTES.TESTING, testRouter);

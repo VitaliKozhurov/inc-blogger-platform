@@ -9,4 +9,5 @@ export const APP_ROUTES = {
   AUTH: '/auth',
   AUTH_LOGIN: '/login',
   AUTH_ME: '/me',
+  COMMENTS: '/comments',
 } as const;

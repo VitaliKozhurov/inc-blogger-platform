@@ -2,13 +2,14 @@ import { Request, Response } from 'express';
 
 import { HTTP_STATUSES } from '../../../core/types';
 import { blogsCollection, postsCollection } from '../../../db';
-import { usersCollection } from '../../../db/mongo.db';
+import { commentsCollection, usersCollection } from '../../../db/mongo.db';
 
 export const clearDBHandler = async (_: Request, res: Response) => {
   try {
     await Promise.all([
       blogsCollection.deleteMany(),
       postsCollection.deleteMany(),
+      commentsCollection.deleteMany(),
       usersCollection.deleteMany(),
     ]);
 

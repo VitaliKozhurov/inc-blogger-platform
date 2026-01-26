@@ -1,6 +1,7 @@
 import { Collection, Db, MongoClient } from 'mongodb';
 
 import { BlogDBType } from '../blogs/types';
+import { CommentDbType } from '../comments/types';
 import { SETTINGS } from '../core/settings';
 import { PostDBType } from '../posts/types';
 import { UserDBType } from '../users/types';
@@ -11,6 +12,7 @@ let client: MongoClient;
 
 export let blogsCollection: Collection<BlogDBType>;
 export let postsCollection: Collection<PostDBType>;
+export let commentsCollection: Collection<CommentDbType>;
 export let usersCollection: Collection<UserDBType>;
 
 export const runDB = async (dbUrl: string) => {
@@ -21,6 +23,7 @@ export const runDB = async (dbUrl: string) => {
 
     blogsCollection = db.collection<BlogDBType>(COLLECTION_NAME.BLOGS);
     postsCollection = db.collection<PostDBType>(COLLECTION_NAME.POSTS);
+    commentsCollection = db.collection<CommentDbType>(COLLECTION_NAME.COMMENTS);
     usersCollection = db.collection<UserDBType>(COLLECTION_NAME.USERS);
 
     await client.connect();
