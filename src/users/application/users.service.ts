@@ -41,6 +41,7 @@ export const usersService = {
   async deleteUserById(id: string) {
     return usersRepository.deleteUserById(id);
   },
+
   async _validateLoginEmailAvailability(login: string, email: string) {
     const userByLogin = await usersQWRepository.getUserByLoginOrEmail(login);
 

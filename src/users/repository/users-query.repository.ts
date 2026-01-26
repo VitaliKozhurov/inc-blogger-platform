@@ -3,7 +3,12 @@ import { Filter, ObjectId, WithId } from 'mongodb';
 import { Nullable, ResponseWithPaginationType } from '../../core/types';
 import { getPaginationData, getPaginationParams } from '../../core/utils';
 import { usersCollection } from '../../db/mongo.db';
-import { UserDBType, UsersRequestQueryType, UserViewModelType } from '../types';
+import {
+  MeUserViewModelType,
+  UserDBType,
+  UsersRequestQueryType,
+  UserViewModelType,
+} from '../types';
 import { UserFields } from '../types/user-fields';
 
 export const usersQWRepository = {
@@ -53,19 +58,23 @@ export const usersQWRepository = {
 
     return paginationData;
   },
-  async getUserByIdOrFail(id: string): Promise<Nullable<UserViewModelType>> {
+  async getUserById(id: string): Promise<Nullable<UserViewModelType>> {
     const user = await usersCollection.findOne({ _id: new ObjectId(id) });
 
     if (!user) {
       return null;
     }
 
-    return {
-      id: user._id.toString(),
-      login: user.login,
-      email: user.email,
-      createdAt: user.createdAt,
-    };
+    return this._mapToViewModel(user);
+  },
+  async getMeUserById(id: string): Promise<Nullable<MeUserViewModelType>> {
+    const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+
+    if (!user) {
+      return null;
+    }
+
+    return { userId: user._id.toString(), email: user.email, login: user.login };
   },
   async getUserByLoginOrEmail(loginOrEmail: string): Promise<WithId<UserDBType> | null> {
     const user = await usersCollection.findOne({

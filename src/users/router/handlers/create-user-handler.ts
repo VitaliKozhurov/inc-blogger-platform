@@ -15,7 +15,7 @@ export const createUserHandler = async (
     return res.status(HTTP_STATUSES.BAD_REQUEST).send({ errorMessages: result.extensions });
   }
 
-  const createdUser = await usersQWRepository.getUserByIdOrFail(result.data!.id);
+  const createdUser = await usersQWRepository.getUserById(result.data!.id);
 
   return res.status(HTTP_STATUSES.CREATED).send(createdUser);
 };

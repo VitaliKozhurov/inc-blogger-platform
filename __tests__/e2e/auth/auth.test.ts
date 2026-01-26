@@ -74,4 +74,31 @@ describe('Auth test', () => {
         .expect(HTTP_STATUSES.UNAUTHORIZED);
     });
   });
+
+  describe('GET /auth/me', () => {
+    it('should return a 200 status code with correct authorized user data', async () => {
+      const createdUser = await createUser(testManager);
+
+      const { body } = await testManager.context
+        .request()
+        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGIN}`)
+        .send({ loginOrEmail: createdUser.login, password: mockUser.password })
+        .expect(HTTP_STATUSES.OK);
+
+      await testManager.context
+        .request()
+        .get(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_ME}`)
+        .set('Authorization', `Bearer ${body.accessToken}`)
+        .expect(HTTP_STATUSES.OK)
+        .expect({ email: createdUser.email, login: createdUser.login, userId: createdUser.id });
+    });
+
+    it('should return a 401 status code if send incorrect token', async () => {
+      await testManager.context
+        .request()
+        .get(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_ME}`)
+        .set('Authorization', `Bearer incorrect`)
+        .expect(HTTP_STATUSES.UNAUTHORIZED);
+    });
+  });
 });
