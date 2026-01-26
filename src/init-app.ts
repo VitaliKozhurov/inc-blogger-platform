@@ -5,7 +5,7 @@ import { Express } from 'express';
 import { authRouter } from './auth/router/auth.router';
 import { blogRouter } from './blogs/router/blog.router';
 import { APP_ROUTES } from './core/constants';
-import { bodyParserMiddleware } from './core/middleware';
+import { bodyParserMiddleware, globalErrorMiddleware } from './core/middleware';
 import { postRouter } from './posts/router/posts.router';
 import { testRouter } from './tests/router/test.router';
 import { userRouter } from './users/router/user.router';
@@ -20,6 +20,8 @@ export const initApp = (app: Express): Promise<Server> => {
   app.use(APP_ROUTES.USERS, userRouter);
   app.use(APP_ROUTES.AUTH, authRouter);
   app.use(APP_ROUTES.TESTING, testRouter);
+
+  app.use(globalErrorMiddleware);
 
   return new Promise((resolve, reject) => {
     const server = app.listen(PORT, () => {

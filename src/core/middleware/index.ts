@@ -1,5 +1,6 @@
 export { bodyParserMiddleware } from './body-parser.middleware';
 export { checkValidationMiddleware } from './check-validation.middleware';
+export { globalErrorMiddleware } from './global-error.middleware';
 export {
   getUriParamValidatorMiddleware,
   idUriParamMiddleware,
