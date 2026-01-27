@@ -10,8 +10,13 @@ export const commentsQWRepository = {
   async getComments({ postId, query }: { postId: string; query: CommentsRequestQueryType }) {
     const { sort, skip, limit } = getPaginationParams(query);
 
-    const items = await commentsCollection.find({}).sort(sort).skip(skip).limit(limit).toArray();
-    const totalCount = await commentsCollection.countDocuments({});
+    const items = await commentsCollection
+      .find({ postId })
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+    const totalCount = await commentsCollection.countDocuments({ postId });
 
     const paginationData = getPaginationData({
       items: items.map(this._mapToViewModel),
@@ -27,7 +32,7 @@ export const commentsQWRepository = {
 
     return comment ? this._mapToViewModel(comment) : comment;
   },
-  _mapToViewModel({ _id, ...restComment }: WithId<CommentDbType>) {
+  _mapToViewModel({ _id, postId: _, ...restComment }: WithId<CommentDbType>) {
     return { id: _id.toString(), ...restComment };
   },
 };

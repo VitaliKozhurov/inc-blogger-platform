@@ -5,4 +5,5 @@ export type CommentDbType = {
     userLogin: string;
   };
   createdAt: string;
+  postId: string;
 };

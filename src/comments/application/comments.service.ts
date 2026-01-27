@@ -43,6 +43,7 @@ export const commentsService = {
         userId: user.id,
         userLogin: user.login,
       },
+      postId,
     };
 
     const commentId = await commentsRepository.createComment(comment);

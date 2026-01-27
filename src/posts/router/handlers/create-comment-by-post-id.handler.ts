@@ -27,5 +27,9 @@ export const createCommentByPostIdHandler = async (
 
   const createdCommentViewModel = await commentsQWRepository.getCommentById(result.data!.commentId);
 
+  if (!createdCommentViewModel) {
+    return res.sendStatus(HTTP_STATUSES.NOT_FOUND);
+  }
+
   return res.status(HTTP_STATUSES.CREATED).send(createdCommentViewModel);
 };

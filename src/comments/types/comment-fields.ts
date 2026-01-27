@@ -4,6 +4,6 @@ export enum CommentFields {
   CREATED_AT = 'createdAt',
 }
 
-export enum CommentsSortFields {
+export enum CommentSortFields {
   CREATED_AT = 'createdAt',
 }

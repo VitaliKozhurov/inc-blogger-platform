@@ -4,6 +4,7 @@ import { matchedData } from 'express-validator';
 import { commentsQWRepository } from '../../../comments/repository';
 import { CommentsRequestQueryType } from '../../../comments/types';
 import { HTTP_STATUSES, IdParamType, RequestWithParamAndQueryType } from '../../../core/types';
+import { postsQWRepository } from '../../repository';
 
 export const getCommentsByPostIdHandler = async (
   req: RequestWithParamAndQueryType<IdParamType, Record<string, string>>,
@@ -16,13 +17,13 @@ export const getCommentsByPostIdHandler = async (
     includeOptionals: true,
   });
 
-  const comment = await commentsQWRepository.getCommentById(postId);
+  const post = await postsQWRepository.getPostById(postId);
 
-  if (!comment) {
+  if (!post) {
     return res.sendStatus(HTTP_STATUSES.NOT_FOUND);
   }
 
-  const commentsViewMode = await commentsQWRepository.getComments({ blogId, query });
+  const commentsViewModel = await commentsQWRepository.getComments({ postId, query });
 
-  return res.status(HTTP_STATUSES.OK).send(postsViewMode);
+  return res.status(HTTP_STATUSES.OK).send(commentsViewModel);
 };

@@ -16,8 +16,6 @@ export const jwtService = {
     try {
       return jwt.verify(token, SETTINGS.JWT_ACCESS_SECRET) as AccessTokenPayloadType;
     } catch {
-      console.log('HERE');
-
       return null;
     }
   },

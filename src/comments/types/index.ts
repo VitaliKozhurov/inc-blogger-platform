@@ -1,4 +1,4 @@
-export { CommentFields, CommentsSortFields } from './comment-fields';
+export { CommentFields, CommentSortFields } from './comment-fields';
 export { CommentDbType } from './comment.db';
 export { CreateCommentInputType, UpdateCommentInputType } from './comment.input';
 export { CommentViewModelType } from './comment.view-model';

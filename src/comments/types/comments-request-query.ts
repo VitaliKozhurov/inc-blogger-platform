@@ -1,10 +1,10 @@
 import { SortDirection } from '../../core/types/sort';
 
-import { CommentsSortFields } from './comment-fields';
+import { CommentSortFields } from './comment-fields';
 
 export type CommentsRequestQueryType = {
   searchNameTerm?: string;
-  sortBy: CommentsSortFields;
+  sortBy: CommentSortFields;
   sortDirection: SortDirection;
   pageNumber: number;
   pageSize: number;
