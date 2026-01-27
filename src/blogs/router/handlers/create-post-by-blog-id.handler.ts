@@ -1,12 +1,12 @@
 import { Response } from 'express';
 
-import { HTTP_STATUSES, RequestWithParamAndBodyType } from '../../../core/types';
+import { HTTP_STATUSES, IdParamType, RequestWithParamAndBodyType } from '../../../core/types';
 import { postsService } from '../../../posts/application';
 import { postsQWRepository } from '../../../posts/repository';
 import { CreatePostInputType } from '../../../posts/types';
 
 export const createPostByBlogIdHandler = async (
-  req: RequestWithParamAndBodyType<{ id: string }, Omit<CreatePostInputType, 'blogId'>>,
+  req: RequestWithParamAndBodyType<IdParamType, Omit<CreatePostInputType, 'blogId'>>,
   res: Response
 ) => {
   const blogId = req.params.id;

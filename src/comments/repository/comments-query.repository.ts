@@ -7,16 +7,16 @@ import { CommentDbType, CommentsRequestQueryType } from '../types';
 import { CommentViewModelType } from '../types/comment.view-model';
 
 export const commentsQWRepository = {
-  async getComments(args: CommentsRequestQueryType) {
-    const { sort, skip, limit } = getPaginationParams(args);
+  async getComments({ postId, query }: { postId: string; query: CommentsRequestQueryType }) {
+    const { sort, skip, limit } = getPaginationParams(query);
 
     const items = await commentsCollection.find({}).sort(sort).skip(skip).limit(limit).toArray();
     const totalCount = await commentsCollection.countDocuments({});
 
     const paginationData = getPaginationData({
       items: items.map(this._mapToViewModel),
-      pageNumber: args.pageNumber,
-      pageSize: args.pageSize,
+      pageNumber: query.pageNumber,
+      pageSize: query.pageSize,
       totalCount,
     });
 

@@ -9,7 +9,7 @@ export const commentsRepository = {
 
     return insertedId.toString();
   },
-  async updateComment({ id, content }: { id: string; content: string }) {
+  async updateCommentById({ id, content }: { id: string; content: string }) {
     const { modifiedCount } = await commentsCollection.updateOne(
       { _id: new ObjectId(id) },
       { $set: { content } }
@@ -17,7 +17,7 @@ export const commentsRepository = {
 
     return modifiedCount > 0;
   },
-  async deleteComment(id: string) {
+  async deleteCommentById(id: string) {
     const { deletedCount } = await commentsCollection.deleteOne({ _id: new ObjectId(id) });
 
     return deletedCount > 0;
