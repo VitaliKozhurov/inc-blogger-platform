@@ -10,8 +10,9 @@ export const updateCommentByIdHandler = async (
   res: Response
 ) => {
   const userId = req.userId;
+  const commentId = req.params.id;
 
-  const comment = await commentsQWRepository.getCommentById(req.params.id);
+  const comment = await commentsQWRepository.getCommentById(commentId);
 
   if (!comment) {
     return res.sendStatus(HTTP_STATUSES.NOT_FOUND);
@@ -22,7 +23,7 @@ export const updateCommentByIdHandler = async (
   }
 
   const isUpdated = await commentsService.updateCommentById({
-    id: req.params.id,
+    id: commentId,
     content: req.body.content,
   });
 

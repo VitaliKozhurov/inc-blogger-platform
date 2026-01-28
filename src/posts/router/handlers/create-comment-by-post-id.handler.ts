@@ -11,13 +11,9 @@ export const createCommentByPostIdHandler = async (
 ) => {
   const userId = req.userId;
 
-  if (!userId) {
-    return res.sendStatus(HTTP_STATUSES.BAD_REQUEST);
-  }
-
   const result = await commentsService.createCommentByPostId({
     postId: req.params.id,
-    userId,
+    userId: userId ?? '',
     content: req.body.content,
   });
 

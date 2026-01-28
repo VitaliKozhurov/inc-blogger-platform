@@ -23,7 +23,7 @@ export const getCommentsByPostIdHandler = async (
     return res.sendStatus(HTTP_STATUSES.NOT_FOUND);
   }
 
-  const commentsViewModel = await commentsQWRepository.getComments({ postId, query });
+  const commentsViewModel = await commentsQWRepository.getCommentsByPostId({ postId, query });
 
   return res.status(HTTP_STATUSES.OK).send(commentsViewModel);
 };

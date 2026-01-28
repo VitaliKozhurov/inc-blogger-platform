@@ -7,7 +7,7 @@ import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { PostViewModelType } from '../../../src/posts/types';
 import { createBlog } from '../../utils/blogs/create-blog';
 import { mockBlog, mockUpdatedBlog } from '../../utils/blogs/mock';
-import { createPost } from '../../utils/posts/createPost';
+import { createPost } from '../../utils/posts/create-post';
 import { mockPost } from '../../utils/posts/mock';
 import { TestManager } from '../../utils/test-manager';
 

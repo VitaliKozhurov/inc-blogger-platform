@@ -7,7 +7,13 @@ import { CommentDbType, CommentsRequestQueryType } from '../types';
 import { CommentViewModelType } from '../types/comment.view-model';
 
 export const commentsQWRepository = {
-  async getComments({ postId, query }: { postId: string; query: CommentsRequestQueryType }) {
+  async getCommentsByPostId({
+    postId,
+    query,
+  }: {
+    postId: string;
+    query: CommentsRequestQueryType;
+  }) {
     const { sort, skip, limit } = getPaginationParams(query);
 
     const items = await commentsCollection
