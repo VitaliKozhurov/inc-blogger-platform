@@ -7,3 +7,6 @@ export type RegistrationInputType = {
   password: string;
   email: string;
 };
+export type RegistrationConfirmationInputType = {
+  code: string;
+};
