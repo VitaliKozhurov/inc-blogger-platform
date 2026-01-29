@@ -84,8 +84,11 @@ export const usersQWRepository = {
     return user;
   },
   _mapToViewModel(user: WithId<UserDBType>): UserViewModelType {
-    const { _id, passwordHash: _, ...restUserData } = user;
-
-    return { id: _id.toString(), ...restUserData };
+    return {
+      id: user._id.toString(),
+      login: user.login,
+      email: user.email,
+      createdAt: user.createdAt,
+    };
   },
 };

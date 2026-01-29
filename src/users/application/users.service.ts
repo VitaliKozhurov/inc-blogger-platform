@@ -22,11 +22,17 @@ export const usersService = {
 
     const passwordHash = await argonService.createHash(password);
 
+    // TODO нормально ли так формировать пользователя (confirmationCode, expirationDate)
     const newUser: UserDBType = {
       login,
       email,
       passwordHash,
       createdAt: new Date().toISOString(),
+      emailConfirmation: {
+        isConfirmed: true,
+        confirmationCode: '',
+        expirationDate: '',
+      },
     };
 
     const id = await usersRepository.createUser(newUser);
