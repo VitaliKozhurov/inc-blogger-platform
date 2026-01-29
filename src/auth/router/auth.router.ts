@@ -6,6 +6,7 @@ import {
   accessTokenMiddleware,
   loginInputModelMiddleware,
   registrationConfirmationInputModelMiddleware,
+  registrationEmailResendingInputModelMiddleware,
   registrationInputModelMiddleware,
 } from '../middleware';
 
@@ -34,6 +35,13 @@ authRouter.post(
 authRouter.post(
   APP_ROUTES.AUTH_REGISTRATION_CONFIRMATION,
   registrationConfirmationInputModelMiddleware,
+  checkValidationMiddleware,
+  registrationHandler
+);
+
+authRouter.post(
+  APP_ROUTES.AUTH_REGISTRATION_EMAIL_RESENDING,
+  registrationEmailResendingInputModelMiddleware,
   checkValidationMiddleware,
   registrationHandler
 );

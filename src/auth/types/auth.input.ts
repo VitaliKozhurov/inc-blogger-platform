@@ -10,3 +10,5 @@ export type RegistrationInputType = {
 export type RegistrationConfirmationInputType = {
   code: string;
 };
+
+export type RegistrationEmailResendingType = Pick<RegistrationInputType, 'email'>;
