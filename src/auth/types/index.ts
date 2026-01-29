@@ -1,2 +1,2 @@
-export { LoginFields } from './login-fields';
-export { LoginInputType } from './login.input';
+export { LoginInputType, RegistrationInputType } from './auth.input';
+export { AuthFields } from './login-fields';
