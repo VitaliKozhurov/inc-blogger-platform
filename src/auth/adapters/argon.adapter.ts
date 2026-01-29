@@ -1,6 +1,6 @@
 import argon2 from 'argon2';
 
-export const argonService = {
+export const argonAdapter = {
   async createHash(password: string) {
     return argon2.hash(password);
   },

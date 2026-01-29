@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-import { jwtService } from '../../../src/auth/application';
+import { jwtAdapter } from '../../../src/auth/adapters';
 import { CommentViewModelType } from '../../../src/comments/types';
 import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES, ResponseWithPaginationType } from '../../../src/core/types';
@@ -95,7 +95,7 @@ describe('Comments test', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .send(mockComment);
 
-      const token = jwtService.createJWT({ userId: 'random' });
+      const token = jwtAdapter.createJWT({ userId: 'random' });
 
       await testManager.context
         .request()
@@ -139,7 +139,7 @@ describe('Comments test', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .send(mockComment);
 
-      const incorrectToken = jwtService.createJWT({ userId: 'incorrect user' });
+      const incorrectToken = jwtAdapter.createJWT({ userId: 'incorrect user' });
 
       await testManager.context
         .request()

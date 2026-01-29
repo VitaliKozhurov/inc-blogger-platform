@@ -1,4 +1,4 @@
-import { argonService } from '../../auth/application';
+import { argonAdapter } from '../../auth/adapters';
 import { HTTP_STATUSES } from '../../core/types';
 import { createErrorMessages } from '../../core/utils';
 import { usersQWRepository } from '../repository';
@@ -20,7 +20,7 @@ export const usersService = {
 
     const { login, email, password } = user;
 
-    const passwordHash = await argonService.createHash(password);
+    const passwordHash = await argonAdapter.createHash(password);
 
     // TODO нормально ли так формировать пользователя (confirmationCode, expirationDate)
     const newUser: UserDBType = {

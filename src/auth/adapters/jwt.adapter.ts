@@ -4,7 +4,7 @@ import { SETTINGS } from '../../core/settings';
 
 export type AccessTokenPayloadType = { userId: string };
 
-export const jwtService = {
+export const jwtAdapter = {
   createJWT(payload: AccessTokenPayloadType) {
     const token = jwt.sign(payload, SETTINGS.JWT_ACCESS_SECRET, {
       expiresIn: Number(SETTINGS.JWT_ACCESS_TIME),

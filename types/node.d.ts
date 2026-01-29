@@ -6,5 +6,7 @@ declare namespace NodeJS {
     PORT: number;
     MONGO_URL: string;
     DB_NAME: string;
+    EMAIL_ADDRESS: string;
+    APP_EMAIL_PASSWORD: string;
   }
 }

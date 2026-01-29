@@ -1,4 +1,4 @@
-import { jwtService } from '../../../src/auth/application';
+import { jwtAdapter } from '../../../src/auth/adapters';
 import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
@@ -31,7 +31,7 @@ describe('Auth test', () => {
         .send({ loginOrEmail: createdUser.login, password: mockUser.password })
         .expect(HTTP_STATUSES.OK);
 
-      const token = jwtService.decodeJWT(body.accessToken);
+      const token = jwtAdapter.decodeJWT(body.accessToken);
 
       expect(token?.userId).toBe(createdUser.id);
     });
@@ -45,7 +45,7 @@ describe('Auth test', () => {
         .send({ loginOrEmail: createdUser.email, password: mockUser.password })
         .expect(HTTP_STATUSES.OK);
 
-      const token = jwtService.decodeJWT(body.accessToken);
+      const token = jwtAdapter.decodeJWT(body.accessToken);
 
       expect(token?.userId).toBe(createdUser.id);
     });

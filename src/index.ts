@@ -7,8 +7,6 @@ import { initApp } from './init-app';
 const bootstrap = async () => {
   const app = express();
 
-  console.log(SETTINGS);
-
   await runDB(SETTINGS.MONGO_URL);
 
   await initApp(app);
