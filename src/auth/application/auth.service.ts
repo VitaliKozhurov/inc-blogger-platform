@@ -25,6 +25,15 @@ export const authService = {
       return this._buildErrorResult();
     }
 
+    if (!user.emailConfirmation.isConfirmed) {
+      return {
+        data: null,
+        status: HTTP_STATUSES.UNAUTHORIZED,
+        extensions: [{ field: null, message: 'Account should be confirmed' }],
+        errorMessage: 'Account should be confirmed',
+      };
+    }
+
     const accessToken = jwtAdapter.createJWT({ userId: user._id.toString() });
 
     return {

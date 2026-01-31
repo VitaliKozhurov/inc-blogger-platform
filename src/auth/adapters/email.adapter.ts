@@ -39,9 +39,7 @@ export const emailAdapter = {
       });
 
       return !!info;
-    } catch (err) {
-      console.log('ERR: ', err);
-
+    } catch {
       return false;
     }
   },

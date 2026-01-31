@@ -8,7 +8,7 @@ export const loginHandler = async (req: RequestWithBodyType<LoginInputType>, res
   const result = await authService.login(req.body);
 
   if (result.status !== HTTP_STATUSES.OK) {
-    return res.sendStatus(HTTP_STATUSES.UNAUTHORIZED);
+    return res.status(HTTP_STATUSES.UNAUTHORIZED).send({ errorsMessages: result.extensions });
   }
 
   res.status(HTTP_STATUSES.OK).send({ accessToken: result.data!.accessToken });
