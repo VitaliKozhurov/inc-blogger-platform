@@ -12,6 +12,7 @@ import {
 
 import { loginHandler } from './handlers/login.handler';
 import { meHandler } from './handlers/me.handler';
+import { registrationConfirmationHandler } from './handlers/registration-confirmation.handler';
 import { registrationHandler } from './handlers/registration.handler';
 
 export const authRouter = Router();
@@ -36,7 +37,7 @@ authRouter.post(
   APP_ROUTES.AUTH_REGISTRATION_CONFIRMATION,
   registrationConfirmationInputModelMiddleware,
   checkValidationMiddleware,
-  registrationHandler
+  registrationConfirmationHandler
 );
 
 authRouter.post(

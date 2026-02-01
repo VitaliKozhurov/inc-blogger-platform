@@ -83,6 +83,11 @@ export const usersQWRepository = {
 
     return user;
   },
+  async getUserByConfirmationCode(code: string): Promise<WithId<UserDBType> | null> {
+    const user = await usersCollection.findOne({ 'emailConfirmation.confirmationCode': code });
+
+    return user;
+  },
   _mapToViewModel(user: WithId<UserDBType>): UserViewModelType {
     return {
       id: user._id.toString(),

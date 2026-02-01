@@ -42,7 +42,7 @@ export const authService = {
       extensions: [],
     };
   },
-  async register(credentials: RegistrationInputType) {
+  async registration(credentials: RegistrationInputType) {
     const { login, email, password } = credentials;
 
     const useByLogin = await usersQWRepository.getUserByLoginOrEmail(login);
@@ -83,6 +83,34 @@ export const authService = {
       extensions: [],
     };
   },
+  async registrationConfirmation(code: string) {
+    const user = await usersQWRepository.getUserByConfirmationCode(code);
+
+    if (!user) {
+      return this._buildEmailConfirmationErrorResult();
+    }
+
+    if (user.emailConfirmation.isConfirmed) {
+      return this._buildEmailConfirmationErrorResult();
+    }
+
+    if (new Date(user.emailConfirmation.expirationDate) < new Date()) {
+      return this._buildEmailConfirmationErrorResult();
+    }
+
+    const userData = {
+      ...user,
+      emailConfirmation: { ...user.emailConfirmation, isConfirmed: true },
+    };
+
+    await usersRepository.updateUserById({ id: user._id.toString(), userData });
+
+    return {
+      data: null,
+      status: HTTP_STATUSES.OK,
+      extensions: [],
+    };
+  },
   _buildErrorResult() {
     const result: ResultType = {
       data: null,
@@ -92,5 +120,14 @@ export const authService = {
     };
 
     return result;
+  },
+
+  _buildEmailConfirmationErrorResult() {
+    return {
+      data: null,
+      status: HTTP_STATUSES.BAD_REQUEST,
+      extensions: [{ field: 'code', message: 'Code confirmation operation failed' }],
+      errorMessage: 'Code confirmation operation failed',
+    };
   },
 };

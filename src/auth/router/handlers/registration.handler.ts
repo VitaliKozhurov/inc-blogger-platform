@@ -8,7 +8,7 @@ export const registrationHandler = async (
   req: RequestWithBodyType<RegistrationInputType>,
   res: Response
 ) => {
-  const result = await authService.register(req.body);
+  const result = await authService.registration(req.body);
 
   if (result.status !== HTTP_STATUSES.OK) {
     return res.status(HTTP_STATUSES.BAD_REQUEST).send({ errorsMessages: result.extensions });

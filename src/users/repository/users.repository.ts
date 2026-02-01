@@ -14,4 +14,12 @@ export const usersRepository = {
 
     return deletedCount > 0;
   },
+  updateUserById: async ({ id, userData }: { id: string; userData: UserDBType }) => {
+    const { modifiedCount } = await usersCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: userData }
+    );
+
+    return modifiedCount > 0;
+  },
 };
