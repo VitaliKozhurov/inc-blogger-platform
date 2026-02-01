@@ -48,13 +48,12 @@ export const authService = {
     const useByLogin = await usersQWRepository.getUserByLoginOrEmail(login);
     const userByEmail = await usersQWRepository.getUserByLoginOrEmail(email);
 
-    if (useByLogin || userByEmail) {
-      return {
-        data: null,
-        status: HTTP_STATUSES.BAD_REQUEST,
-        extensions: [{ field: 'null', message: 'User with such credentials is in the system' }],
-        errorMessage: 'User with the same login or email exist',
-      };
+    if (userByEmail) {
+      return this._buildErrorForUserCredentialsResult('email');
+    }
+
+    if (useByLogin) {
+      return this._buildErrorForUserCredentialsResult('login');
     }
 
     const passwordHash = await argonAdapter.createHash(password);
@@ -123,16 +122,38 @@ export const authService = {
   async registrationEmailResending(credentials: RegistrationEmailResendingType) {
     const userByEmail = await usersQWRepository.getUserByLoginOrEmail(credentials.email);
 
-    if (userByEmail?.emailConfirmation.isConfirmed) {
-      return {
-        data: null,
-        status: HTTP_STATUSES.BAD_REQUEST,
-        extensions: [{ field: 'null', message: 'User is confirmed' }],
-        errorMessage: 'User is confirmed',
-      };
+    if (!userByEmail) {
+      return this._buildErrorForUserCredentialsResult('email');
+    }
+
+    if (userByEmail.emailConfirmation.isConfirmed) {
+      return this._buildErrorForUserCredentialsResult('email');
     }
 
     const confirmationCode = randomUUID();
+
+    const userData = {
+      ...userByEmail,
+      emailConfirmation: {
+        isConfirmed: false,
+        confirmationCode,
+        expirationDate: add(new Date(), { hours: 1 }).toISOString(),
+      },
+    };
+
+    const isUpdated = await usersRepository.updateUserById({
+      id: userByEmail._id.toString(),
+      userData,
+    });
+
+    if (!isUpdated) {
+      return {
+        data: null,
+        status: HTTP_STATUSES.BAD_REQUEST,
+        extensions: [{ field: '', message: 'User update error' }],
+        errorMessage: 'User update error',
+      };
+    }
 
     emailAdapter.resendRegistrationConfirmation({
       email: credentials.email,
@@ -155,7 +176,14 @@ export const authService = {
 
     return result;
   },
-
+  _buildErrorForUserCredentialsResult(field: 'email' | 'login') {
+    return {
+      data: null,
+      status: HTTP_STATUSES.BAD_REQUEST,
+      extensions: [{ field, message: 'User credentials error' }],
+      errorMessage: 'User credentials error',
+    };
+  },
   _buildEmailConfirmationErrorResult() {
     return {
       data: null,

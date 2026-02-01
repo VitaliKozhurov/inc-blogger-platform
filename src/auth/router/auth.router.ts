@@ -13,6 +13,7 @@ import {
 import { loginHandler } from './handlers/login.handler';
 import { meHandler } from './handlers/me.handler';
 import { registrationConfirmationHandler } from './handlers/registration-confirmation.handler';
+import { registrationEmailResendingHandler } from './handlers/registration-email-resending.handler';
 import { registrationHandler } from './handlers/registration.handler';
 
 export const authRouter = Router();
@@ -44,5 +45,5 @@ authRouter.post(
   APP_ROUTES.AUTH_REGISTRATION_EMAIL_RESENDING,
   registrationEmailResendingInputModelMiddleware,
   checkValidationMiddleware,
-  registrationHandler
+  registrationEmailResendingHandler
 );
