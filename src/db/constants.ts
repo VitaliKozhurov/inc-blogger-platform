@@ -3,4 +3,4 @@ export const COLLECTION_NAME = {
   POSTS: 'posts',
   COMMENTS: 'comments',
   USERS: 'users',
-};
+} as const

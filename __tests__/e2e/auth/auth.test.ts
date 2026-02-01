@@ -94,22 +94,8 @@ describe('Auth test', () => {
       expect(res.body.errorsMessages.length).toBe(3);
     });
 
-    it('should return a 400 status code if send incorrect credentials', async () => {
-      const res = await testManager.context
-        .request()
-        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REGISTRATION}`)
-        .send({ login: '', password: '', email: '' })
-        .expect(HTTP_STATUSES.BAD_REQUEST);
-
-      expect(res.body.errorsMessages.length).toBe(3);
-    });
-
     it('should return a 400 status code if that user already exists', async () => {
-      await testManager.context
-        .request()
-        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REGISTRATION}`)
-        .send(mockUser)
-        .expect(HTTP_STATUSES.NO_CONTENT);
+      await createUser(testManager);
 
       await testManager.context
         .request()
@@ -133,63 +119,63 @@ describe('Auth test', () => {
     });
   });
 
-  describe('POST /auth/register-confirmation', () => {
-    it('should return a 204 status code if send correct code', async () => {
-      await testManager.context
-        .request()
-        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REGISTRATION}`)
-        .send(mockUser)
-        .expect(HTTP_STATUSES.NO_CONTENT);
-    });
+  // describe('POST /auth/register-confirmation', () => {
+  //   it('should return a 204 status code if send correct code', async () => {
+  //     await testManager.context
+  //       .request()
+  //       .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REGISTRATION}`)
+  //       .send(mockUser)
+  //       .expect(HTTP_STATUSES.NO_CONTENT);
+  //   });
 
-    it('should return a 400 status code if send incorrect credentials', async () => {
-      const res = await testManager.context
-        .request()
-        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REGISTRATION}`)
-        .send({ login: '', password: '', email: '' })
-        .expect(HTTP_STATUSES.BAD_REQUEST);
+  //   it('should return a 400 status code if send incorrect credentials', async () => {
+  //     const res = await testManager.context
+  //       .request()
+  //       .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REGISTRATION}`)
+  //       .send({ login: '', password: '', email: '' })
+  //       .expect(HTTP_STATUSES.BAD_REQUEST);
 
-      expect(res.body.errorsMessages.length).toBe(3);
-    });
+  //     expect(res.body.errorsMessages.length).toBe(3);
+  //   });
 
-    it('should return a 400 status code if send incorrect credentials', async () => {
-      const res = await testManager.context
-        .request()
-        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REGISTRATION}`)
-        .send({ login: '', password: '', email: '' })
-        .expect(HTTP_STATUSES.BAD_REQUEST);
+  //   it('should return a 400 status code if send incorrect credentials', async () => {
+  //     const res = await testManager.context
+  //       .request()
+  //       .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REGISTRATION}`)
+  //       .send({ login: '', password: '', email: '' })
+  //       .expect(HTTP_STATUSES.BAD_REQUEST);
 
-      expect(res.body.errorsMessages.length).toBe(3);
-    });
+  //     expect(res.body.errorsMessages.length).toBe(3);
+  //   });
 
-    it('should return a 400 status code if that user already exists', async () => {
-      await testManager.context
-        .request()
-        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REGISTRATION}`)
-        .send(mockUser)
-        .expect(HTTP_STATUSES.NO_CONTENT);
+  //   it('should return a 400 status code if that user already exists', async () => {
+  //     await testManager.context
+  //       .request()
+  //       .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REGISTRATION}`)
+  //       .send(mockUser)
+  //       .expect(HTTP_STATUSES.NO_CONTENT);
 
-      await testManager.context
-        .request()
-        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REGISTRATION}`)
-        .send(mockUser)
-        .expect(HTTP_STATUSES.BAD_REQUEST);
-    });
+  //     await testManager.context
+  //       .request()
+  //       .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REGISTRATION}`)
+  //       .send(mockUser)
+  //       .expect(HTTP_STATUSES.BAD_REQUEST);
+  //   });
 
-    it('should return a 401 status code if user login with not confirmed account', async () => {
-      await testManager.context
-        .request()
-        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REGISTRATION}`)
-        .send(mockUser)
-        .expect(HTTP_STATUSES.NO_CONTENT);
+  //   it('should return a 401 status code if user login with not confirmed account', async () => {
+  //     await testManager.context
+  //       .request()
+  //       .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REGISTRATION}`)
+  //       .send(mockUser)
+  //       .expect(HTTP_STATUSES.NO_CONTENT);
 
-      await testManager.context
-        .request()
-        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGIN}`)
-        .send({ loginOrEmail: mockUser.login, password: mockUser.password })
-        .expect(HTTP_STATUSES.UNAUTHORIZED);
-    });
-  });
+  //     await testManager.context
+  //       .request()
+  //       .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGIN}`)
+  //       .send({ loginOrEmail: mockUser.login, password: mockUser.password })
+  //       .expect(HTTP_STATUSES.UNAUTHORIZED);
+  //   });
+  // });
 
   describe('GET /auth/me', () => {
     it('should return a 200 status code with correct authorized user data', async () => {

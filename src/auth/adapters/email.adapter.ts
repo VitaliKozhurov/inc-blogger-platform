@@ -51,4 +51,12 @@ export const emailAdapter = {
 
     return this.sendEmail({ email, html });
   },
+  async resendRegistrationConfirmation({ email, code }: { email: string; code: string }) {
+    const html = `<div>
+                      <h1>This is new confirmation code</h1>
+                      <a href='https://some-front.com/confirm-registration?code=${code}'>complete registration</a>
+                  </div>`;
+
+    return this.sendEmail({ email, html });
+  },
 };

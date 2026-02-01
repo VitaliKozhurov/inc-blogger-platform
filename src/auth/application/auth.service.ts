@@ -7,7 +7,7 @@ import { usersQWRepository } from '../../users/repository';
 import { usersRepository } from '../../users/repository/users.repository';
 import { UserDBType } from '../../users/types';
 import { argonAdapter, emailAdapter, jwtAdapter } from '../adapters';
-import { LoginInputType, RegistrationInputType } from '../types';
+import { LoginInputType, RegistrationEmailResendingType, RegistrationInputType } from '../types';
 
 export const authService = {
   async login(credentials: LoginInputType) {
@@ -75,7 +75,7 @@ export const authService = {
 
     const userId = await usersRepository.createUser(newUser);
 
-    await emailAdapter.sendRegistrationConfirmation({ email, code: confirmationCode });
+    emailAdapter.sendRegistrationConfirmation({ email, code: confirmationCode });
 
     return {
       data: userId,
@@ -100,10 +100,44 @@ export const authService = {
 
     const userData = {
       ...user,
-      emailConfirmation: { ...user.emailConfirmation, isConfirmed: true },
+      emailConfirmation: { isConfirmed: true, confirmationCode: '', expirationDate: '' },
     };
 
-    await usersRepository.updateUserById({ id: user._id.toString(), userData });
+    const isUpdated = await usersRepository.updateUserById({ id: user._id.toString(), userData });
+
+    if (!isUpdated) {
+      return {
+        data: null,
+        status: HTTP_STATUSES.BAD_REQUEST,
+        extensions: [{ field: '', message: 'User update error' }],
+        errorMessage: 'User update error',
+      };
+    }
+
+    return {
+      data: null,
+      status: HTTP_STATUSES.OK,
+      extensions: [],
+    };
+  },
+  async registrationEmailResending(credentials: RegistrationEmailResendingType) {
+    const userByEmail = await usersQWRepository.getUserByLoginOrEmail(credentials.email);
+
+    if (userByEmail?.emailConfirmation.isConfirmed) {
+      return {
+        data: null,
+        status: HTTP_STATUSES.BAD_REQUEST,
+        extensions: [{ field: 'null', message: 'User is confirmed' }],
+        errorMessage: 'User is confirmed',
+      };
+    }
+
+    const confirmationCode = randomUUID();
+
+    emailAdapter.resendRegistrationConfirmation({
+      email: credentials.email,
+      code: confirmationCode,
+    });
 
     return {
       data: null,
