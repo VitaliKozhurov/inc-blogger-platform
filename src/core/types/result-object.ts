@@ -5,6 +5,14 @@ type ExtensionType = {
   message: string;
 };
 
+export enum RESULT_STATUSES {
+  OK,
+  BAD_REQUEST,
+  UNAUTHORIZED,
+  FORBIDDEN,
+  SERVER_ERROR,
+}
+
 export type ResultType<T = null> = {
   status: HTTP_STATUSES;
   errorMessage?: string;

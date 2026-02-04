@@ -6,7 +6,7 @@ import { HTTP_STATUSES, ResultType } from '../../core/types';
 import { usersQWRepository } from '../../users/repository';
 import { usersRepository } from '../../users/repository/users.repository';
 import { UserDBType } from '../../users/types';
-import { argonAdapter, emailAdapter, jwtAdapter } from '../adapters';
+import { passwordHashAdapter, emailAdapter, jwtAdapter } from '../adapters';
 import { LoginInputType, RegistrationEmailResendingType, RegistrationInputType } from '../types';
 
 export const authService = {
@@ -19,7 +19,10 @@ export const authService = {
       return this._buildErrorResult();
     }
 
-    const isVerified = await argonAdapter.verifyPassword({ password, hash: user.passwordHash });
+    const isVerified = await passwordHashAdapter.verifyPassword({
+      password,
+      hash: user.passwordHash,
+    });
 
     if (!isVerified) {
       return this._buildErrorResult();
@@ -56,7 +59,7 @@ export const authService = {
       return this._buildErrorForUserCredentialsResult('login');
     }
 
-    const passwordHash = await argonAdapter.createHash(password);
+    const passwordHash = await passwordHashAdapter.createPasswordHash(password);
 
     const confirmationCode = randomUUID();
 

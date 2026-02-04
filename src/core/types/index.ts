@@ -12,4 +12,4 @@ export {
 } from './util-types';
 export { QueryFields } from './query-fields';
 export { HTTP_STATUSES } from './http-statuses';
-export { ResultType } from './result-object';
+export { ResultType, RESULT_STATUSES } from './result-object';

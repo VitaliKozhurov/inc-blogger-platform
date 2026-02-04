@@ -1,6 +1,11 @@
 import { param } from 'express-validator';
 
-import { PARAM_ID_ERROR_MESSAGES } from '../constants';
+const PARAM_ID_ERROR_MESSAGES = {
+  REQUIRED: 'ID is required',
+  NOT_EMPTY: 'ID must not be empty',
+  MUST_BE_STRING: 'ID must be a string',
+  MUST_BE_OBJECT_ID: 'ID must be of mongo id format',
+};
 
 export const getUriParamValidatorMiddleware = (uriParam: string = 'id') => {
   return [

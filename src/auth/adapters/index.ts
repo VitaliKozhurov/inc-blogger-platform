@@ -1,3 +1,2 @@
-export { jwtAdapter } from './jwt.adapter';
-export { argonAdapter } from './argon.adapter';
-export { emailAdapter } from './email.adapter';
+export { authTokenAdapter } from './auth-token.adapter';
+export { emailRegistrationAdapter } from './email-registration.adapter';
