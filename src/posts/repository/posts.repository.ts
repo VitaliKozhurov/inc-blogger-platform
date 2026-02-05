@@ -1,5 +1,6 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId, WithId } from 'mongodb';
 
+import { Nullable } from '../../core/types';
 import { postsCollection } from '../../db';
 import { PostDBType, UpdatePostInputType } from '../types';
 
@@ -25,5 +26,9 @@ export const postsRepository = {
     const { deletedCount } = await postsCollection.deleteOne({ _id: new ObjectId(id) });
 
     return deletedCount > 0;
+  },
+
+  async getPostById(id: string): Promise<Nullable<WithId<PostDBType>>> {
+    return postsCollection.findOne({ _id: new ObjectId(id) });
   },
 };

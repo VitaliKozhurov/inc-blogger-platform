@@ -1,19 +1,14 @@
-import { blogsQWRepository } from '../../blogs/repository';
-import { HTTP_STATUSES } from '../../core/types';
+import { blogsRepository } from '../../blogs/repository';
 import { postsRepository } from '../repository';
 import { CreatePostInputType, PostDBType, UpdatePostInputType } from '../types';
+import { postsObjectResult } from '../utils/posts-object-result';
 
 export const postsService = {
   createPost: async (postData: CreatePostInputType) => {
-    const blog = await blogsQWRepository.getBlogById(postData.blogId);
+    const blog = await blogsRepository.getBlogById(postData.blogId);
 
     if (!blog) {
-      return {
-        data: null,
-        status: HTTP_STATUSES.NOT_FOUND,
-        extensions: [{ field: null, message: 'Blog not found' }],
-        errorMessage: 'Blog not found',
-      };
+      return postsObjectResult.notFoundBlog();
     }
 
     const newPost: PostDBType = {
@@ -24,52 +19,26 @@ export const postsService = {
 
     const id = await postsRepository.createPost(newPost);
 
-    return {
-      data: { id },
-      status: HTTP_STATUSES.OK,
-      extensions: [],
-    };
+    return postsObjectResult.success({ id });
   },
 
   updatePostById: async ({ id, postData }: { id: string; postData: UpdatePostInputType }) => {
-    return postsRepository.updatePostById({ id, postData });
+    const isUpdated = await postsRepository.updatePostById({ id, postData });
+
+    if (isUpdated) {
+      return postsObjectResult.success();
+    }
+
+    return postsObjectResult.notFoundPost();
   },
 
   deletePostById: async (blogId: string) => {
-    return postsRepository.deletePostById(blogId);
-  },
+    const isDeleted = await postsRepository.deletePostById(blogId);
 
-  createPostForBlogById: async ({
-    blogId,
-    postData,
-  }: {
-    blogId: string;
-    postData: Omit<CreatePostInputType, 'blogId'>;
-  }) => {
-    const blog = await blogsQWRepository.getBlogById(blogId);
-
-    if (!blog) {
-      return {
-        data: null,
-        status: HTTP_STATUSES.NOT_FOUND,
-        extensions: [{ field: null, message: 'Blog not found' }],
-        errorMessage: 'Blog not found',
-      };
+    if (isDeleted) {
+      return postsObjectResult.success();
     }
 
-    const newPost: PostDBType = {
-      ...postData,
-      blogId,
-      blogName: blog.name,
-      createdAt: new Date().toISOString(),
-    };
-
-    const id = await postsRepository.createPost(newPost);
-
-    return {
-      data: { id },
-      status: HTTP_STATUSES.OK,
-      extensions: [],
-    };
+    return postsObjectResult.notFoundPost();
   },
 };

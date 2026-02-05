@@ -2,6 +2,7 @@ import { ObjectId, WithId } from 'mongodb';
 
 import { usersCollection } from '../../db/mongo.db';
 import { UserDBType } from '../types';
+import { Nullable } from '../../core/types';
 
 export const usersRepository = {
   async createUser(userData: UserDBType) {
@@ -33,5 +34,8 @@ export const usersRepository = {
     const user = await usersCollection.findOne({ 'emailConfirmation.confirmationCode': code });
 
     return user;
+  },
+  async getUserById(id: string): Promise<Nullable<WithId<UserDBType>>> {
+    return usersCollection.findOne({ _id: new ObjectId(id) });
   },
 };

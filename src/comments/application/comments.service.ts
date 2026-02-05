@@ -1,6 +1,6 @@
-import { HTTP_STATUSES } from '../../core/types';
-import { postsQWRepository } from '../../posts/repository';
-import { usersQWRepository } from '../../users/repository';
+import { postsRepository } from '../../posts/repository';
+import { postsObjectResult } from '../../posts/utils/posts-object-result';
+import { usersRepository } from '../../users/repository/users.repository';
 import { commentsRepository } from '../repository';
 import { CommentDbType } from '../types';
 
@@ -14,33 +14,23 @@ export const commentsService = {
     userId: string;
     content: string;
   }) {
-    const post = await postsQWRepository.getPostById(postId);
+    const post = await postsRepository.getPostById(postId);
 
     if (!post) {
-      return {
-        status: HTTP_STATUSES.NOT_FOUND,
-        data: null,
-        errorMessage: 'Post not exist',
-        extensions: [{ field: null, message: 'Post not exist' }],
-      };
+      return postsObjectResult.notFoundPost();
     }
 
-    const user = await usersQWRepository.getUserById(userId);
+    const user = await usersRepository.getUserById(userId);
 
     if (!user) {
-      return {
-        status: HTTP_STATUSES.BAD_REQUEST,
-        data: null,
-        errorMessage: 'Incorrect user',
-        extensions: [{ field: null, message: 'Incorrect user' }],
-      };
+      return postsObjectResult.badRequest();
     }
 
     const comment: CommentDbType = {
       content,
       createdAt: new Date().toISOString(),
       commentatorInfo: {
-        userId: user.id,
+        userId: user._id.toString(),
         userLogin: user.login,
       },
       postId,
@@ -48,16 +38,24 @@ export const commentsService = {
 
     const commentId = await commentsRepository.createComment(comment);
 
-    return {
-      status: HTTP_STATUSES.OK,
-      data: { commentId },
-      extensions: [],
-    };
+    return postsObjectResult.success({ commentId });
   },
   async updateCommentById({ id, content }: { id: string; content: string }) {
-    return commentsRepository.updateCommentById({ id, content });
+    const isUpdated = await commentsRepository.updateCommentById({ id, content });
+
+    if (isUpdated) {
+      return postsObjectResult.success();
+    }
+
+    return postsObjectResult.notFoundPost();
   },
   async deleteCommentById(id: string) {
-    return commentsRepository.deleteCommentById(id);
+    const isDeleted = await commentsRepository.deleteCommentById(id);
+
+    if (isDeleted) {
+      return postsObjectResult.success();
+    }
+
+    return postsObjectResult.notFoundPost();
   },
 };

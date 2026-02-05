@@ -1,6 +1,7 @@
 import { Response } from 'express';
 
 import { HTTP_STATUSES, IdParamType, RequestWithParamAndBodyType } from '../../../core/types';
+import { RESULT_STATUSES, resultCodeToHttpException } from '../../../core/utils';
 import { postsService } from '../../../posts/application';
 import { postsQWRepository } from '../../../posts/repository';
 import { CreatePostInputType } from '../../../posts/types';
@@ -11,10 +12,10 @@ export const createPostByBlogIdHandler = async (
 ) => {
   const blogId = req.params.id;
 
-  const result = await postsService.createPostForBlogById({ blogId, postData: req.body });
+  const result = await postsService.createPost({ blogId, ...req.body });
 
-  if (result.status !== HTTP_STATUSES.OK) {
-    return res.sendStatus(HTTP_STATUSES.NOT_FOUND);
+  if (result.status !== RESULT_STATUSES.OK) {
+    return res.sendStatus(resultCodeToHttpException(result.status));
   }
 
   const createdPostViewModel = await postsQWRepository.getPostById(result.data!.id);

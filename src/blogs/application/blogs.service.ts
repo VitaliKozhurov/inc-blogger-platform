@@ -26,6 +26,12 @@ export const blogsService = {
   },
 
   deleteBlogById: async (id: string) => {
-    return blogsRepository.deleteBlogById(id);
+    const isDeleted = await blogsRepository.deleteBlogById(id);
+
+    if (isDeleted) {
+      return blogsObjectResult.success();
+    }
+
+    return blogsObjectResult.notFoundBlog();
   },
 };

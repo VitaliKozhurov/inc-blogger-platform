@@ -1,5 +1,6 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId, WithId } from 'mongodb';
 
+import { Nullable } from '../../core/types';
 import { blogsCollection } from '../../db';
 import { BlogDBType, UpdateBlogInputType } from '../types';
 
@@ -25,5 +26,9 @@ export const blogsRepository = {
     const { deletedCount } = await blogsCollection.deleteOne({ _id: new ObjectId(id) });
 
     return deletedCount > 0;
+  },
+
+  async getBlogById(id: string): Promise<Nullable<WithId<BlogDBType>>> {
+    return blogsCollection.findOne({ _id: new ObjectId(id) });
   },
 };
