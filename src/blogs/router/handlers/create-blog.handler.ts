@@ -9,13 +9,9 @@ export const createBlogHandler = async (
   req: RequestWithBodyType<CreateBlogInputType>,
   res: Response
 ) => {
-  const blogId = await blogsService.createBlog(req.body);
+  const result = await blogsService.createBlog(req.body);
 
-  const createdBlogViewModel = await blogsQWRepository.getBlogById(blogId);
-
-  if (!createdBlogViewModel) {
-    return res.sendStatus(HTTP_STATUSES.NOT_FOUND);
-  }
+  const createdBlogViewModel = await blogsQWRepository.getBlogById(result.data);
 
   return res.status(HTTP_STATUSES.CREATED).send(createdBlogViewModel);
 };

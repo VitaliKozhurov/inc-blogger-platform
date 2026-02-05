@@ -1,5 +1,6 @@
 import { blogsRepository } from '../repository';
 import { BlogDBType, CreateBlogInputType, UpdateBlogInputType } from '../types';
+import { blogsObjectResult } from '../utils/blogs-object-result';
 
 export const blogsService = {
   createBlog: async (blogData: CreateBlogInputType) => {
@@ -11,11 +12,17 @@ export const blogsService = {
 
     const blogId = await blogsRepository.createBlog(newBlog);
 
-    return blogId;
+    return blogsObjectResult.success(blogId);
   },
 
   updateBlogById: async ({ id, blogData }: { id: string; blogData: UpdateBlogInputType }) => {
-    return blogsRepository.updateBlogById({ id, blogData });
+    const isUpdated = await blogsRepository.updateBlogById({ id, blogData });
+
+    if (isUpdated) {
+      return blogsObjectResult.success();
+    }
+
+    return blogsObjectResult.notFoundBlog();
   },
 
   deleteBlogById: async (id: string) => {
