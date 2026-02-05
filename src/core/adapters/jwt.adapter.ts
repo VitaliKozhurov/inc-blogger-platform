@@ -22,9 +22,9 @@ export const jwtAdapter = {
     try {
       const payload = jwt.verify(token, secret) as T;
 
-      return { success: true, payload };
+      return { success: true as const, payload };
     } catch {
-      return { success: false, payload: null };
+      return { success: false as const, payload: null };
     }
   },
   decodeJWT<T extends JwtPayload>(token: string) {

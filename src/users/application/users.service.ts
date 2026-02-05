@@ -1,7 +1,6 @@
-import { passwordHashAdapter } from '../../auth/adapters';
+import { passwordHashAdapter } from '../../core/adapters';
 import { HTTP_STATUSES } from '../../core/types';
 import { createErrorMessages } from '../../core/utils';
-import { usersQWRepository } from '../repository';
 import { usersRepository } from '../repository/users.repository';
 import { CreateUserInputType, UserDBType } from '../types';
 
@@ -49,7 +48,7 @@ export const usersService = {
   },
 
   async _validateLoginEmailAvailability(login: string, email: string) {
-    const userByLogin = await usersQWRepository.getUserByLoginOrEmail(login);
+    const userByLogin = await usersRepository.getUserByLoginOrEmail(login);
 
     if (userByLogin) {
       return createErrorMessages([
@@ -60,7 +59,7 @@ export const usersService = {
       ]);
     }
 
-    const userByEmail = await usersQWRepository.getUserByLoginOrEmail(email);
+    const userByEmail = await usersRepository.getUserByLoginOrEmail(email);
 
     if (userByEmail) {
       return createErrorMessages([

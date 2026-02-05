@@ -3,7 +3,6 @@ import { randomUUID } from 'crypto';
 import { add } from 'date-fns/add';
 
 import { passwordHashAdapter } from '../../core/adapters';
-import { HTTP_STATUSES } from '../../core/types';
 import { usersRepository } from '../../users/repository/users.repository';
 import { UserDBType } from '../../users/types';
 import { authTokenAdapter, emailRegistrationAdapter } from '../adapters';
@@ -98,12 +97,6 @@ export const authService = {
     await usersRepository.updateUserById({ id: user._id.toString(), userData });
 
     return authObjectResult.success();
-
-    return {
-      data: null,
-      status: HTTP_STATUSES.OK,
-      extensions: [],
-    };
   },
   async registrationEmailResending(credentials: RegistrationEmailResendingType) {
     const userByEmail = await usersRepository.getUserByLoginOrEmail(credentials.email);

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { HTTP_STATUSES } from '../../core/types';
-import { jwtAdapter } from '../adapters';
+import { authTokenAdapter } from '../adapters';
 
 export const accessTokenMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const authToken = req.headers.authorization;
@@ -16,13 +16,13 @@ export const accessTokenMiddleware = (req: Request, res: Response, next: NextFun
     return res.sendStatus(HTTP_STATUSES.UNAUTHORIZED);
   }
 
-  const payload = jwtAdapter.verifyJWT(token);
+  const result = authTokenAdapter.verifyAccessToken(token);
 
-  if (!payload) {
+  if (!result.success) {
     return res.sendStatus(HTTP_STATUSES.UNAUTHORIZED);
   }
 
-  req.userId = payload.userId;
+  req.userId = result.payload.userId;
 
   next();
 };

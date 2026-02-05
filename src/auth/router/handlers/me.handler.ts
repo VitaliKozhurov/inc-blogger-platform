@@ -6,7 +6,7 @@ import { usersQWRepository } from '../../../users/repository';
 export const meHandler = async (req: Request, res: Response) => {
   const userId = req.userId;
 
-  const user = await usersQWRepository.getMeUserById(userId ?? '');
+  const user = userId ? await usersQWRepository.getMeUserById(userId) : null;
 
   if (!user) {
     return res.sendStatus(HTTP_STATUSES.UNAUTHORIZED);
