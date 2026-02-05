@@ -1,5 +1,6 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId, WithId } from 'mongodb';
 
+import { Nullable } from '../../core/types';
 import { commentsCollection } from '../../db/mongo.db';
 import { CommentDbType } from '../types';
 
@@ -21,5 +22,8 @@ export const commentsRepository = {
     const { deletedCount } = await commentsCollection.deleteOne({ _id: new ObjectId(id) });
 
     return deletedCount > 0;
+  },
+  async getCommentById(id: string): Promise<Nullable<WithId<CommentDbType>>> {
+    return commentsCollection.findOne({ _id: new ObjectId(id) });
   },
 };

@@ -13,7 +13,7 @@ export const createPostHandler = async (
   const result = await postsService.createPost(req.body);
 
   if (result.status !== RESULT_STATUSES.OK) {
-    return res.status(resultCodeToHttpException(result.status));
+    return res.sendStatus(resultCodeToHttpException(result.status));
   }
 
   const createdPostViewModel = await postsQWRepository.getPostById(result.data!.id);
