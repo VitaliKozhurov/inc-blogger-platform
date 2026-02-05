@@ -17,7 +17,7 @@ describe('Auth test', () => {
     return {
       _id: new ObjectId(),
       createdAt: '',
-      email: SETTINGS.EMAIL_ADDRESS ?? '',
+      email: SETTINGS.APP_EMAIL_ADDRESS ?? '',
       login: '',
       passwordHash: '',
       emailConfirmation: {
@@ -72,7 +72,7 @@ describe('Auth test', () => {
       await usersCollection.insertOne(createUser());
 
       const result = await authService.registrationEmailResending({
-        email: SETTINGS.EMAIL_ADDRESS ?? '',
+        email: SETTINGS.APP_EMAIL_ADDRESS ?? '',
       });
 
       expect(result.status).toBe(HTTP_STATUSES.OK);
@@ -82,7 +82,7 @@ describe('Auth test', () => {
       await usersCollection.insertOne(createUser({ isConfirmed: true }));
 
       const result = await authService.registrationEmailResending({
-        email: SETTINGS.EMAIL_ADDRESS ?? '',
+        email: SETTINGS.APP_EMAIL_ADDRESS ?? '',
       });
 
       expect(result.status).toBe(HTTP_STATUSES.BAD_REQUEST);

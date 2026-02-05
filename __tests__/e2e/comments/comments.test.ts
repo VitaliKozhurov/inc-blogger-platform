@@ -1,15 +1,12 @@
 import { ObjectId } from 'mongodb';
 
-import { jwtAdapter } from '../../../src/auth/adapters';
-import { CommentViewModelType } from '../../../src/comments/types';
+import { authTokenAdapter } from '../../../src/auth/adapters';
 import { APP_ROUTES } from '../../../src/core/constants';
-import { HTTP_STATUSES, ResponseWithPaginationType } from '../../../src/core/types';
+import { HTTP_STATUSES } from '../../../src/core/types';
 import { mockComment } from '../../utils/comments/mock';
 import { createPost } from '../../utils/posts/create-post';
 import { TestManager } from '../../utils/test-manager';
 import { loginUser } from '../../utils/users/login-user';
-
-type CommentsResponseType = ResponseWithPaginationType<CommentViewModelType>;
 
 describe('Comments test', () => {
   const testManager = new TestManager();
@@ -95,7 +92,7 @@ describe('Comments test', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .send(mockComment);
 
-      const token = jwtAdapter.createJWT({ userId: 'random' });
+      const token = authTokenAdapter.createAccessToken({ userId: 'random' });
 
       await testManager.context
         .request()
@@ -139,7 +136,7 @@ describe('Comments test', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .send(mockComment);
 
-      const incorrectToken = jwtAdapter.createJWT({ userId: 'incorrect user' });
+      const incorrectToken = authTokenAdapter.createAccessToken({ userId: 'incorrect user' });
 
       await testManager.context
         .request()

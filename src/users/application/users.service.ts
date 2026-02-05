@@ -1,27 +1,27 @@
 import { passwordHashAdapter } from '../../core/adapters';
-import { HTTP_STATUSES } from '../../core/types';
-import { createErrorMessages } from '../../core/utils';
 import { usersRepository } from '../repository/users.repository';
 import { CreateUserInputType, UserDBType } from '../types';
+import { usersObjectResult } from '../utils/users-object-result';
 
 export const usersService = {
   async createUser(user: CreateUserInputType) {
-    const availabilityErrors = await this._validateLoginEmailAvailability(user.login, user.email);
+    const [userByLogin, userByEmail] = await Promise.all([
+      usersRepository.getUserByLoginOrEmail(user.login),
+      usersRepository.getUserByLoginOrEmail(user.email),
+    ]);
 
-    if (availabilityErrors) {
-      return {
-        status: HTTP_STATUSES.BAD_REQUEST,
-        data: null,
-        extensions: availabilityErrors.errorMessages,
-        errorMessage: 'Invalid credentials',
-      };
+    if (userByLogin) {
+      return usersObjectResult.invalidCredentials('login');
+    }
+
+    if (userByEmail) {
+      return usersObjectResult.invalidCredentials('email');
     }
 
     const { login, email, password } = user;
 
     const passwordHash = await passwordHashAdapter.createPasswordHash(password);
 
-    // TODO нормально ли так формировать пользователя (confirmationCode, expirationDate)
     const newUser: UserDBType = {
       login,
       email,
@@ -36,40 +36,16 @@ export const usersService = {
 
     const id = await usersRepository.createUser(newUser);
 
-    return {
-      status: HTTP_STATUSES.OK,
-      data: { id },
-      extensions: [],
-    };
+    return usersObjectResult.success({ id });
   },
 
   async deleteUserById(id: string) {
-    return usersRepository.deleteUserById(id);
-  },
+    const isDeleted = await usersRepository.deleteUserById(id);
 
-  async _validateLoginEmailAvailability(login: string, email: string) {
-    const userByLogin = await usersRepository.getUserByLoginOrEmail(login);
-
-    if (userByLogin) {
-      return createErrorMessages([
-        {
-          field: 'login',
-          message: 'User with the same login already exists',
-        },
-      ]);
+    if (isDeleted) {
+      return usersObjectResult.success();
     }
 
-    const userByEmail = await usersRepository.getUserByLoginOrEmail(email);
-
-    if (userByEmail) {
-      return createErrorMessages([
-        {
-          field: 'email',
-          message: 'User with the same email already exists',
-        },
-      ]);
-    }
-
-    return null;
+    return usersObjectResult.notFoundUser();
   },
 };

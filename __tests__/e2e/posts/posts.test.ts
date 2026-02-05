@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-import { APP_ROUTES, PARAM_ID_ERROR_MESSAGES } from '../../../src/core/constants';
+import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES, ResponseWithPaginationType } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { PostViewModelType } from '../../../src/posts/types';
@@ -91,7 +91,7 @@ describe('Posts', () => {
         .get(`${APP_ROUTES.POSTS}/${null}`)
         .expect(HTTP_STATUSES.BAD_REQUEST)
         .expect({
-          errorsMessages: [{ field: 'id', message: PARAM_ID_ERROR_MESSAGES.MUST_BE_OBJECT_ID }],
+          errorsMessages: [{ field: 'id', message: ERROR_FIELD_MESSAGES.MUST_BE_OBJECT_ID('ID') }],
         });
     });
   });

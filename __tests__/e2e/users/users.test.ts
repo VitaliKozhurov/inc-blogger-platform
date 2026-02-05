@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
 
 import { APP_ROUTES } from '../../../src/core/constants';
+import { SETTINGS } from '../../../src/core/settings';
 import { HTTP_STATUSES, ResponseWithPaginationType } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { UserViewModelType } from '../../../src/users/types';
@@ -14,6 +15,8 @@ describe('Users test', () => {
   const testManager = new TestManager();
 
   beforeAll(async () => {
+    console.log(SETTINGS);
+
     await testManager.init();
   });
 
@@ -95,7 +98,9 @@ describe('Users test', () => {
         .send(mockUser)
         .expect(HTTP_STATUSES.BAD_REQUEST)
         .expect({
-          errorMessages: [{ field: 'login', message: 'User with the same login already exists' }],
+          errorMessages: [
+            { field: 'login', message: 'User with such credentials exist in the system' },
+          ],
         });
     });
 
@@ -170,7 +175,7 @@ describe('Users test', () => {
         .expect(HTTP_STATUSES.NOT_FOUND);
     });
 
-    it('should return 204 status code if request with correct blog id', async () => {
+    it('should return 204 status code if request with correct user id', async () => {
       const createdUser = await createUser(testManager);
 
       await testManager.context

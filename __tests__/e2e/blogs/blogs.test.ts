@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 
 import { BlogViewModelType } from '../../../src/blogs/types';
-import { APP_ROUTES, PARAM_ID_ERROR_MESSAGES } from '../../../src/core/constants';
+import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES, ResponseWithPaginationType } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { PostViewModelType } from '../../../src/posts/types';
@@ -96,7 +96,7 @@ describe('Blogs test', () => {
         .get(`${APP_ROUTES.BLOGS}/${null}`)
         .expect(HTTP_STATUSES.BAD_REQUEST)
         .expect({
-          errorsMessages: [{ field: 'id', message: PARAM_ID_ERROR_MESSAGES.MUST_BE_OBJECT_ID }],
+          errorsMessages: [{ field: 'id', message: ERROR_FIELD_MESSAGES.MUST_BE_OBJECT_ID('ID') }],
         });
     });
   });
@@ -264,7 +264,7 @@ describe('Blogs test', () => {
         .get(`${APP_ROUTES.BLOGS}/${null}${APP_ROUTES.POSTS}`)
         .expect(HTTP_STATUSES.BAD_REQUEST)
         .expect({
-          errorsMessages: [{ field: 'id', message: PARAM_ID_ERROR_MESSAGES.MUST_BE_OBJECT_ID }],
+          errorsMessages: [{ field: 'id', message: ERROR_FIELD_MESSAGES.MUST_BE_OBJECT_ID('ID') }],
         });
     });
   });
@@ -307,7 +307,7 @@ describe('Blogs test', () => {
         .expect(HTTP_STATUSES.BAD_REQUEST)
         .send(mockPost)
         .expect({
-          errorsMessages: [{ field: 'id', message: PARAM_ID_ERROR_MESSAGES.MUST_BE_OBJECT_ID }],
+          errorsMessages: [{ field: 'id', message: ERROR_FIELD_MESSAGES.MUST_BE_OBJECT_ID('ID') }],
         });
     });
   });

@@ -1,13 +1,14 @@
 import { Response } from 'express';
 
 import { HTTP_STATUSES, RequestWithUriParamType } from '../../../core/types';
+import { RESULT_STATUSES, resultCodeToHttpException } from '../../../core/utils';
 import { usersService } from '../../application';
 
 export const deleteUserByIdHandler = async (req: RequestWithUriParamType, res: Response) => {
-  const isDeleted = await usersService.deleteUserById(req.params.id);
+  const result = await usersService.deleteUserById(req.params.id);
 
-  if (!isDeleted) {
-    return res.sendStatus(HTTP_STATUSES.NOT_FOUND);
+  if (result.status !== RESULT_STATUSES.OK) {
+    return res.sendStatus(resultCodeToHttpException(result.status));
   }
 
   return res.sendStatus(HTTP_STATUSES.NO_CONTENT);
