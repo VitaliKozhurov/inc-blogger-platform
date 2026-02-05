@@ -44,12 +44,12 @@ export const authService = {
       usersRepository.getUserByLoginOrEmail(email),
     ]);
 
-    if (userByEmail) {
-      return authObjectResult.registrationInvalidCredentials('email');
-    }
-
     if (useByLogin) {
       return authObjectResult.registrationInvalidCredentials('login');
+    }
+
+    if (userByEmail) {
+      return authObjectResult.registrationInvalidCredentials('email');
     }
 
     const passwordHash = await passwordHashAdapter.createPasswordHash(password);
