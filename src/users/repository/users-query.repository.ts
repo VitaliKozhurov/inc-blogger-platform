@@ -76,18 +76,6 @@ export const usersQWRepository = {
 
     return { userId: user._id.toString(), email: user.email, login: user.login };
   },
-  async getUserByLoginOrEmail(loginOrEmail: string): Promise<WithId<UserDBType> | null> {
-    const user = await usersCollection.findOne({
-      $or: [{ login: loginOrEmail }, { email: loginOrEmail }],
-    });
-
-    return user;
-  },
-  async getUserByConfirmationCode(code: string): Promise<WithId<UserDBType> | null> {
-    const user = await usersCollection.findOne({ 'emailConfirmation.confirmationCode': code });
-
-    return user;
-  },
   _mapToViewModel(user: WithId<UserDBType>): UserViewModelType {
     return {
       id: user._id.toString(),

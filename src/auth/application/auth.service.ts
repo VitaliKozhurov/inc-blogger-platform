@@ -2,21 +2,22 @@ import { randomUUID } from 'crypto';
 
 import { add } from 'date-fns/add';
 
-import { HTTP_STATUSES, ResultType } from '../../core/types';
-import { usersQWRepository } from '../../users/repository';
+import { passwordHashAdapter } from '../../core/adapters';
+import { HTTP_STATUSES } from '../../core/types';
 import { usersRepository } from '../../users/repository/users.repository';
 import { UserDBType } from '../../users/types';
-import { passwordHashAdapter, emailAdapter, jwtAdapter } from '../adapters';
+import { authTokenAdapter, emailRegistrationAdapter } from '../adapters';
 import { LoginInputType, RegistrationEmailResendingType, RegistrationInputType } from '../types';
+import { authObjectResult } from '../utils/auth-object-result';
 
 export const authService = {
   async login(credentials: LoginInputType) {
     const { loginOrEmail, password } = credentials;
 
-    const user = await usersQWRepository.getUserByLoginOrEmail(loginOrEmail);
+    const user = await usersRepository.getUserByLoginOrEmail(loginOrEmail);
 
     if (!user) {
-      return this._buildErrorResult();
+      return authObjectResult.invalidCredentials();
     }
 
     const isVerified = await passwordHashAdapter.verifyPassword({
@@ -25,38 +26,31 @@ export const authService = {
     });
 
     if (!isVerified) {
-      return this._buildErrorResult();
+      return authObjectResult.invalidCredentials();
     }
 
     if (!user.emailConfirmation.isConfirmed) {
-      return {
-        data: null,
-        status: HTTP_STATUSES.UNAUTHORIZED,
-        extensions: [{ field: null, message: 'Account should be confirmed' }],
-        errorMessage: 'Account should be confirmed',
-      };
+      return authObjectResult.emailNotVerified();
     }
 
-    const accessToken = jwtAdapter.createJWT({ userId: user._id.toString() });
+    const accessToken = authTokenAdapter.createAccessToken({ userId: user._id.toString() });
 
-    return {
-      data: { accessToken },
-      status: HTTP_STATUSES.OK,
-      extensions: [],
-    };
+    return authObjectResult.success({ accessToken });
   },
   async registration(credentials: RegistrationInputType) {
     const { login, email, password } = credentials;
 
-    const useByLogin = await usersQWRepository.getUserByLoginOrEmail(login);
-    const userByEmail = await usersQWRepository.getUserByLoginOrEmail(email);
+    const [useByLogin, userByEmail] = await Promise.all([
+      usersRepository.getUserByLoginOrEmail(login),
+      usersRepository.getUserByLoginOrEmail(email),
+    ]);
 
     if (userByEmail) {
-      return this._buildErrorForUserCredentialsResult('email');
+      return authObjectResult.registrationInvalidCredentials('email');
     }
 
     if (useByLogin) {
-      return this._buildErrorForUserCredentialsResult('login');
+      return authObjectResult.registrationInvalidCredentials('login');
     }
 
     const passwordHash = await passwordHashAdapter.createPasswordHash(password);
@@ -77,27 +71,23 @@ export const authService = {
 
     const userId = await usersRepository.createUser(newUser);
 
-    emailAdapter.sendRegistrationConfirmation({ email, code: confirmationCode });
+    emailRegistrationAdapter.sendConfirmationCode({ email, code: confirmationCode });
 
-    return {
-      data: userId,
-      status: HTTP_STATUSES.OK,
-      extensions: [],
-    };
+    return authObjectResult.success(userId);
   },
   async registrationConfirmation(code: string) {
-    const user = await usersQWRepository.getUserByConfirmationCode(code);
+    const user = await usersRepository.getUserByConfirmationCode(code);
 
     if (!user) {
-      return this._buildEmailConfirmationErrorResult();
+      return authObjectResult.invalidConfirmationCode();
     }
 
     if (user.emailConfirmation.isConfirmed) {
-      return this._buildEmailConfirmationErrorResult();
+      return authObjectResult.invalidConfirmationCode();
     }
 
     if (new Date(user.emailConfirmation.expirationDate) < new Date()) {
-      return this._buildEmailConfirmationErrorResult();
+      return authObjectResult.invalidConfirmationCode();
     }
 
     const userData = {
@@ -105,16 +95,9 @@ export const authService = {
       emailConfirmation: { isConfirmed: true, confirmationCode: '', expirationDate: '' },
     };
 
-    const isUpdated = await usersRepository.updateUserById({ id: user._id.toString(), userData });
+    await usersRepository.updateUserById({ id: user._id.toString(), userData });
 
-    if (!isUpdated) {
-      return {
-        data: null,
-        status: HTTP_STATUSES.BAD_REQUEST,
-        extensions: [{ field: '', message: 'User update error' }],
-        errorMessage: 'User update error',
-      };
-    }
+    return authObjectResult.success();
 
     return {
       data: null,
@@ -123,14 +106,14 @@ export const authService = {
     };
   },
   async registrationEmailResending(credentials: RegistrationEmailResendingType) {
-    const userByEmail = await usersQWRepository.getUserByLoginOrEmail(credentials.email);
+    const userByEmail = await usersRepository.getUserByLoginOrEmail(credentials.email);
 
     if (!userByEmail) {
-      return this._buildErrorForUserCredentialsResult('email');
+      return authObjectResult.registrationInvalidCredentials('email');
     }
 
     if (userByEmail.emailConfirmation.isConfirmed) {
-      return this._buildErrorForUserCredentialsResult('email');
+      return authObjectResult.registrationInvalidCredentials('email');
     }
 
     const confirmationCode = randomUUID();
@@ -144,55 +127,13 @@ export const authService = {
       },
     };
 
-    const isUpdated = await usersRepository.updateUserById({
-      id: userByEmail._id.toString(),
-      userData,
-    });
+    await usersRepository.updateUserById({ id: userByEmail._id.toString(), userData });
 
-    if (!isUpdated) {
-      return {
-        data: null,
-        status: HTTP_STATUSES.BAD_REQUEST,
-        extensions: [{ field: '', message: 'User update error' }],
-        errorMessage: 'User update error',
-      };
-    }
-
-    emailAdapter.resendRegistrationConfirmation({
+    emailRegistrationAdapter.resendConfirmationCode({
       email: credentials.email,
       code: confirmationCode,
     });
 
-    return {
-      data: null,
-      status: HTTP_STATUSES.OK,
-      extensions: [],
-    };
-  },
-  _buildErrorResult() {
-    const result: ResultType = {
-      data: null,
-      status: HTTP_STATUSES.UNAUTHORIZED,
-      extensions: [{ field: 'loginOrEmail', message: 'Wrong credentials' }],
-      errorMessage: 'Unauthorized error',
-    };
-
-    return result;
-  },
-  _buildErrorForUserCredentialsResult(field: 'email' | 'login') {
-    return {
-      data: null,
-      status: HTTP_STATUSES.BAD_REQUEST,
-      extensions: [{ field, message: 'User credentials error' }],
-      errorMessage: 'User credentials error',
-    };
-  },
-  _buildEmailConfirmationErrorResult() {
-    return {
-      data: null,
-      status: HTTP_STATUSES.BAD_REQUEST,
-      extensions: [{ field: 'code', message: 'Code confirmation operation failed' }],
-      errorMessage: 'Code confirmation operation failed',
-    };
+    return authObjectResult.success();
   },
 };
