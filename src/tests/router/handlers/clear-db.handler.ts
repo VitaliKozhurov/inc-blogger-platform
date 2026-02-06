@@ -2,7 +2,11 @@ import { Request, Response } from 'express';
 
 import { HTTP_STATUSES } from '../../../core/types';
 import { blogsCollection, postsCollection } from '../../../db';
-import { commentsCollection, usersCollection } from '../../../db/mongo.db';
+import {
+  commentsCollection,
+  revokedRefreshTokenCollection,
+  usersCollection,
+} from '../../../db/mongo.db';
 
 export const clearDBHandler = async (_: Request, res: Response) => {
   try {
@@ -11,6 +15,7 @@ export const clearDBHandler = async (_: Request, res: Response) => {
       postsCollection.deleteMany(),
       commentsCollection.deleteMany(),
       usersCollection.deleteMany(),
+      revokedRefreshTokenCollection.deleteMany(),
     ]);
 
     res.sendStatus(HTTP_STATUSES.NO_CONTENT);

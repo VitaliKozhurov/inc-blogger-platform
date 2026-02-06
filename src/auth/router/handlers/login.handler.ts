@@ -13,6 +13,7 @@ export const loginHandler = async (req: RequestWithBodyType<LoginInputType>, res
       .status(resultCodeToHttpException(result.status))
       .send({ errorsMessages: result.extensions });
   }
+
   res.cookie('refreshToken', result.data?.refreshToken, { httpOnly: true, secure: true });
   res.status(HTTP_STATUSES.OK).send({ accessToken: result.data!.accessToken });
 };
