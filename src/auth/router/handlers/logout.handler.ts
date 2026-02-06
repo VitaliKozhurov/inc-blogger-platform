@@ -9,5 +9,6 @@ export const logoutHandler = async (req: RequestWithBodyType<LoginInputType>, re
 
   await authService.logout(refreshToken);
 
+  res.clearCookie('refreshToken', { path: '/' });
   res.sendStatus(HTTP_STATUSES.NO_CONTENT);
 };
