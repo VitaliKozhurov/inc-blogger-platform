@@ -6,6 +6,7 @@ import { passwordHashAdapter } from '../../core/adapters';
 import { usersRepository } from '../../users/repository/users.repository';
 import { UserDBType } from '../../users/types';
 import { authTokenAdapter, emailRegistrationAdapter } from '../adapters';
+import { refreshTokenRepository } from '../repository';
 import { LoginInputType, RegistrationEmailResendingType, RegistrationInputType } from '../types';
 import { authObjectResult } from '../utils/auth-object-result';
 
@@ -38,6 +39,8 @@ export const authService = {
     return authObjectResult.success({ accessToken, refreshToken });
   },
   async refreshToken(token: string) {
+    await refreshTokenRepository.addRevokedToken(token);
+
     const tokenResult = authTokenAdapter.decodeToken(token);
 
     if (!tokenResult) {

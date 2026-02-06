@@ -10,6 +10,7 @@ export const refreshTokenHandler = async (
   res: Response
 ) => {
   const refreshToken = req.cookies.refreshToken;
+
   const result = await authService.refreshToken(refreshToken);
 
   if (result.status !== RESULT_STATUSES.OK) {

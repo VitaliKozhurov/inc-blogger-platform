@@ -1,1 +1,9 @@
-export { blogsCollection, postsCollection, runDB, stopDb } from './mongo.db';
+export {
+  blogsCollection,
+  commentsCollection,
+  postsCollection,
+  revokedRefreshTokenCollection,
+  runDB,
+  stopDb,
+  usersCollection,
+} from './mongo.db';
