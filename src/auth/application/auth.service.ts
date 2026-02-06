@@ -33,8 +33,27 @@ export const authService = {
     }
 
     const accessToken = authTokenAdapter.createAccessToken({ userId: user._id.toString() });
+    const refreshToken = authTokenAdapter.createRefreshToken({ userId: user._id.toString() });
 
-    return authObjectResult.success({ accessToken });
+    return authObjectResult.success({ accessToken, refreshToken });
+  },
+  async refreshToken(token: string) {
+    const tokenResult = authTokenAdapter.decodeToken(token);
+
+    if (!tokenResult) {
+      return authObjectResult.invalidCredentials();
+    }
+
+    const user = await usersRepository.getUserById(tokenResult.userId);
+
+    if (!user) {
+      return authObjectResult.invalidCredentials();
+    }
+
+    const accessToken = authTokenAdapter.createAccessToken({ userId: user._id.toString() });
+    const refreshToken = authTokenAdapter.createRefreshToken({ userId: user._id.toString() });
+
+    return authObjectResult.success({ accessToken, refreshToken });
   },
   async registration(credentials: RegistrationInputType) {
     const { login, email, password } = credentials;

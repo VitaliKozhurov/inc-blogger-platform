@@ -9,6 +9,8 @@ export const SETTINGS = {
   DB_NAME: process.env.DB_NAME || 'back-blogger-platform',
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
   JWT_ACCESS_TIME: process.env.JWT_ACCESS_TIME,
+  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
+  JWT_REFRESH_TIME: process.env.JWT_REFRESH_TIME,
   APP_EMAIL_ADDRESS: process.env.APP_EMAIL_ADDRESS ?? '',
   APP_EMAIL_PASSWORD: process.env.APP_EMAIL_PASSWORD,
 };

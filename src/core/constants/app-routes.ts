@@ -12,5 +12,6 @@ export const APP_ROUTES = {
   AUTH_REGISTRATION_CONFIRMATION: '/registration-confirmation',
   AUTH_REGISTRATION_EMAIL_RESENDING: '/registration-email-resending',
   AUTH_ME: '/me',
+  AUTH_REFRESH_TOKEN: '/refresh-token',
   COMMENTS: '/comments',
 } as const;

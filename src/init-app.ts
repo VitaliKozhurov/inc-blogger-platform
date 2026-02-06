@@ -1,5 +1,6 @@
 import { Server } from 'http';
 
+import cookieParser from 'cookie-parser';
 import { Express } from 'express';
 
 import { authRouter } from './auth/router/auth.router';
@@ -15,6 +16,7 @@ const PORT = process.env.PORT || 5000;
 
 export const initApp = (app: Express): Promise<Server> => {
   app.use(bodyParserMiddleware);
+  app.use(cookieParser());
 
   app.use(APP_ROUTES.BLOGS, blogRouter);
   app.use(APP_ROUTES.POSTS, postRouter);

@@ -19,4 +19,21 @@ export const authTokenAdapter = {
       secret: SETTINGS.JWT_ACCESS_SECRET,
     });
   },
+
+  createRefreshToken(payload: AccessTokenPayload) {
+    return jwtAdapter.createJWT({
+      payload,
+      secret: SETTINGS.JWT_ACCESS_SECRET,
+      expiresIn: Number(SETTINGS.JWT_ACCESS_TIME),
+    });
+  },
+  verifyRefreshToken(token: string) {
+    return jwtAdapter.verifyJWT<AccessTokenPayload>({
+      token,
+      secret: SETTINGS.JWT_ACCESS_SECRET,
+    });
+  },
+  decodeToken(token: string) {
+    return jwtAdapter.decodeJWT<{ userId: string }>(token);
+  },
 };
