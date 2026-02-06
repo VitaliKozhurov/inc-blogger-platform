@@ -21,7 +21,10 @@ export default defineConfig([
     languageOptions: { globals: globals.node },
     settings: {
       'import/resolver': {
-        typescript: true,
+        typescript: {
+          project: './tsconfig.json',
+          alwaysTryTypes: true,
+        },
       },
     },
     plugins: {

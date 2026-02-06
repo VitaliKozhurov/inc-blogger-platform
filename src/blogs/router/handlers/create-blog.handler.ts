@@ -1,12 +1,17 @@
 import { Response } from 'express';
 
-import { HTTP_STATUSES } from '../../../core/constants';
-import { RequestWithBodyType } from '../../../core/types';
-import { blogRepository } from '../../repository/blog.repository';
-import { BlogInputModelType } from '../../types/blog';
+import { HTTP_STATUSES, RequestWithBodyType } from '../../../core/types';
+import { blogsService } from '../../application';
+import { blogsQWRepository } from '../../repository';
+import { CreateBlogInputType } from '../../types';
 
-export const createBlogHandler = (req: RequestWithBodyType<BlogInputModelType>, res: Response) => {
-  const newPost = blogRepository.createBlog(req.body);
+export const createBlogHandler = async (
+  req: RequestWithBodyType<CreateBlogInputType>,
+  res: Response
+) => {
+  const result = await blogsService.createBlog(req.body);
 
-  res.status(HTTP_STATUSES.CREATED).send(newPost);
+  const createdBlogViewModel = await blogsQWRepository.getBlogById(result.data);
+
+  return res.status(HTTP_STATUSES.CREATED).send(createdBlogViewModel);
 };

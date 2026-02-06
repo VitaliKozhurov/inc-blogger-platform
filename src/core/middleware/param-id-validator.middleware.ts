@@ -1,8 +1,11 @@
 import { param } from 'express-validator';
 
-import { PARAM_ID_ERROR_MESSAGES } from '../constants';
-
-import { checkValidationMiddleware } from './check-validation.middleware';
+const PARAM_ID_ERROR_MESSAGES = {
+  REQUIRED: 'ID is required',
+  NOT_EMPTY: 'ID must not be empty',
+  MUST_BE_STRING: 'ID must be a string',
+  MUST_BE_OBJECT_ID: 'ID must be of mongo id format',
+};
 
 export const getUriParamValidatorMiddleware = (uriParam: string = 'id') => {
   return [
@@ -13,11 +16,9 @@ export const getUriParamValidatorMiddleware = (uriParam: string = 'id') => {
       .withMessage(PARAM_ID_ERROR_MESSAGES.NOT_EMPTY)
       .isString()
       .withMessage(PARAM_ID_ERROR_MESSAGES.MUST_BE_STRING)
-      .isNumeric({ no_symbols: true })
-      .withMessage(PARAM_ID_ERROR_MESSAGES.MUST_BE_NUMERIC),
-
-    checkValidationMiddleware,
+      .isMongoId()
+      .withMessage(PARAM_ID_ERROR_MESSAGES.MUST_BE_OBJECT_ID),
   ];
 };
 
-export const idUriParamValidatorMiddleware = getUriParamValidatorMiddleware();
+export const idUriParamMiddleware = getUriParamValidatorMiddleware();

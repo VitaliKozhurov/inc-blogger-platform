@@ -1,16 +1,22 @@
 import { Response } from 'express';
 
-import { HTTP_STATUSES } from '../../../core/constants';
-import { RequestWithBodyType } from '../../../core/types';
-import { postRepository } from '../../repository/post.repository';
-import { PostInputModelType } from '../../types/post';
+import { HTTP_STATUSES, RequestWithBodyType } from '../../../core/types';
+import { RESULT_STATUSES, resultCodeToHttpException } from '../../../core/utils';
+import { postsService } from '../../application';
+import { postsQWRepository } from '../../repository';
+import { CreatePostInputType } from '../../types';
 
-export const createPostHandler = (req: RequestWithBodyType<PostInputModelType>, res: Response) => {
-  const newPost = postRepository.createPost(req.body);
+export const createPostHandler = async (
+  req: RequestWithBodyType<CreatePostInputType>,
+  res: Response
+) => {
+  const result = await postsService.createPost(req.body);
 
-  if (newPost) {
-    res.status(HTTP_STATUSES.CREATED).send(newPost);
+  if (result.status !== RESULT_STATUSES.OK) {
+    return res.sendStatus(resultCodeToHttpException(result.status));
   }
 
-  res.sendStatus(HTTP_STATUSES.BAD_REQUEST);
+  const createdPostViewModel = await postsQWRepository.getPostById(result.data!.id);
+
+  return res.status(HTTP_STATUSES.CREATED).send(createdPostViewModel);
 };
