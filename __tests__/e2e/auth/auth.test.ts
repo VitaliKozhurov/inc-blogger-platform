@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 import { jwtAdapter } from '../../../src/core/adapters';
 import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES } from '../../../src/core/types';
@@ -5,6 +7,9 @@ import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { TestManager } from '../../utils/test-manager';
 import { createUser } from '../../utils/users/create-user';
 import { mockUser } from '../../utils/users/mock';
+
+import { authTokenAdapter } from './../../../src/auth/adapters/auth-token.adapter';
+import { refreshTokenRepository } from './../../../src/auth/repository/refresh-token.repository';
 
 describe('Auth test', () => {
   const testManager = new TestManager();
@@ -142,6 +147,69 @@ describe('Auth test', () => {
         .request()
         .get(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_ME}`)
         .set('Authorization', `Bearer incorrect`)
+        .expect(HTTP_STATUSES.UNAUTHORIZED);
+    });
+  });
+
+  describe('POST /auth/refresh-token', () => {
+    it('should return a 401 status code if incorrect refreshToken', async () => {
+      await testManager.context
+        .request()
+        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REFRESH_TOKEN}`)
+        .expect(HTTP_STATUSES.UNAUTHORIZED);
+    });
+
+    it('should return a 401 status code if incorrect refreshToken', async () => {
+      const createdUser = await createUser(testManager);
+
+      const refreshToken = authTokenAdapter.createRefreshToken({ userId: createdUser.id });
+
+      const result = await testManager.context
+        .request()
+        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REFRESH_TOKEN}`)
+        .set('Cookie', `refreshToken=${refreshToken}`)
+        .expect(HTTP_STATUSES.OK);
+
+      expect(result.body.accessToken).toBeDefined();
+      expect(result.header['set-cookie']).toBeDefined();
+    });
+
+    it('should return a 401 status code if user not exist', async () => {
+      const fakeId = new ObjectId().toString();
+      const refreshToken = authTokenAdapter.createRefreshToken({ userId: fakeId });
+
+      await testManager.context
+        .request()
+        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REFRESH_TOKEN}`)
+        .set('Cookie', `refreshToken=${refreshToken}`)
+        .expect(HTTP_STATUSES.UNAUTHORIZED);
+    });
+  });
+
+  describe('POST /auth/logout', () => {
+    it('should return a 204 status code', async () => {
+      const createdUser = await createUser(testManager);
+
+      const refreshToken = authTokenAdapter.createRefreshToken({ userId: createdUser.id });
+
+      await testManager.context
+        .request()
+        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGOUT}`)
+        .set('Cookie', `refreshToken=${refreshToken}`)
+        .expect(HTTP_STATUSES.NO_CONTENT);
+
+      const revokedToken = await refreshTokenRepository.getRevokedToken(refreshToken);
+
+      expect(revokedToken).toBeTruthy();
+    });
+
+    it('should return a 201 status code if incorrect refreshToken', async () => {
+      const token = 'fakeToken';
+
+      await testManager.context
+        .request()
+        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGOUT}`)
+        .set('Cookie', `refreshToken=${token}`)
         .expect(HTTP_STATUSES.UNAUTHORIZED);
     });
   });

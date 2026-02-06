@@ -38,6 +38,11 @@ export const authService = {
 
     return authObjectResult.success({ accessToken, refreshToken });
   },
+  async logout(token: string) {
+    await refreshTokenRepository.addRevokedToken(token);
+
+    return authObjectResult.success();
+  },
   async refreshToken(token: string) {
     await refreshTokenRepository.addRevokedToken(token);
 

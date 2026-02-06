@@ -1,7 +1,6 @@
 import { ObjectId } from 'mongodb';
 
 import { APP_ROUTES } from '../../../src/core/constants';
-import { SETTINGS } from '../../../src/core/settings';
 import { HTTP_STATUSES, ResponseWithPaginationType } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
 import { UserViewModelType } from '../../../src/users/types';
@@ -15,8 +14,6 @@ describe('Users test', () => {
   const testManager = new TestManager();
 
   beforeAll(async () => {
-    console.log(SETTINGS);
-
     await testManager.init();
   });
 

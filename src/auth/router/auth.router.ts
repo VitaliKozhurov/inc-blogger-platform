@@ -12,7 +12,9 @@ import {
 } from '../middleware';
 
 import { loginHandler } from './handlers/login.handler';
+import { logoutHandler } from './handlers/logout.handler';
 import { meHandler } from './handlers/me.handler';
+import { refreshTokenHandler } from './handlers/refresh-token.handler';
 import { registrationConfirmationHandler } from './handlers/registration-confirmation.handler';
 import { registrationEmailResendingHandler } from './handlers/registration-email-resending.handler';
 import { registrationHandler } from './handlers/registration.handler';
@@ -49,4 +51,6 @@ authRouter.post(
   registrationEmailResendingHandler
 );
 
-authRouter.get(APP_ROUTES.AUTH_REFRESH_TOKEN, refreshTokenMiddleware);
+authRouter.post(APP_ROUTES.AUTH_REFRESH_TOKEN, refreshTokenMiddleware, refreshTokenHandler);
+
+authRouter.post(APP_ROUTES.AUTH_LOGOUT, refreshTokenMiddleware, logoutHandler);
