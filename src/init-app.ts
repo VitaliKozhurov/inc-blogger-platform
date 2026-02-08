@@ -15,6 +15,7 @@ import { userRouter } from './users/router/user.router';
 const PORT = process.env.PORT || 5000;
 
 export const initApp = (app: Express): Promise<Server> => {
+  app.set('trust proxy', true);
   app.use(bodyParserMiddleware);
   app.use(cookieParser());
 

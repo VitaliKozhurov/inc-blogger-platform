@@ -4,6 +4,7 @@ import { RefreshTokenDBType } from '../auth/types';
 import { BlogDBType } from '../blogs/types';
 import { CommentDbType } from '../comments/types';
 import { SETTINGS } from '../core/settings';
+import { RequestLogDBType } from '../logs/types';
 import { PostDBType } from '../posts/types';
 import { UserDBType } from '../users/types';
 
@@ -16,6 +17,7 @@ export let postsCollection: Collection<PostDBType>;
 export let commentsCollection: Collection<CommentDbType>;
 export let usersCollection: Collection<UserDBType>;
 export let revokedRefreshTokenCollection: Collection<RefreshTokenDBType>;
+export let requestLogsCollection: Collection<RequestLogDBType>;
 
 export const runDB = async (dbUrl: string) => {
   try {
@@ -30,6 +32,7 @@ export const runDB = async (dbUrl: string) => {
     revokedRefreshTokenCollection = db.collection<RefreshTokenDBType>(
       COLLECTION_NAME.REVOKED_REFRESH_TOKENS
     );
+    requestLogsCollection = db.collection<RequestLogDBType>(COLLECTION_NAME.REQUEST_LOGS);
 
     revokedRefreshTokenCollection.createIndex({ createdAt: 1 }, { expireAfterSeconds: 86400 });
 

@@ -4,4 +4,5 @@ export const COLLECTION_NAME = {
   COMMENTS: 'comments',
   USERS: 'users',
   REVOKED_REFRESH_TOKENS: 'revoked_refresh_tokens',
+  REQUEST_LOGS: 'request_logs',
 } as const;
