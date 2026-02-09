@@ -6,12 +6,19 @@ import { passwordHashAdapter } from '../../core/adapters';
 import { usersRepository } from '../../users/repository/users.repository';
 import { UserDBType } from '../../users/types';
 import { authTokenAdapter, emailRegistrationAdapter } from '../adapters';
-import { userSessionRepository } from '../repository';
 import { LoginInputType, RegistrationEmailResendingType, RegistrationInputType } from '../types';
 import { authObjectResult } from '../utils/auth-object-result';
 
+import { userSessionService } from './user-session.service';
+
+type LoginArgs = {
+  ip: string;
+  deviceName: string;
+  credentials: LoginInputType;
+};
+
 export const authService = {
-  async login({ deviceName, credentials }: { deviceName: string; credentials: LoginInputType }) {
+  async login({ credentials, ...restArgs }: LoginArgs) {
     const { loginOrEmail, password } = credentials;
 
     const user = await usersRepository.getUserByLoginOrEmail(loginOrEmail);
@@ -33,20 +40,13 @@ export const authService = {
       return authObjectResult.emailNotVerified();
     }
 
-    const deviceId = randomUUID();
     const userId = user._id.toString();
+    const deviceId = randomUUID();
 
     const accessToken = authTokenAdapter.createAccessToken({ userId });
     const refreshToken = authTokenAdapter.createRefreshToken({ userId, deviceId });
 
-    const a = await userSessionRepository.addUserSession({
-      userId,
-      deviceId,
-      deviceName,
-      ip: '',
-      iat: '',
-      expirationAt: '',
-    });
+    await userSessionService.saveUserSession({ userId, refreshToken, deviceId, ...restArgs });
 
     return authObjectResult.success({ accessToken, refreshToken });
   },

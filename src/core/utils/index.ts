@@ -3,6 +3,7 @@ export { ERROR_FIELD_MESSAGES } from './error-field-messages';
 export { formatExpressError } from './format-express-error';
 export { getPaginationData } from './get-pagination-data';
 export { getPaginationParams } from './get-pagination-params';
+export { getRequestIp } from './get-request-ip';
 export {
   RESULT_STATUSES,
   resultCodeToHttpException,

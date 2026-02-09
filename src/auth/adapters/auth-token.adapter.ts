@@ -9,7 +9,6 @@ type AccessTokenPayload = {
 
 type RefreshTokenPayload = AccessTokenPayload & {
   deviceId: string;
-  iat: number;
 };
 
 export const authTokenAdapter = {
@@ -41,7 +40,7 @@ export const authTokenAdapter = {
     });
   },
   decodeRefreshToken(token: string) {
-    return jwtAdapter.decodeJWT<T>(token);
+    return jwtAdapter.decodeJWT<RefreshTokenPayload & { iat: number; exp: number }>(token);
   },
   decodeToken<T extends JwtPayload>(token: string) {
     return jwtAdapter.decodeJWT<T>(token);
