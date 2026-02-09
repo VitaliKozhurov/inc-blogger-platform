@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware } from '../../core/middleware';
+import { getRateLimitMiddleware } from '../../logs/middleware';
 import {
   accessTokenMiddleware,
   loginInputModelMiddleware,
@@ -23,6 +24,7 @@ export const authRouter = Router();
 
 authRouter.post(
   APP_ROUTES.AUTH_LOGIN,
+  getRateLimitMiddleware(),
   loginInputModelMiddleware,
   checkValidationMiddleware,
   loginHandler
@@ -32,6 +34,7 @@ authRouter.get(APP_ROUTES.AUTH_ME, accessTokenMiddleware, meHandler);
 
 authRouter.post(
   `${APP_ROUTES.AUTH_REGISTRATION}`,
+  getRateLimitMiddleware(),
   registrationInputModelMiddleware,
   checkValidationMiddleware,
   registrationHandler
@@ -39,6 +42,7 @@ authRouter.post(
 
 authRouter.post(
   APP_ROUTES.AUTH_REGISTRATION_CONFIRMATION,
+  getRateLimitMiddleware(),
   registrationConfirmationInputModelMiddleware,
   checkValidationMiddleware,
   registrationConfirmationHandler
@@ -46,6 +50,7 @@ authRouter.post(
 
 authRouter.post(
   APP_ROUTES.AUTH_REGISTRATION_EMAIL_RESENDING,
+  getRateLimitMiddleware(),
   registrationEmailResendingInputModelMiddleware,
   checkValidationMiddleware,
   registrationEmailResendingHandler

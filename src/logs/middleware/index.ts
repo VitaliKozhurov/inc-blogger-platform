@@ -1,1 +1,1 @@
-export {rateLimitMiddleware} from './rate-limit.middleware'
+export { getRateLimitMiddleware } from './rate-limit.middleware';
