@@ -9,6 +9,7 @@ import { commentRouter } from './comments/router/comment.router';
 import { APP_ROUTES } from './core/constants';
 import { bodyParserMiddleware, globalErrorMiddleware } from './core/middleware';
 import { postRouter } from './posts/router/posts.router';
+import { deviceSessionRouter } from './sessions/router/device-session.router';
 import { testRouter } from './tests/router/test.router';
 import { userRouter } from './users/router/user.router';
 
@@ -24,6 +25,7 @@ export const initApp = (app: Express): Promise<Server> => {
   app.use(APP_ROUTES.COMMENTS, commentRouter);
   app.use(APP_ROUTES.USERS, userRouter);
   app.use(APP_ROUTES.AUTH, authRouter);
+  app.use(APP_ROUTES.SECURITY, deviceSessionRouter);
   app.use(APP_ROUTES.TESTING, testRouter);
 
   app.use(globalErrorMiddleware);

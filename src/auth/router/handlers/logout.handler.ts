@@ -1,7 +1,7 @@
 import { Response } from 'express';
 
 import { HTTP_STATUSES, RequestWithBodyType } from '../../../core/types';
-import { userSessionService } from '../../application/user-session.service';
+import { userSessionService } from '../../../sessions/application/user-session.service';
 import { LoginInputType } from '../../types';
 
 export const logoutHandler = async (req: RequestWithBodyType<LoginInputType>, res: Response) => {

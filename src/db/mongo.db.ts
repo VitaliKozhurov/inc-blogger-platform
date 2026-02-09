@@ -1,11 +1,11 @@
 import { Collection, Db, MongoClient } from 'mongodb';
 
-import { UserSessionDBType } from '../auth/types';
 import { BlogDBType } from '../blogs/types';
 import { CommentDbType } from '../comments/types';
 import { SETTINGS } from '../core/settings';
 import { RequestLogDBType } from '../logs/types';
 import { PostDBType } from '../posts/types';
+import { UserSessionDBType } from '../sessions/types';
 import { UserDBType } from '../users/types';
 
 import { COLLECTION_NAME } from './constants';

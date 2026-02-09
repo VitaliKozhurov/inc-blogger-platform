@@ -33,7 +33,7 @@ authRouter.post(
 authRouter.get(APP_ROUTES.AUTH_ME, accessTokenMiddleware, meHandler);
 
 authRouter.post(
-  `${APP_ROUTES.AUTH_REGISTRATION}`,
+  APP_ROUTES.AUTH_REGISTRATION,
   getRateLimitMiddleware(),
   registrationInputModelMiddleware,
   checkValidationMiddleware,

@@ -3,13 +3,12 @@ import { randomUUID } from 'crypto';
 import { add } from 'date-fns/add';
 
 import { passwordHashAdapter } from '../../core/adapters';
+import { userSessionService } from '../../sessions/application';
 import { usersRepository } from '../../users/repository/users.repository';
 import { UserDBType } from '../../users/types';
 import { authTokenAdapter, emailRegistrationAdapter } from '../adapters';
 import { LoginInputType, RegistrationEmailResendingType, RegistrationInputType } from '../types';
 import { authObjectResult } from '../utils/auth-object-result';
-
-import { userSessionService } from './user-session.service';
 
 type LoginArgs = {
   ip: string;

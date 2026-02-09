@@ -4,7 +4,6 @@ import { UserSessionDBType } from '../types';
 type UpdateSessionArgs = { prevIat: number } & Omit<UserSessionDBType, 'userId' | 'deviceName'>;
 
 export const userSessionRepository = {
-  async getUserSession() {},
   async addUserSession(session: UserSessionDBType): Promise<string> {
     const { insertedId } = await userSessionCollection.insertOne(session);
 
@@ -22,5 +21,15 @@ export const userSessionRepository = {
     const { deletedCount } = await userSessionCollection.deleteOne({ deviceId, iat });
 
     return deletedCount > 0;
+  },
+  async deleteUserSessionsExceptTheCurrent({ deviceId }: { deviceId: string }) {
+    const { deletedCount } = await userSessionCollection.deleteMany({
+      deviceId: { $ne: deviceId },
+    });
+
+    return deletedCount > 0;
+  },
+  async getUserSessionByUserId(userId: string) {
+    return userSessionCollection.find({ userId }).toArray();
   },
 };

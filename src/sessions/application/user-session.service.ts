@@ -1,6 +1,7 @@
-import { authTokenAdapter } from '../adapters';
+import { authTokenAdapter } from '../../auth/adapters';
+import { authObjectResult } from '../../auth/utils/auth-object-result';
+import { RESULT_STATUSES, ResultObject } from '../../core/utils';
 import { userSessionRepository } from '../repository';
-import { authObjectResult } from '../utils/auth-object-result';
 
 type SaveSessionArgs = {
   refreshToken: string;
@@ -44,11 +45,37 @@ export const userSessionService = {
       expirationAt,
     });
   },
-  async deleteUserSession(refreshToken: string) {
+  async deleteUserSessionsExceptTheCurrent(refreshToken: string) {
+    const { deviceId } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
+
+    await userSessionRepository.deleteUserSessionsExceptTheCurrent({ deviceId });
+  },
+  async deleteUserSessionByRefreshToken(refreshToken: string) {
     const { deviceId, iat } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
     await userSessionRepository.deleteUserSession({ deviceId, iat });
 
     return authObjectResult.success();
+  },
+  async deleteUserSessionByDeviceId({
+    refreshToken,
+    deviceId,
+  }: {
+    refreshToken: string;
+    deviceId: string;
+  }) {
+    const { userId } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
+
+    const mySessions = await userSessionRepository.getUserSessionByUserId(userId);
+
+    const isMySession = !!mySessions.find(s => s.deviceId === deviceId);
+
+    if (isMySession) {
+      return new ResultObject({
+        data: null,
+        status: RESULT_STATUSES.FORBIDDEN,
+        extensions: [{ field: 'deviceId', message: 'Incorrect deviceId' }],
+      });
+    }
   },
 };
