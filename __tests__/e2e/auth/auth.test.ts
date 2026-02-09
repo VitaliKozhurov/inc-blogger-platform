@@ -78,6 +78,21 @@ describe('Auth test', () => {
         .send({ loginOrEmail: createdUser.login, password: 'incorrect' })
         .expect(HTTP_STATUSES.UNAUTHORIZED);
     });
+
+    it('should return 429 status code if the number of attempts has reached the limit', async () => {
+      for (let i = 0; i <= 5; i++) {
+        await testManager.context
+          .request()
+          .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGIN}`)
+          .send({ loginOrEmail: 'incorrect', password: 'incorrect' })
+          .expect(HTTP_STATUSES.UNAUTHORIZED);
+      }
+      await testManager.context
+        .request()
+        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGIN}`)
+        .send({ loginOrEmail: 'incorrect', password: 'incorrect' })
+        .expect(HTTP_STATUSES.MANY_REQUESTS);
+    });
   });
 
   describe('POST /auth/register', () => {

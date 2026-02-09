@@ -5,6 +5,10 @@ type AccessTokenPayload = {
   userId: string;
 };
 
+type RefreshTokenPayload = AccessTokenPayload & {
+  deviceId: string;
+};
+
 export const authTokenAdapter = {
   createAccessToken(payload: AccessTokenPayload) {
     return jwtAdapter.createJWT({
@@ -20,7 +24,7 @@ export const authTokenAdapter = {
     });
   },
 
-  createRefreshToken(payload: AccessTokenPayload) {
+  createRefreshToken(payload: RefreshTokenPayload) {
     return jwtAdapter.createJWT({
       payload,
       secret: SETTINGS.JWT_ACCESS_SECRET,
@@ -28,7 +32,7 @@ export const authTokenAdapter = {
     });
   },
   verifyRefreshToken(token: string) {
-    return jwtAdapter.verifyJWT<AccessTokenPayload>({
+    return jwtAdapter.verifyJWT<RefreshTokenPayload>({
       token,
       secret: SETTINGS.JWT_ACCESS_SECRET,
     });

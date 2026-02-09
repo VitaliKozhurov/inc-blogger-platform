@@ -1,1 +1,1 @@
-export { refreshTokenRepository } from './refresh-token.repository';
+export { userSessionRepository } from './user-session.repository';

@@ -2,8 +2,8 @@ export {
   blogsCollection,
   commentsCollection,
   postsCollection,
-  revokedRefreshTokenCollection,
   runDB,
   stopDb,
   usersCollection,
+  userSessionCollection,
 } from './mongo.db';

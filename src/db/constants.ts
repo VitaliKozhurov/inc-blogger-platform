@@ -3,6 +3,6 @@ export const COLLECTION_NAME = {
   POSTS: 'posts',
   COMMENTS: 'comments',
   USERS: 'users',
-  REVOKED_REFRESH_TOKENS: 'revoked_refresh_tokens',
+  USER_SESSION: 'user_session',
   REQUEST_LOGS: 'request_logs',
 } as const;
