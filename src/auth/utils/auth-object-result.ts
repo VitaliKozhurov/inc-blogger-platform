@@ -11,6 +11,13 @@ export const authObjectResult = {
       extensions: [{ field: 'loginOrEmail', message: 'Wrong credentials' }],
     });
   },
+  invalidRefreshToken() {
+    return new ResultObject({
+      status: RESULT_STATUSES.UNAUTHORIZED,
+      data: null,
+      extensions: [{ field: 'refreshToken', message: 'Wrong refresh token' }],
+    });
+  },
   emailNotVerified() {
     return new ResultObject({
       status: RESULT_STATUSES.UNAUTHORIZED,

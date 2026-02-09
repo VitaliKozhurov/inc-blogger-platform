@@ -1,8 +1,8 @@
 export type UserSessionDBType = {
   userId: string;
   deviceId: string;
-  iat: Date;
+  iat: number;
   deviceName: string;
   ip: string;
-  expirationAt: Date;
+  expirationAt: number;
 };
