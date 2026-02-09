@@ -1,3 +1,5 @@
+import { JwtPayload } from 'jsonwebtoken';
+
 import { jwtAdapter } from '../../core/adapters';
 import { SETTINGS } from '../../core/settings';
 
@@ -7,6 +9,7 @@ type AccessTokenPayload = {
 
 type RefreshTokenPayload = AccessTokenPayload & {
   deviceId: string;
+  iat: number;
 };
 
 export const authTokenAdapter = {
@@ -37,7 +40,10 @@ export const authTokenAdapter = {
       secret: SETTINGS.JWT_ACCESS_SECRET,
     });
   },
-  decodeToken(token: string) {
-    return jwtAdapter.decodeJWT<{ userId: string }>(token);
+  decodeRefreshToken(token: string) {
+    return jwtAdapter.decodeJWT<T>(token);
+  },
+  decodeToken<T extends JwtPayload>(token: string) {
+    return jwtAdapter.decodeJWT<T>(token);
   },
 };

@@ -6,6 +6,7 @@ import { passwordHashAdapter } from '../../core/adapters';
 import { usersRepository } from '../../users/repository/users.repository';
 import { UserDBType } from '../../users/types';
 import { authTokenAdapter, emailRegistrationAdapter } from '../adapters';
+import { userSessionRepository } from '../repository';
 import { LoginInputType, RegistrationEmailResendingType, RegistrationInputType } from '../types';
 import { authObjectResult } from '../utils/auth-object-result';
 
@@ -38,13 +39,14 @@ export const authService = {
     const accessToken = authTokenAdapter.createAccessToken({ userId });
     const refreshToken = authTokenAdapter.createRefreshToken({ userId, deviceId });
 
-    console.log(accessToken);
-
-    // const a = await userSessionRepository.addUserSession({
-    //   userId,
-    //   deviceId,
-    //   deviceName,
-    // });
+    const a = await userSessionRepository.addUserSession({
+      userId,
+      deviceId,
+      deviceName,
+      ip: '',
+      iat: '',
+      expirationAt: '',
+    });
 
     return authObjectResult.success({ accessToken, refreshToken });
   },
