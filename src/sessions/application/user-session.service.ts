@@ -65,15 +65,16 @@ export const userSessionService = {
   }) {
     const decodedToken = authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
-    const sessionForDeleting = await userSessionRepository.getUserSessionsByDeviceId(deviceId);
+    const sessionForDeleting = await userSessionRepository.getUserSessionByFilter({ deviceId });
 
     if (!sessionForDeleting) {
       return sessionObjectResult.notFound();
     }
 
-    const mySessions = await userSessionRepository.getUserSessionsByUserId(decodedToken.userId);
-
-    const isMySession = !!mySessions.find(s => s.deviceId === deviceId);
+    const isMySession = !!(await userSessionRepository.getUserSessionByFilter({
+      deviceId,
+      userId: decodedToken.userId,
+    }));
 
     if (!isMySession) {
       return sessionObjectResult.forbidden();

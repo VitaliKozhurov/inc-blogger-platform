@@ -17,9 +17,9 @@ export const refreshTokenMiddleware = async (req: Request, res: Response, next: 
     return res.sendStatus(HTTP_STATUSES.UNAUTHORIZED);
   }
 
-  const tokenSession = await userSessionRepository.getUserSessionsByDeviceId(
-    result.payload.deviceId
-  );
+  const tokenSession = await userSessionRepository.getUserSessionByFilter({
+    deviceId: result.payload.deviceId,
+  });
 
   if (!tokenSession || tokenSession.iat !== result.payload.iat) {
     return res.sendStatus(HTTP_STATUSES.UNAUTHORIZED);

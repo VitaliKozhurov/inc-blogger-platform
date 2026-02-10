@@ -1,9 +1,31 @@
+import { Filter } from 'mongodb';
+
 import { userSessionCollection } from '../../db';
 import { UserSessionDBType } from '../types';
 
 type UpdateSessionArgs = { prevIat: number } & Omit<UserSessionDBType, 'userId' | 'deviceName'>;
 
 export const userSessionRepository = {
+  async getUserSessionsByUserId(userId: string) {
+    return userSessionCollection.find({ userId }).toArray();
+  },
+  async getUserSessionByFilter(filter: { userId?: string; deviceId?: string }) {
+    const queryFilter: Filter<UserSessionDBType> = {};
+
+    if (filter.userId) {
+      queryFilter.userId = filter.userId;
+    }
+
+    if (filter.deviceId) {
+      queryFilter.deviceId = filter.deviceId;
+    }
+
+    if (Object.keys(queryFilter).length === 0) {
+      return null;
+    }
+
+    return userSessionCollection.findOne(queryFilter);
+  },
   async addUserSession(session: UserSessionDBType): Promise<string> {
     const { insertedId } = await userSessionCollection.insertOne(session);
 
@@ -28,11 +50,5 @@ export const userSessionRepository = {
     });
 
     return deletedCount > 0;
-  },
-  async getUserSessionsByUserId(userId: string) {
-    return userSessionCollection.find({ userId }).toArray();
-  },
-  async getUserSessionsByDeviceId(deviceId: string) {
-    return userSessionCollection.findOne({ deviceId });
   },
 };
