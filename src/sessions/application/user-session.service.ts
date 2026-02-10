@@ -1,7 +1,6 @@
 import { authTokenAdapter } from '../../auth/adapters';
-import { authObjectResult } from '../../auth/utils/auth-object-result';
-import { RESULT_STATUSES, ResultObject } from '../../core/utils';
 import { userSessionRepository } from '../repository';
+import { sessionObjectResult } from '../utils/session-object-result';
 
 type SaveSessionArgs = {
   refreshToken: string;
@@ -51,31 +50,37 @@ export const userSessionService = {
     await userSessionRepository.deleteUserSessionsExceptTheCurrent({ deviceId });
   },
   async deleteUserSessionByRefreshToken(refreshToken: string) {
-    const { deviceId, iat } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
+    const { deviceId } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
-    await userSessionRepository.deleteUserSession({ deviceId, iat });
+    await userSessionRepository.deleteUserSession({ deviceId });
 
-    return authObjectResult.success();
+    return sessionObjectResult.success();
   },
   async deleteUserSessionByDeviceId({
-    refreshToken,
     deviceId,
+    refreshToken,
   }: {
-    refreshToken: string;
     deviceId: string;
+    refreshToken: string;
   }) {
-    const { userId } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
+    const decodedToken = authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
-    const mySessions = await userSessionRepository.getUserSessionByUserId(userId);
+    const sessionForDeleting = await userSessionRepository.getUserSessionsByDeviceId(deviceId);
+
+    if (!sessionForDeleting) {
+      return sessionObjectResult.notFound();
+    }
+
+    const mySessions = await userSessionRepository.getUserSessionsByUserId(decodedToken.userId);
 
     const isMySession = !!mySessions.find(s => s.deviceId === deviceId);
 
-    if (isMySession) {
-      return new ResultObject({
-        data: null,
-        status: RESULT_STATUSES.FORBIDDEN,
-        extensions: [{ field: 'deviceId', message: 'Incorrect deviceId' }],
-      });
+    if (!isMySession) {
+      return sessionObjectResult.forbidden();
     }
+
+    await userSessionRepository.deleteUserSession({ deviceId });
+
+    return sessionObjectResult.success();
   },
 };

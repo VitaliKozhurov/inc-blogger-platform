@@ -17,8 +17,8 @@ export const userSessionRepository = {
 
     return modifiedCount > 0;
   },
-  async deleteUserSession({ deviceId, iat }: Pick<UserSessionDBType, 'deviceId' | 'iat'>) {
-    const { deletedCount } = await userSessionCollection.deleteOne({ deviceId, iat });
+  async deleteUserSession({ deviceId }: Pick<UserSessionDBType, 'deviceId'>) {
+    const { deletedCount } = await userSessionCollection.deleteOne({ deviceId });
 
     return deletedCount > 0;
   },
@@ -29,7 +29,10 @@ export const userSessionRepository = {
 
     return deletedCount > 0;
   },
-  async getUserSessionByUserId(userId: string) {
+  async getUserSessionsByUserId(userId: string) {
     return userSessionCollection.find({ userId }).toArray();
+  },
+  async getUserSessionsByDeviceId(deviceId: string) {
+    return userSessionCollection.findOne({ deviceId });
   },
 };

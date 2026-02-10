@@ -7,6 +7,11 @@ export const userSessionQWRepository = {
 
     return sessions.map(this._mapToViewModel);
   },
+  async getUserSessionsForUserById(userId: string): Promise<SessionViewModelType[]> {
+    const sessions = await userSessionCollection.find({ userId }).toArray();
+
+    return sessions.map(this._mapToViewModel);
+  },
   _mapToViewModel({ ip, deviceName, deviceId, iat }: UserSessionDBType): SessionViewModelType {
     return { ip, title: deviceName, deviceId, lastActiveDate: new Date(iat * 1000).toISOString() };
   },

@@ -1,7 +1,6 @@
 import { Router } from 'express';
 
 import { refreshTokenMiddleware } from '../../auth/middleware';
-import { authRouter } from '../../auth/router/auth.router';
 import { APP_ROUTES } from '../../core/constants';
 
 import { deleteDeviceSessionByIdHandler } from './handlers/delete-device-session-by-id.handler';
@@ -10,15 +9,19 @@ import { getDevicesSessionsHandler } from './handlers/get-devices-sessions.handl
 
 export const deviceSessionRouter = Router();
 
-authRouter.get(APP_ROUTES.SECURITY_DEVICES, refreshTokenMiddleware, getDevicesSessionsHandler);
+deviceSessionRouter.get(
+  APP_ROUTES.SECURITY_DEVICES,
+  refreshTokenMiddleware,
+  getDevicesSessionsHandler
+);
 
-authRouter.delete(
+deviceSessionRouter.delete(
   APP_ROUTES.SECURITY_DEVICES,
   refreshTokenMiddleware,
   deleteDevicesSessionsHandler
 );
 
-authRouter.delete(
+deviceSessionRouter.delete(
   `${APP_ROUTES.SECURITY_DEVICES}${APP_ROUTES.ID}`,
   refreshTokenMiddleware,
   deleteDeviceSessionByIdHandler

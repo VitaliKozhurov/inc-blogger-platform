@@ -7,7 +7,7 @@ import { LoginInputType } from '../../types';
 export const logoutHandler = async (req: RequestWithBodyType<LoginInputType>, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
 
-  await userSessionService.deleteUserSession(refreshToken);
+  await userSessionService.deleteUserSessionByRefreshToken(refreshToken);
 
   res.clearCookie('refreshToken', { path: '/' });
   res.sendStatus(HTTP_STATUSES.NO_CONTENT);

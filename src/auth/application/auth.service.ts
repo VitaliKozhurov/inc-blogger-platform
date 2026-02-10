@@ -74,7 +74,7 @@ export const authService = {
     const isUpdated = await userSessionService.updateUserSession({
       prevIat,
       ip,
-      refreshToken,
+      refreshToken: newRefreshToken,
     });
 
     if (!isUpdated) {
