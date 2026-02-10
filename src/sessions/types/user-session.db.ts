@@ -5,4 +5,5 @@ export type UserSessionDBType = {
   deviceName: string;
   ip: string;
   expirationAt: number;
+  expirationDate: Date;
 };

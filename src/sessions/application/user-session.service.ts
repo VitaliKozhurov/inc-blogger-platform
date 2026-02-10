@@ -29,6 +29,7 @@ export const userSessionService = {
       ip,
       iat,
       expirationAt,
+      expirationDate: new Date(expirationAt * 1000),
     };
 
     await userSessionRepository.addUserSession(userSessionData);
@@ -42,6 +43,7 @@ export const userSessionService = {
       ip,
       iat,
       expirationAt,
+      expirationDate: new Date(expirationAt * 1000),
     });
   },
   async deleteUserSessionsExceptTheCurrent(refreshToken: string) {

@@ -17,17 +17,17 @@ export const getRateLimitMiddleware =
     const ip = getRequestIp(req);
     const url = req.originalUrl;
 
+    await requestLogsRepository.addRequestLog({ ip, url, date: new Date() });
+
     const requestsCount = await requestLogsRepository.getRequestByFilterCount({
       ip,
       url,
       timeWindowDurationSeconds,
     });
 
-    if (requestsCount >= attemptsLimit) {
+    if (requestsCount > attemptsLimit) {
       return res.sendStatus(HTTP_STATUSES.MANY_REQUESTS);
     }
-
-    await requestLogsRepository.addRequestLog({ ip, url, date: new Date() });
 
     next();
   };

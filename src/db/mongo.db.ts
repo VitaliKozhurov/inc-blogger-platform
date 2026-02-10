@@ -10,6 +10,7 @@ import { UserDBType } from '../users/types';
 
 import { COLLECTION_NAME } from './constants';
 
+const SESSION_TTL = 24 * 3600;
 const LOGS_TTL = 3600;
 
 let client: MongoClient;
@@ -33,6 +34,11 @@ export const runDB = async (dbUrl: string) => {
     usersCollection = db.collection<UserDBType>(COLLECTION_NAME.USERS);
     userSessionCollection = db.collection<UserSessionDBType>(COLLECTION_NAME.USER_SESSION);
     requestLogsCollection = db.collection<RequestLogDBType>(COLLECTION_NAME.REQUEST_LOGS);
+
+    userSessionCollection.createIndex(
+      { expirationDate: 1 },
+      { expireAfterSeconds: SESSION_TTL, name: 'sessions_ttl' }
+    );
 
     requestLogsCollection.createIndex(
       { date: 1 },
