@@ -10,6 +10,8 @@ import { UserDBType } from '../users/types';
 
 import { COLLECTION_NAME } from './constants';
 
+const LOGS_TTL = 3600;
+
 let client: MongoClient;
 
 export let blogsCollection: Collection<BlogDBType>;
@@ -31,6 +33,11 @@ export const runDB = async (dbUrl: string) => {
     usersCollection = db.collection<UserDBType>(COLLECTION_NAME.USERS);
     userSessionCollection = db.collection<UserSessionDBType>(COLLECTION_NAME.USER_SESSION);
     requestLogsCollection = db.collection<RequestLogDBType>(COLLECTION_NAME.REQUEST_LOGS);
+
+    requestLogsCollection.createIndex(
+      { date: 1 },
+      { expireAfterSeconds: LOGS_TTL, name: 'request_logs_ttl' }
+    );
 
     // TODO добавить автоматическое удаление сессий, которые уже истекли
     // revokedRefreshTokenCollection.createIndex({ createdAt: 1 }, { expireAfterSeconds: 86400 });

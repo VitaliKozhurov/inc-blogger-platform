@@ -9,11 +9,13 @@ export const requestLogsRepository = {
 
     return insertedId.toString();
   },
-  async getRequestByFilterCount(filter: Omit<RequestLogDBType, 'date'>): Promise<number> {
+  async getRequestByFilterCount(
+    filter: { timeWindowDurationSeconds: number } & Omit<RequestLogDBType, 'date'>
+  ): Promise<number> {
     const count = await requestLogsCollection.countDocuments({
       ip: filter.ip,
       url: filter.url,
-      date: { $gte: sub(new Date(), { seconds: 10 }) },
+      date: { $gte: sub(new Date(), { seconds: filter.timeWindowDurationSeconds }) },
     });
 
     return count;
