@@ -1,5 +1,5 @@
 import { authTokenAdapter } from '../../auth/adapters';
-import { userSessionRepository } from '../repository';
+import { userDeviceSessionRepository } from '../repository';
 import { sessionObjectResult } from '../utils/session-object-result';
 
 type SaveSessionArgs = {
@@ -16,7 +16,7 @@ type UpdateSessionArgs = {
   refreshToken: string;
 };
 
-export const userSessionService = {
+export const userDeviceSessionService = {
   async saveUserSession(args: SaveSessionArgs) {
     const { ip, deviceId, deviceName, refreshToken, userId } = args;
 
@@ -32,12 +32,12 @@ export const userSessionService = {
       expirationDate: new Date(expirationAt * 1000),
     };
 
-    await userSessionRepository.addUserSession(userSessionData);
+    await userDeviceSessionRepository.addUserSession(userSessionData);
   },
   async updateUserSession({ prevIat, ip, refreshToken }: UpdateSessionArgs) {
     const { deviceId, iat, exp: expirationAt } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
-    return userSessionRepository.updateUserSession({
+    return userDeviceSessionRepository.updateUserSession({
       deviceId,
       prevIat,
       ip,
@@ -49,12 +49,12 @@ export const userSessionService = {
   async deleteUserSessionsExceptTheCurrent(refreshToken: string) {
     const { deviceId } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
-    await userSessionRepository.deleteUserSessionsExceptTheCurrent({ deviceId });
+    await userDeviceSessionRepository.deleteUserSessionsExceptTheCurrent({ deviceId });
   },
   async deleteUserSessionByRefreshToken(refreshToken: string) {
     const { deviceId } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
-    await userSessionRepository.deleteUserSession({ deviceId });
+    await userDeviceSessionRepository.deleteUserSession({ deviceId });
 
     return sessionObjectResult.success();
   },
@@ -67,13 +67,15 @@ export const userSessionService = {
   }) {
     const decodedToken = authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
-    const sessionForDeleting = await userSessionRepository.getUserSessionByFilter({ deviceId });
+    const sessionForDeleting = await userDeviceSessionRepository.getUserSessionByFilter({
+      deviceId,
+    });
 
     if (!sessionForDeleting) {
       return sessionObjectResult.notFound();
     }
 
-    const isMySession = !!(await userSessionRepository.getUserSessionByFilter({
+    const isMySession = !!(await userDeviceSessionRepository.getUserSessionByFilter({
       deviceId,
       userId: decodedToken.userId,
     }));
@@ -82,7 +84,7 @@ export const userSessionService = {
       return sessionObjectResult.forbidden();
     }
 
-    await userSessionRepository.deleteUserSession({ deviceId });
+    await userDeviceSessionRepository.deleteUserSession({ deviceId });
 
     return sessionObjectResult.success();
   },

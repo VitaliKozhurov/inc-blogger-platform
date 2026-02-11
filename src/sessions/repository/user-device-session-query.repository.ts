@@ -1,14 +1,14 @@
-import { userSessionCollection } from '../../db';
+import { userDeviceSessionCollection } from '../../db';
 import { SessionViewModelType, UserSessionDBType } from '../types';
 
-export const userSessionQWRepository = {
+export const userDeviceSessionQWRepository = {
   async getUserSessions(): Promise<SessionViewModelType[]> {
-    const sessions = await userSessionCollection.find().toArray();
+    const sessions = await userDeviceSessionCollection.find().toArray();
 
     return sessions.map(this._mapToViewModel);
   },
   async getUserSessionsForUserById(userId: string): Promise<SessionViewModelType[]> {
-    const sessions = await userSessionCollection.find({ userId }).toArray();
+    const sessions = await userDeviceSessionCollection.find({ userId }).toArray();
 
     return sessions.map(this._mapToViewModel);
   },

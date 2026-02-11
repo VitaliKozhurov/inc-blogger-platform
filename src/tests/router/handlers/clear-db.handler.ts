@@ -5,7 +5,7 @@ import { blogsCollection, postsCollection } from '../../../db';
 import {
   commentsCollection,
   requestLogsCollection,
-  userSessionCollection,
+  userDeviceSessionCollection,
   usersCollection,
 } from '../../../db/mongo.db';
 
@@ -16,7 +16,7 @@ export const clearDBHandler = async (_: Request, res: Response) => {
       postsCollection.deleteMany(),
       commentsCollection.deleteMany(),
       usersCollection.deleteMany(),
-      userSessionCollection.deleteMany(),
+      userDeviceSessionCollection.deleteMany(),
       requestLogsCollection.deleteMany(),
     ]);
 

@@ -2,7 +2,7 @@ import { Response } from 'express';
 
 import { HTTP_STATUSES, RequestWithUriParamType } from '../../../core/types';
 import { RESULT_STATUSES, resultCodeToHttpException } from '../../../core/utils';
-import { userSessionService } from '../../application';
+import { userDeviceSessionService } from '../../application';
 
 export const deleteDeviceSessionByIdHandler = async (
   req: RequestWithUriParamType,
@@ -11,7 +11,7 @@ export const deleteDeviceSessionByIdHandler = async (
   const deviceId = req.params.id;
   const refreshToken = req.cookies.refreshToken;
 
-  const result = await userSessionService.deleteUserSessionByDeviceId({
+  const result = await userDeviceSessionService.deleteUserSessionByDeviceId({
     deviceId,
     refreshToken,
   });

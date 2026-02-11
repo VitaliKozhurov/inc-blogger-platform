@@ -19,7 +19,7 @@ export let blogsCollection: Collection<BlogDBType>;
 export let postsCollection: Collection<PostDBType>;
 export let commentsCollection: Collection<CommentDbType>;
 export let usersCollection: Collection<UserDBType>;
-export let userSessionCollection: Collection<UserSessionDBType>;
+export let userDeviceSessionCollection: Collection<UserSessionDBType>;
 export let requestLogsCollection: Collection<RequestLogDBType>;
 
 export const runDB = async (dbUrl: string) => {
@@ -32,10 +32,10 @@ export const runDB = async (dbUrl: string) => {
     postsCollection = db.collection<PostDBType>(COLLECTION_NAME.POSTS);
     commentsCollection = db.collection<CommentDbType>(COLLECTION_NAME.COMMENTS);
     usersCollection = db.collection<UserDBType>(COLLECTION_NAME.USERS);
-    userSessionCollection = db.collection<UserSessionDBType>(COLLECTION_NAME.USER_SESSION);
+    userDeviceSessionCollection = db.collection<UserSessionDBType>(COLLECTION_NAME.USER_SESSION);
     requestLogsCollection = db.collection<RequestLogDBType>(COLLECTION_NAME.REQUEST_LOGS);
 
-    userSessionCollection.createIndex(
+    userDeviceSessionCollection.createIndex(
       { expirationDate: 1 },
       { expireAfterSeconds: SESSION_TTL, name: 'sessions_ttl' }
     );

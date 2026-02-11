@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto';
 import { add } from 'date-fns/add';
 
 import { passwordHashAdapter } from '../../core/adapters';
-import { userSessionService } from '../../sessions/application';
+import { userDeviceSessionService } from '../../sessions/application';
 import { usersRepository } from '../../users/repository/users.repository';
 import { UserDBType } from '../../users/types';
 import { authTokenAdapter, emailRegistrationAdapter } from '../adapters';
@@ -47,7 +47,7 @@ export const authService = {
     const accessToken = authTokenAdapter.createAccessToken({ userId });
     const refreshToken = authTokenAdapter.createRefreshToken({ userId, deviceId });
 
-    await userSessionService.saveUserSession({ userId, refreshToken, deviceId, ...restArgs });
+    await userDeviceSessionService.saveUserSession({ userId, refreshToken, deviceId, ...restArgs });
 
     return authObjectResult.success({ accessToken, refreshToken });
   },
@@ -71,7 +71,7 @@ export const authService = {
     const newAccessToken = authTokenAdapter.createAccessToken({ userId });
     const newRefreshToken = authTokenAdapter.createRefreshToken({ userId, deviceId });
 
-    const isUpdated = await userSessionService.updateUserSession({
+    const isUpdated = await userDeviceSessionService.updateUserSession({
       prevIat,
       ip,
       refreshToken: newRefreshToken,

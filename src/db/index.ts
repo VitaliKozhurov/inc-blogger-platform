@@ -4,6 +4,6 @@ export {
   postsCollection,
   runDB,
   stopDb,
+  userDeviceSessionCollection,
   usersCollection,
-  userSessionCollection,
 } from './mongo.db';

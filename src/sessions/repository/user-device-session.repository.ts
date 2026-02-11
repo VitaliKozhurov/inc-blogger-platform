@@ -1,13 +1,13 @@
 import { Filter } from 'mongodb';
 
-import { userSessionCollection } from '../../db';
+import { userDeviceSessionCollection } from '../../db';
 import { UserSessionDBType } from '../types';
 
 type UpdateSessionArgs = { prevIat: number } & Omit<UserSessionDBType, 'userId' | 'deviceName'>;
 
-export const userSessionRepository = {
+export const userDeviceSessionRepository = {
   async getUserSessionsByUserId(userId: string) {
-    return userSessionCollection.find({ userId }).toArray();
+    return userDeviceSessionCollection.find({ userId }).toArray();
   },
   async getUserSessionByFilter(filter: { userId?: string; deviceId?: string }) {
     const queryFilter: Filter<UserSessionDBType> = {};
@@ -24,15 +24,15 @@ export const userSessionRepository = {
       return null;
     }
 
-    return userSessionCollection.findOne(queryFilter);
+    return userDeviceSessionCollection.findOne(queryFilter);
   },
   async addUserSession(session: UserSessionDBType): Promise<string> {
-    const { insertedId } = await userSessionCollection.insertOne(session);
+    const { insertedId } = await userDeviceSessionCollection.insertOne(session);
 
     return insertedId.toString();
   },
   async updateUserSession({ deviceId, prevIat, ...restData }: UpdateSessionArgs): Promise<boolean> {
-    const { modifiedCount } = await userSessionCollection.updateOne(
+    const { modifiedCount } = await userDeviceSessionCollection.updateOne(
       { deviceId, iat: prevIat },
       { $set: restData }
     );
@@ -40,12 +40,12 @@ export const userSessionRepository = {
     return modifiedCount > 0;
   },
   async deleteUserSession({ deviceId }: Pick<UserSessionDBType, 'deviceId'>) {
-    const { deletedCount } = await userSessionCollection.deleteOne({ deviceId });
+    const { deletedCount } = await userDeviceSessionCollection.deleteOne({ deviceId });
 
     return deletedCount > 0;
   },
   async deleteUserSessionsExceptTheCurrent({ deviceId }: { deviceId: string }) {
-    const { deletedCount } = await userSessionCollection.deleteMany({
+    const { deletedCount } = await userDeviceSessionCollection.deleteMany({
       deviceId: { $ne: deviceId },
     });
 
