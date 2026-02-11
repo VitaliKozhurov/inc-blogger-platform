@@ -1,9 +1,17 @@
+import { JwtPayload } from 'jsonwebtoken';
+
 import { jwtAdapter } from '../../core/adapters';
 import { SETTINGS } from '../../core/settings';
 
 type AccessTokenPayload = {
   userId: string;
 };
+
+type RefreshTokenPayload = AccessTokenPayload & {
+  deviceId: string;
+};
+
+type VerifiedRefreshTokenPayload = RefreshTokenPayload & { iat: number; exp: number };
 
 export const authTokenAdapter = {
   createAccessToken(payload: AccessTokenPayload) {
@@ -20,7 +28,7 @@ export const authTokenAdapter = {
     });
   },
 
-  createRefreshToken(payload: AccessTokenPayload) {
+  createRefreshToken(payload: RefreshTokenPayload) {
     return jwtAdapter.createJWT({
       payload,
       secret: SETTINGS.JWT_ACCESS_SECRET,
@@ -28,12 +36,15 @@ export const authTokenAdapter = {
     });
   },
   verifyRefreshToken(token: string) {
-    return jwtAdapter.verifyJWT<AccessTokenPayload>({
+    return jwtAdapter.verifyJWT<VerifiedRefreshTokenPayload>({
       token,
       secret: SETTINGS.JWT_ACCESS_SECRET,
     });
   },
-  decodeToken(token: string) {
-    return jwtAdapter.decodeJWT<{ userId: string }>(token);
+  decodeRefreshToken(token: string) {
+    return jwtAdapter.decodeJWT<VerifiedRefreshTokenPayload>(token);
+  },
+  decodeToken<T extends JwtPayload>(token: string) {
+    return jwtAdapter.decodeJWT<T>(token);
   },
 };

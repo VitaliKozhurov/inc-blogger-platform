@@ -15,4 +15,6 @@ export const APP_ROUTES = {
   AUTH_ME: '/me',
   AUTH_REFRESH_TOKEN: '/refresh-token',
   COMMENTS: '/comments',
+  SECURITY: '/security',
+  SECURITY_DEVICES: '/devices',
 } as const;

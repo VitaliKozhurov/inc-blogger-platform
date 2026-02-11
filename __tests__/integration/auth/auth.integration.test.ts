@@ -2,17 +2,17 @@ import { add } from 'date-fns';
 import { Db, ObjectId } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-import { emailRegistrationAdapter } from '../../../src/auth/adapters';
+import { authTokenAdapter, emailRegistrationAdapter } from '../../../src/auth/adapters';
 import { authService } from '../../../src/auth/application';
 import { HTTP_STATUSES } from '../../../src/core/types';
 import { RESULT_STATUSES } from '../../../src/core/utils';
 import { runDB, stopDb } from '../../../src/db/mongo.db';
+import { userDeviceSessionService } from '../../../src/sessions/application';
 import { UserDBType } from '../../../src/users/types';
 
 import { SETTINGS } from './../../../src/core/settings/settings';
 
 describe('Auth test', () => {
-  // const testManager = new TestManager();
   const confirmationCode = '123';
   let DB: Db;
 
@@ -108,19 +108,6 @@ describe('Auth test', () => {
 
       expect(result.status).toBe(RESULT_STATUSES.BAD_REQUEST);
     });
-
-    // it('should return a 400 status code if send credentials with the same user in system', async () => {
-    //   await createUser();
-
-    //   const result = await authService.registration({
-    //     login: 'super_user',
-    //     email: SETTINGS.APP_EMAIL_ADDRESS ?? '',
-    //     password: 'secret_password',
-    //   });
-
-    //   expect(result.status).toBe(HTTP_STATUSES.BAD_REQUEST);
-    //   expect(emailRegistrationAdapter.sendConfirmationCode).not.toHaveBeenCalled();
-    // });
   });
 
   describe('POST /auth/registration-email-confirmation', () => {
@@ -148,6 +135,25 @@ describe('Auth test', () => {
 
       expect(result.status).toBe(HTTP_STATUSES.BAD_REQUEST);
       expect(emailRegistrationAdapter.resendConfirmationCode).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('POST /auth/refresh', () => {
+    jest.spyOn(userDeviceSessionService, 'updateUserSession').mockResolvedValue(true);
+
+    it('should return a 200 status code if send correct refreshToken', async () => {
+      const mockIp = '0.0.0.0';
+      const createdUser = await createUser();
+
+      const refreshToken = authTokenAdapter.createRefreshToken({
+        userId: createdUser._id.toString(),
+        deviceId: '123',
+      });
+
+      const result = await authService.refreshToken({ ip: mockIp, refreshToken });
+
+      expect(result.data?.accessToken).toBeDefined();
+      expect(result.data?.refreshToken).toBeDefined();
     });
   });
 });

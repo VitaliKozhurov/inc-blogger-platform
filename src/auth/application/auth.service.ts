@@ -3,15 +3,23 @@ import { randomUUID } from 'crypto';
 import { add } from 'date-fns/add';
 
 import { passwordHashAdapter } from '../../core/adapters';
+import { userDeviceSessionService } from '../../sessions/application';
 import { usersRepository } from '../../users/repository/users.repository';
 import { UserDBType } from '../../users/types';
 import { authTokenAdapter, emailRegistrationAdapter } from '../adapters';
-import { refreshTokenRepository } from '../repository';
 import { LoginInputType, RegistrationEmailResendingType, RegistrationInputType } from '../types';
 import { authObjectResult } from '../utils/auth-object-result';
 
+type LoginArgs = {
+  ip: string;
+  deviceName: string;
+  credentials: LoginInputType;
+};
+
+type RefreshTokenArgs = { ip: string; refreshToken: string };
+
 export const authService = {
-  async login(credentials: LoginInputType) {
+  async login({ credentials, ...restArgs }: LoginArgs) {
     const { loginOrEmail, password } = credentials;
 
     const user = await usersRepository.getUserByLoginOrEmail(loginOrEmail);
@@ -33,20 +41,18 @@ export const authService = {
       return authObjectResult.emailNotVerified();
     }
 
-    const accessToken = authTokenAdapter.createAccessToken({ userId: user._id.toString() });
-    const refreshToken = authTokenAdapter.createRefreshToken({ userId: user._id.toString() });
+    const userId = user._id.toString();
+    const deviceId = randomUUID();
+
+    const accessToken = authTokenAdapter.createAccessToken({ userId });
+    const refreshToken = authTokenAdapter.createRefreshToken({ userId, deviceId });
+
+    await userDeviceSessionService.saveUserSession({ userId, refreshToken, deviceId, ...restArgs });
 
     return authObjectResult.success({ accessToken, refreshToken });
   },
-  async logout(token: string) {
-    await refreshTokenRepository.addRevokedToken(token);
-
-    return authObjectResult.success();
-  },
-  async refreshToken(token: string) {
-    await refreshTokenRepository.addRevokedToken(token);
-
-    const tokenResult = authTokenAdapter.decodeToken(token);
+  async refreshToken({ ip, refreshToken }: RefreshTokenArgs) {
+    const tokenResult = authTokenAdapter.decodeRefreshToken(refreshToken);
 
     if (!tokenResult) {
       return authObjectResult.invalidCredentials();
@@ -58,10 +64,27 @@ export const authService = {
       return authObjectResult.invalidCredentials();
     }
 
-    const accessToken = authTokenAdapter.createAccessToken({ userId: user._id.toString() });
-    const refreshToken = authTokenAdapter.createRefreshToken({ userId: user._id.toString() });
+    const userId = user._id.toString();
+    const deviceId = tokenResult.deviceId;
+    const prevIat = tokenResult.iat;
 
-    return authObjectResult.success({ accessToken, refreshToken });
+    const newAccessToken = authTokenAdapter.createAccessToken({ userId });
+    const newRefreshToken = authTokenAdapter.createRefreshToken({ userId, deviceId });
+
+    const isUpdated = await userDeviceSessionService.updateUserSession({
+      prevIat,
+      ip,
+      refreshToken: newRefreshToken,
+    });
+
+    if (!isUpdated) {
+      return authObjectResult.invalidRefreshToken();
+    }
+
+    return authObjectResult.success({
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    });
   },
   async registration(credentials: RegistrationInputType) {
     const { login, email, password } = credentials;

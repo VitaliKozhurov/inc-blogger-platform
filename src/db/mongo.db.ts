@@ -1,13 +1,17 @@
 import { Collection, Db, MongoClient } from 'mongodb';
 
-import { RefreshTokenDBType } from '../auth/types';
 import { BlogDBType } from '../blogs/types';
 import { CommentDbType } from '../comments/types';
 import { SETTINGS } from '../core/settings';
+import { RequestLogDBType } from '../logs/types';
 import { PostDBType } from '../posts/types';
+import { UserSessionDBType } from '../sessions/types';
 import { UserDBType } from '../users/types';
 
 import { COLLECTION_NAME } from './constants';
+
+const SESSION_TTL = 24 * 3600;
+const LOGS_TTL = 3600;
 
 let client: MongoClient;
 
@@ -15,7 +19,8 @@ export let blogsCollection: Collection<BlogDBType>;
 export let postsCollection: Collection<PostDBType>;
 export let commentsCollection: Collection<CommentDbType>;
 export let usersCollection: Collection<UserDBType>;
-export let revokedRefreshTokenCollection: Collection<RefreshTokenDBType>;
+export let userDeviceSessionCollection: Collection<UserSessionDBType>;
+export let requestLogsCollection: Collection<RequestLogDBType>;
 
 export const runDB = async (dbUrl: string) => {
   try {
@@ -27,11 +32,21 @@ export const runDB = async (dbUrl: string) => {
     postsCollection = db.collection<PostDBType>(COLLECTION_NAME.POSTS);
     commentsCollection = db.collection<CommentDbType>(COLLECTION_NAME.COMMENTS);
     usersCollection = db.collection<UserDBType>(COLLECTION_NAME.USERS);
-    revokedRefreshTokenCollection = db.collection<RefreshTokenDBType>(
-      COLLECTION_NAME.REVOKED_REFRESH_TOKENS
+    userDeviceSessionCollection = db.collection<UserSessionDBType>(COLLECTION_NAME.USER_SESSION);
+    requestLogsCollection = db.collection<RequestLogDBType>(COLLECTION_NAME.REQUEST_LOGS);
+
+    userDeviceSessionCollection.createIndex(
+      { expirationDate: 1 },
+      { expireAfterSeconds: SESSION_TTL, name: 'sessions_ttl' }
     );
 
-    revokedRefreshTokenCollection.createIndex({ createdAt: 1 }, { expireAfterSeconds: 86400 });
+    requestLogsCollection.createIndex(
+      { date: 1 },
+      { expireAfterSeconds: LOGS_TTL, name: 'request_logs_ttl' }
+    );
+
+    // TODO добавить автоматическое удаление сессий, которые уже истекли
+    // revokedRefreshTokenCollection.createIndex({ createdAt: 1 }, { expireAfterSeconds: 86400 });
 
     await client.connect();
     await db.command({ ping: 1 });

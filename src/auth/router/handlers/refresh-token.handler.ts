@@ -1,7 +1,7 @@
 import { Response } from 'express';
 
 import { HTTP_STATUSES, RequestWithBodyType } from '../../../core/types';
-import { RESULT_STATUSES, resultCodeToHttpException } from '../../../core/utils';
+import { getRequestIp, RESULT_STATUSES, resultCodeToHttpException } from '../../../core/utils';
 import { authService } from '../../application';
 import { RegistrationInputType } from '../../types/auth.input';
 
@@ -9,9 +9,10 @@ export const refreshTokenHandler = async (
   req: RequestWithBodyType<RegistrationInputType>,
   res: Response
 ) => {
-  const refreshToken = req.cookies.refreshToken;
+  const refreshToken = req.cookies.refreshToken as string;
+  const ip = getRequestIp(req);
 
-  const result = await authService.refreshToken(refreshToken);
+  const result = await authService.refreshToken({ ip, refreshToken });
 
   if (result.status !== RESULT_STATUSES.OK) {
     return res

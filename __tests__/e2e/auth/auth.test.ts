@@ -9,7 +9,6 @@ import { createUser } from '../../utils/users/create-user';
 import { mockUser } from '../../utils/users/mock';
 
 import { authTokenAdapter } from './../../../src/auth/adapters/auth-token.adapter';
-import { refreshTokenRepository } from './../../../src/auth/repository/refresh-token.repository';
 
 describe('Auth test', () => {
   const testManager = new TestManager();
@@ -77,6 +76,21 @@ describe('Auth test', () => {
         .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGIN}`)
         .send({ loginOrEmail: createdUser.login, password: 'incorrect' })
         .expect(HTTP_STATUSES.UNAUTHORIZED);
+    });
+
+    it('should return 429 status code if the number of attempts has reached the limit', async () => {
+      for (let i = 0; i < 5; i++) {
+        await testManager.context
+          .request()
+          .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGIN}`)
+          .send({ loginOrEmail: 'incorrect', password: 'incorrect' })
+          .expect(HTTP_STATUSES.UNAUTHORIZED);
+      }
+      await testManager.context
+        .request()
+        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGIN}`)
+        .send({ loginOrEmail: 'incorrect', password: 'incorrect' })
+        .expect(HTTP_STATUSES.MANY_REQUESTS);
     });
   });
 
@@ -159,24 +173,13 @@ describe('Auth test', () => {
         .expect(HTTP_STATUSES.UNAUTHORIZED);
     });
 
-    it('should return a 401 status code if incorrect refreshToken', async () => {
-      const createdUser = await createUser(testManager);
-
-      const refreshToken = authTokenAdapter.createRefreshToken({ userId: createdUser.id });
-
-      const result = await testManager.context
-        .request()
-        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_REFRESH_TOKEN}`)
-        .set('Cookie', `refreshToken=${refreshToken}`)
-        .expect(HTTP_STATUSES.OK);
-
-      expect(result.body.accessToken).toBeDefined();
-      expect(result.header['set-cookie']).toBeDefined();
-    });
-
     it('should return a 401 status code if user not exist', async () => {
       const fakeId = new ObjectId().toString();
-      const refreshToken = authTokenAdapter.createRefreshToken({ userId: fakeId });
+      const fakeDeviceId = '123';
+      const refreshToken = authTokenAdapter.createRefreshToken({
+        userId: fakeId,
+        deviceId: fakeDeviceId,
+      });
 
       await testManager.context
         .request()
@@ -190,27 +193,16 @@ describe('Auth test', () => {
     it('should return a 204 status code', async () => {
       const createdUser = await createUser(testManager);
 
-      const refreshToken = authTokenAdapter.createRefreshToken({ userId: createdUser.id });
+      const refreshToken = authTokenAdapter.createRefreshToken({
+        userId: createdUser.id,
+        deviceId: 'device id',
+      });
 
       await testManager.context
         .request()
         .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGOUT}`)
         .set('Cookie', `refreshToken=${refreshToken}`)
         .expect(HTTP_STATUSES.NO_CONTENT);
-
-      const revokedToken = await refreshTokenRepository.getRevokedToken(refreshToken);
-
-      expect(revokedToken).toBeTruthy();
-    });
-
-    it('should return a 201 status code if incorrect refreshToken', async () => {
-      const token = 'fakeToken';
-
-      await testManager.context
-        .request()
-        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGOUT}`)
-        .set('Cookie', `refreshToken=${token}`)
-        .expect(HTTP_STATUSES.UNAUTHORIZED);
     });
   });
 });
