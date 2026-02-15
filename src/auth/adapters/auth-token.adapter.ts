@@ -1,6 +1,6 @@
-import { JwtPayload } from 'jsonwebtoken';
+import { inject, injectable } from 'inversify';
 
-import { jwtAdapter } from '../../core/adapters';
+import { JWTAdapter } from '../../core/adapters';
 import { SETTINGS } from '../../core/settings';
 
 type AccessTokenPayload = {
@@ -13,38 +13,41 @@ type RefreshTokenPayload = AccessTokenPayload & {
 
 type VerifiedRefreshTokenPayload = RefreshTokenPayload & { iat: number; exp: number };
 
-export const authTokenAdapter = {
+@injectable()
+export class AuthTokenAdapter {
+  constructor(@inject(JWTAdapter) private jwtAdapter: JWTAdapter) {}
+
   createAccessToken(payload: AccessTokenPayload) {
-    return jwtAdapter.createJWT({
+    return this.jwtAdapter.createJWT({
       payload,
       secret: SETTINGS.JWT_ACCESS_SECRET,
       expiresIn: Number(SETTINGS.JWT_ACCESS_TIME),
     });
-  },
+  }
+
   verifyAccessToken(token: string) {
-    return jwtAdapter.verifyJWT<AccessTokenPayload>({
+    return this.jwtAdapter.verifyJWT<AccessTokenPayload>({
       token,
       secret: SETTINGS.JWT_ACCESS_SECRET,
     });
-  },
+  }
 
   createRefreshToken(payload: RefreshTokenPayload) {
-    return jwtAdapter.createJWT({
+    return this.jwtAdapter.createJWT({
       payload,
-      secret: SETTINGS.JWT_ACCESS_SECRET,
+      secret: SETTINGS.JWT_REFRESH_SECRET,
       expiresIn: Number(SETTINGS.JWT_ACCESS_TIME),
     });
-  },
+  }
+
   verifyRefreshToken(token: string) {
-    return jwtAdapter.verifyJWT<VerifiedRefreshTokenPayload>({
+    return this.jwtAdapter.verifyJWT<VerifiedRefreshTokenPayload>({
       token,
-      secret: SETTINGS.JWT_ACCESS_SECRET,
+      secret: SETTINGS.JWT_REFRESH_SECRET,
     });
-  },
+  }
+
   decodeRefreshToken(token: string) {
-    return jwtAdapter.decodeJWT<VerifiedRefreshTokenPayload>(token);
-  },
-  decodeToken<T extends JwtPayload>(token: string) {
-    return jwtAdapter.decodeJWT<T>(token);
-  },
-};
+    return this.jwtAdapter.decodeJWT<VerifiedRefreshTokenPayload>(token);
+  }
+}

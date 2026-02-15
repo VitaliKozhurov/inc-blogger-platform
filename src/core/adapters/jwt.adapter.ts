@@ -1,3 +1,4 @@
+import { injectable } from 'inversify';
 import jwt, { JwtPayload, SignOptions } from 'jsonwebtoken';
 
 type PayloadType = Record<string, unknown>;
@@ -12,12 +13,14 @@ type VerifyToken = {
   secret: string;
 };
 
-export const jwtAdapter = {
+@injectable()
+export class JWTAdapter {
   createJWT({ payload, secret, expiresIn }: CreateToken) {
     const token = jwt.sign(payload, secret, { expiresIn });
 
     return token;
-  },
+  }
+
   verifyJWT<T extends JwtPayload>({ token, secret }: VerifyToken) {
     try {
       const payload = jwt.verify(token, secret) as T;
@@ -26,12 +29,13 @@ export const jwtAdapter = {
     } catch {
       return { success: false as const, payload: null };
     }
-  },
+  }
+
   decodeJWT<T extends JwtPayload>(token: string) {
     try {
       return jwt.decode(token) as T;
     } catch {
       return null;
     }
-  },
-};
+  }
+}
