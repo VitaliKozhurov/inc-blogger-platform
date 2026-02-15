@@ -1,1 +1,2 @@
-export { usersQWRepository } from './users-query.repository';
+export { UsersQueryRepository } from './users-query.repository';
+export { UsersRepository } from './users.repository';

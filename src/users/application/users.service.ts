@@ -1,13 +1,18 @@
+import { inject, injectable } from 'inversify';
+
 import { passwordHashAdapter } from '../../core/adapters';
-import { usersRepository } from '../repository/users.repository';
+import { UsersRepository } from '../repository';
 import { CreateUserInputType, UserDBType } from '../types';
 import { usersObjectResult } from '../utils/users-object-result';
 
-export const usersService = {
+@injectable()
+export class UsersService {
+  constructor(@inject(UsersRepository) private usersRepository: UsersRepository) {}
+
   async createUser(user: CreateUserInputType) {
     const [userByLogin, userByEmail] = await Promise.all([
-      usersRepository.getUserByLoginOrEmail(user.login),
-      usersRepository.getUserByLoginOrEmail(user.email),
+      this.usersRepository.getUserByLoginOrEmail(user.login),
+      this.usersRepository.getUserByLoginOrEmail(user.email),
     ]);
 
     if (userByLogin) {
@@ -34,18 +39,18 @@ export const usersService = {
       },
     };
 
-    const id = await usersRepository.createUser(newUser);
+    const id = await this.usersRepository.createUser(newUser);
 
     return usersObjectResult.success({ id });
-  },
+  }
 
   async deleteUserById(id: string) {
-    const isDeleted = await usersRepository.deleteUserById(id);
+    const isDeleted = await this.usersRepository.deleteUserById(id);
 
     if (isDeleted) {
       return usersObjectResult.success();
     }
 
     return usersObjectResult.notFoundUser();
-  },
-};
+  }
+}
