@@ -1,2 +1,2 @@
-export { userDeviceSessionQWRepository } from './user-device-session-query.repository';
-export { userDeviceSessionRepository } from './user-device-session.repository';
+export { UserDeviceSessionsQueryRepository } from './user-device-sessions-query.repository';
+export { UserDeviceSessionsRepository } from './user-device-sessions.repository';

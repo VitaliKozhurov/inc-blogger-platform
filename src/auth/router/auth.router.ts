@@ -1,8 +1,10 @@
 import { Router } from 'express';
 
+import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware } from '../../core/middleware';
 import { getRateLimitMiddleware } from '../../logs/middleware';
+import { AuthController } from '../controller/auth.controller';
 import {
   accessTokenMiddleware,
   loginInputModelMiddleware,
@@ -12,13 +14,7 @@ import {
   registrationInputModelMiddleware,
 } from '../middleware';
 
-import { loginHandler } from './handlers/login.handler';
-import { logoutHandler } from './handlers/logout.handler';
-import { meHandler } from './handlers/me.handler';
-import { refreshTokenHandler } from './handlers/refresh-token.handler';
-import { registrationConfirmationHandler } from './handlers/registration-confirmation.handler';
-import { registrationEmailResendingHandler } from './handlers/registration-email-resending.handler';
-import { registrationHandler } from './handlers/registration.handler';
+const authService = iocContainer.get(AuthController);
 
 export const authRouter = Router();
 
@@ -27,17 +23,17 @@ authRouter.post(
   getRateLimitMiddleware(),
   loginInputModelMiddleware,
   checkValidationMiddleware,
-  loginHandler
+  authService.login
 );
 
-authRouter.get(APP_ROUTES.AUTH_ME, accessTokenMiddleware, meHandler);
+authRouter.get(APP_ROUTES.AUTH_ME, accessTokenMiddleware, authService.me);
 
 authRouter.post(
   APP_ROUTES.AUTH_REGISTRATION,
   getRateLimitMiddleware(),
   registrationInputModelMiddleware,
   checkValidationMiddleware,
-  registrationHandler
+  authService.registration
 );
 
 authRouter.post(
@@ -45,7 +41,7 @@ authRouter.post(
   getRateLimitMiddleware(),
   registrationConfirmationInputModelMiddleware,
   checkValidationMiddleware,
-  registrationConfirmationHandler
+  authService.registrationConfirmation
 );
 
 authRouter.post(
@@ -53,9 +49,9 @@ authRouter.post(
   getRateLimitMiddleware(),
   registrationEmailResendingInputModelMiddleware,
   checkValidationMiddleware,
-  registrationEmailResendingHandler
+  authService.registrationEmailResending
 );
 
-authRouter.post(APP_ROUTES.AUTH_REFRESH_TOKEN, refreshTokenMiddleware, refreshTokenHandler);
+authRouter.post(APP_ROUTES.AUTH_REFRESH_TOKEN, refreshTokenMiddleware, authService.refreshToken);
 
-authRouter.post(APP_ROUTES.AUTH_LOGOUT, refreshTokenMiddleware, logoutHandler);
+authRouter.post(APP_ROUTES.AUTH_LOGOUT, refreshTokenMiddleware, authService.logout);

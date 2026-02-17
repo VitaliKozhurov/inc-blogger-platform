@@ -1,8 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { iocContainer } from '../../composition-root';
 import { HTTP_STATUSES } from '../../core/types';
 import { userDeviceSessionRepository } from '../../sessions/repository';
-import { authTokenAdapter } from '../adapters';
+import { AuthTokenAdapter } from '../adapters';
+
+const authTokenAdapter = iocContainer.get(AuthTokenAdapter);
 
 export const refreshTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const refreshToken = req.cookies.refreshToken as string;
