@@ -1,13 +1,13 @@
 import { Router } from 'express';
 
 import { accessTokenMiddleware } from '../../auth/middleware';
+import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { idUriParamMiddleware, checkValidationMiddleware } from '../../core/middleware';
+import { CommentsController } from '../controller';
 import { commentInputModelMiddleware } from '../middleware/comment-input-model.middleware';
 
-import { deleteCommentByIdHandler } from './handlers/delete-comment-by-id.handler';
-import { getCommentByIdHandler } from './handlers/get-comment-by-id.handler';
-import { updateCommentByIdHandler } from './handlers/update-comment-by-id.handler';
+const commentsController = iocContainer.get(CommentsController);
 
 export const commentRouter = Router();
 
@@ -15,7 +15,7 @@ commentRouter.get(
   APP_ROUTES.ID,
   idUriParamMiddleware,
   checkValidationMiddleware,
-  getCommentByIdHandler
+  commentsController.getCommentById
 );
 
 commentRouter.put(
@@ -24,7 +24,7 @@ commentRouter.put(
   idUriParamMiddleware,
   commentInputModelMiddleware,
   checkValidationMiddleware,
-  updateCommentByIdHandler
+  commentsController.updateCommentById
 );
 
 commentRouter.delete(
@@ -32,5 +32,5 @@ commentRouter.delete(
   accessTokenMiddleware,
   idUriParamMiddleware,
   checkValidationMiddleware,
-  deleteCommentByIdHandler
+  commentsController.deleteCommentById
 );

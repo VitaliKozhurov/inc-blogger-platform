@@ -4,7 +4,7 @@ import { add } from 'date-fns/add';
 import { inject, injectable } from 'inversify';
 
 import { PasswordHashAdapter } from '../../core/adapters';
-import { userDeviceSessionService } from '../../sessions/application';
+import { UserDeviceSessionsService } from '../../sessions/application';
 import { UsersRepository } from '../../users/repository';
 import { UserDBType } from '../../users/types';
 import { AuthTokenAdapter, EmailRegistrationAdapter } from '../adapters';
@@ -25,7 +25,8 @@ export class AuthService {
     @inject(UsersRepository) protected usersRepository: UsersRepository,
     @inject(AuthTokenAdapter) protected authTokenAdapter: AuthTokenAdapter,
     @inject(EmailRegistrationAdapter) protected emailRegistrationAdapter: EmailRegistrationAdapter,
-    @inject(PasswordHashAdapter) protected passwordHashAdapter: PasswordHashAdapter
+    @inject(PasswordHashAdapter) protected passwordHashAdapter: PasswordHashAdapter,
+    @inject(UserDeviceSessionsService) protected userDeviceSessionService: UserDeviceSessionsService
   ) {}
 
   async login({ credentials, ...restArgs }: LoginArgs) {
@@ -56,7 +57,12 @@ export class AuthService {
     const accessToken = this.authTokenAdapter.createAccessToken({ userId });
     const refreshToken = this.authTokenAdapter.createRefreshToken({ userId, deviceId });
 
-    await userDeviceSessionService.saveUserSession({ userId, refreshToken, deviceId, ...restArgs });
+    await this.userDeviceSessionService.saveUserSession({
+      userId,
+      refreshToken,
+      deviceId,
+      ...restArgs,
+    });
 
     return authObjectResult.success({ accessToken, refreshToken });
   }
@@ -81,7 +87,7 @@ export class AuthService {
     const newAccessToken = this.authTokenAdapter.createAccessToken({ userId });
     const newRefreshToken = this.authTokenAdapter.createRefreshToken({ userId, deviceId });
 
-    const isUpdated = await userDeviceSessionService.updateUserSession({
+    const isUpdated = await this.userDeviceSessionService.updateUserSession({
       prevIat,
       ip,
       refreshToken: newRefreshToken,

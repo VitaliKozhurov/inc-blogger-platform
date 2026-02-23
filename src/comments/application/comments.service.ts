@@ -1,11 +1,19 @@
+import { inject, injectable } from 'inversify';
+
 import { postsRepository } from '../../posts/repository';
 import { postsObjectResult } from '../../posts/utils/posts-object-result';
-import { usersRepository } from '../../users/repository/users.repository';
-import { commentsRepository } from '../repository';
+import { UsersRepository } from '../../users/repository';
+import { CommentsRepository } from '../repository';
 import { CommentDbType } from '../types';
 import { commentsObjectResult } from '../utils/comments-object-result';
 
-export const commentsService = {
+@injectable()
+export class CommentsService {
+  constructor(
+    @inject(UsersRepository) private usersRepository: UsersRepository,
+    @inject(CommentsRepository) private commentsRepository: CommentsRepository
+  ) {}
+
   async createCommentByPostId({
     postId,
     userId,
@@ -21,7 +29,7 @@ export const commentsService = {
       return postsObjectResult.notFoundPost();
     }
 
-    const user = await usersRepository.getUserById(userId);
+    const user = await this.usersRepository.getUserById(userId);
 
     if (!user) {
       return postsObjectResult.badRequest();
@@ -37,10 +45,11 @@ export const commentsService = {
       postId,
     };
 
-    const commentId = await commentsRepository.createComment(comment);
+    const commentId = await this.commentsRepository.createComment(comment);
 
     return postsObjectResult.success({ commentId });
-  },
+  }
+
   async updateCommentById({
     userId,
     commentId,
@@ -50,7 +59,7 @@ export const commentsService = {
     commentId: string;
     content: string;
   }) {
-    const comment = await commentsRepository.getCommentById(commentId);
+    const comment = await this.commentsRepository.getCommentById(commentId);
 
     if (!comment) {
       return commentsObjectResult.notFoundComment();
@@ -60,17 +69,17 @@ export const commentsService = {
       return commentsObjectResult.forbiddenCommentMutation();
     }
 
-    const isUpdated = await commentsRepository.updateCommentById({ id: commentId, content });
+    const isUpdated = await this.commentsRepository.updateCommentById({ id: commentId, content });
 
     if (isUpdated) {
       return postsObjectResult.success();
     }
 
     return postsObjectResult.notFoundPost();
-  },
+  }
 
   async deleteCommentById({ userId, commentId }: { userId: string; commentId: string }) {
-    const comment = await commentsRepository.getCommentById(commentId);
+    const comment = await this.commentsRepository.getCommentById(commentId);
 
     if (!comment) {
       return commentsObjectResult.notFoundComment();
@@ -80,12 +89,12 @@ export const commentsService = {
       return commentsObjectResult.forbiddenCommentMutation();
     }
 
-    const isDeleted = await commentsRepository.deleteCommentById(commentId);
+    const isDeleted = await this.commentsRepository.deleteCommentById(commentId);
 
     if (isDeleted) {
       return postsObjectResult.success();
     }
 
     return postsObjectResult.notFoundPost();
-  },
-};
+  }
+}

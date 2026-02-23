@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify';
 
 import { RequestWithBodyType, HTTP_STATUSES } from '../../core/types';
 import { getRequestIp, RESULT_STATUSES, resultCodeToHttpException } from '../../core/utils';
-import { userDeviceSessionService } from '../../sessions/application';
+import { UserDeviceSessionsService } from '../../sessions/application';
 import { UsersQueryRepository } from '../../users/repository';
 import { AuthService } from '../application';
 import {
@@ -19,7 +19,8 @@ const FALLBACK_DEVICE_NAME = 'Unknown Device';
 export class AuthController {
   constructor(
     @inject(AuthService) private authService: AuthService,
-    @inject(UsersQueryRepository) private usersQWRepository: UsersQueryRepository
+    @inject(UsersQueryRepository) private usersQWRepository: UsersQueryRepository,
+    @inject(UserDeviceSessionsService) private userDeviceSessionsService: UserDeviceSessionsService
   ) {}
 
   async login(req: RequestWithBodyType<LoginInputType>, res: Response) {
@@ -41,8 +42,7 @@ export class AuthController {
   async logout(req: RequestWithBodyType<LoginInputType>, res: Response) {
     const refreshToken = req.cookies.refreshToken;
 
-    // TODO userDeviceSessionService
-    await userDeviceSessionService.deleteUserSessionByRefreshToken(refreshToken);
+    await this.userDeviceSessionsService.deleteUserSessionByRefreshToken(refreshToken);
 
     res.clearCookie('refreshToken', { path: '/' });
     res.sendStatus(HTTP_STATUSES.NO_CONTENT);

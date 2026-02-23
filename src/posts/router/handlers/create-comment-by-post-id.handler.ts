@@ -1,7 +1,6 @@
 import { Response } from 'express';
 
-import { commentsService } from '../../../comments/application';
-import { commentsQWRepository } from '../../../comments/repository';
+
 import { CreateCommentInputType } from '../../../comments/types';
 import { HTTP_STATUSES, IdParamType, RequestWithParamAndBodyType } from '../../../core/types';
 import { RESULT_STATUSES } from '../../../core/utils';

@@ -1,13 +1,16 @@
 import { inject, injectable } from 'inversify';
 
-import { passwordHashAdapter } from '../../core/adapters';
+import { PasswordHashAdapter } from '../../core/adapters';
 import { UsersRepository } from '../repository';
 import { CreateUserInputType, UserDBType } from '../types';
 import { usersObjectResult } from '../utils/users-object-result';
 
 @injectable()
 export class UsersService {
-  constructor(@inject(UsersRepository) private usersRepository: UsersRepository) {}
+  constructor(
+    @inject(UsersRepository) private usersRepository: UsersRepository,
+    @inject(PasswordHashAdapter) private passwordHashAdapter: PasswordHashAdapter
+  ) {}
 
   async createUser(user: CreateUserInputType) {
     const [userByLogin, userByEmail] = await Promise.all([
@@ -25,7 +28,7 @@ export class UsersService {
 
     const { login, email, password } = user;
 
-    const passwordHash = await passwordHashAdapter.createPasswordHash(password);
+    const passwordHash = await this.passwordHashAdapter.createPasswordHash(password);
 
     const newUser: UserDBType = {
       login,
