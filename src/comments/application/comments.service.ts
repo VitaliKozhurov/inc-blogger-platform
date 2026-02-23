@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 
-import { postsRepository } from '../../posts/repository';
+import { PostsRepository } from '../../posts/repository';
 import { postsObjectResult } from '../../posts/utils/posts-object-result';
 import { UsersRepository } from '../../users/repository';
 import { CommentsRepository } from '../repository';
@@ -11,6 +11,7 @@ import { commentsObjectResult } from '../utils/comments-object-result';
 export class CommentsService {
   constructor(
     @inject(UsersRepository) private usersRepository: UsersRepository,
+    @inject(PostsRepository) private postsRepository: PostsRepository,
     @inject(CommentsRepository) private commentsRepository: CommentsRepository
   ) {}
 
@@ -23,7 +24,7 @@ export class CommentsService {
     userId: string;
     content: string;
   }) {
-    const post = await postsRepository.getPostById(postId);
+    const post = await this.postsRepository.getPostById(postId);
 
     if (!post) {
       return postsObjectResult.notFoundPost();

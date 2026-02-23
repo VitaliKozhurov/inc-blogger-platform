@@ -10,6 +10,9 @@ import { CommentsService } from './comments/application';
 import { CommentsController } from './comments/controller';
 import { CommentsQueryRepository, CommentsRepository } from './comments/repository';
 import { EmailAdapter, JWTAdapter, PasswordHashAdapter } from './core/adapters';
+import { PostsService } from './posts/application';
+import { PostsController } from './posts/controller';
+import { PostsQueryRepository, PostsRepository } from './posts/repository';
 import { UserDeviceSessionsService } from './sessions/application';
 import { UserDeviceSessionsController } from './sessions/controller';
 import {
@@ -50,6 +53,12 @@ iocContainer.bind(BlogsRepository).toSelf();
 iocContainer.bind(BlogsQueryRepository).toSelf();
 iocContainer.bind(BlogsService).toSelf();
 iocContainer.bind(BlogsController).toSelf();
+
+//posts
+iocContainer.bind(PostsRepository).toSelf();
+iocContainer.bind(PostsQueryRepository).toSelf();
+iocContainer.bind(PostsService).toSelf();
+iocContainer.bind(PostsController).toSelf();
 
 // comments
 iocContainer.bind(CommentsRepository).toSelf();

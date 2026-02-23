@@ -11,8 +11,8 @@ import {
   RequestWithUriParamType,
 } from '../../core/types';
 import { resultCodeToHttpException, RESULT_STATUSES } from '../../core/utils';
-import { postsService } from '../../posts/application';
-import { postsQWRepository } from '../../posts/repository';
+import { PostsService } from '../../posts/application';
+import { PostsQueryRepository } from '../../posts/repository';
 import { CreatePostInputType, PostsRequestQueryType } from '../../posts/types';
 import { BlogsService } from '../application';
 import { BlogsQueryRepository } from '../repository';
@@ -22,7 +22,9 @@ import { BlogsRequestQueryType, CreateBlogInputType, UpdateBlogInputType } from 
 export class BlogsController {
   constructor(
     @inject(BlogsService) private blogsService: BlogsService,
-    @inject(BlogsQueryRepository) private blogsQueryRepository: BlogsQueryRepository
+    @inject(BlogsQueryRepository) private blogsQueryRepository: BlogsQueryRepository,
+    @inject(PostsService) private postsService: PostsService,
+    @inject(PostsQueryRepository) private postsQueryRepository: PostsQueryRepository
   ) {}
 
   async getBlogs(req: Request, res: Response) {
@@ -85,14 +87,14 @@ export class BlogsController {
     res: Response
   ) {
     const blogId = req.params.id;
-    // TODO posts class use
-    const result = await postsService.createPost({ blogId, ...req.body });
+
+    const result = await this.postsService.createPost({ blogId, ...req.body });
 
     if (result.status !== RESULT_STATUSES.OK) {
       return res.sendStatus(resultCodeToHttpException(result.status));
     }
 
-    const createdPostViewModel = await postsQWRepository.getPostById(result.data!.id);
+    const createdPostViewModel = await this.postsQueryRepository.getPostById(result.data!.id);
 
     res.status(HTTP_STATUSES.CREATED).send(createdPostViewModel);
   }
@@ -113,8 +115,8 @@ export class BlogsController {
     if (!blog) {
       return res.sendStatus(HTTP_STATUSES.NOT_FOUND);
     }
-    // TODO posts class use
-    const postsViewMode = await postsQWRepository.getPostsByBlogId({ blogId, query });
+
+    const postsViewMode = await this.postsQueryRepository.getPostsByBlogId({ blogId, query });
 
     return res.status(HTTP_STATUSES.OK).send(postsViewMode);
   }

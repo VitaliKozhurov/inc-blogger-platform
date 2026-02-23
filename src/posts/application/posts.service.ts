@@ -1,11 +1,19 @@
-import { blogsRepository } from '../../blogs/repository';
-import { postsRepository } from '../repository';
+import { inject, injectable } from 'inversify';
+
+import { BlogsRepository } from '../../blogs/repository';
+import { PostsRepository } from '../repository';
 import { CreatePostInputType, PostDBType, UpdatePostInputType } from '../types';
 import { postsObjectResult } from '../utils/posts-object-result';
 
-export const postsService = {
-  createPost: async (postData: CreatePostInputType) => {
-    const blog = await blogsRepository.getBlogById(postData.blogId);
+@injectable()
+export class PostsService {
+  constructor(
+    @inject(BlogsRepository) private blogsRepository: BlogsRepository,
+    @inject(PostsRepository) private postsRepository: PostsRepository
+  ) {}
+
+  async createPost(postData: CreatePostInputType) {
+    const blog = await this.blogsRepository.getBlogById(postData.blogId);
 
     if (!blog) {
       return postsObjectResult.notFoundBlog();
@@ -17,28 +25,28 @@ export const postsService = {
       createdAt: new Date().toISOString(),
     };
 
-    const id = await postsRepository.createPost(newPost);
+    const id = await this.postsRepository.createPost(newPost);
 
     return postsObjectResult.success({ id });
-  },
+  }
 
-  updatePostById: async ({ id, postData }: { id: string; postData: UpdatePostInputType }) => {
-    const isUpdated = await postsRepository.updatePostById({ id, postData });
+  async updatePostById({ id, postData }: { id: string; postData: UpdatePostInputType }) {
+    const isUpdated = await this.postsRepository.updatePostById({ id, postData });
 
     if (isUpdated) {
       return postsObjectResult.success();
     }
 
     return postsObjectResult.notFoundPost();
-  },
+  }
 
-  deletePostById: async (blogId: string) => {
-    const isDeleted = await postsRepository.deletePostById(blogId);
+  async deletePostById(blogId: string) {
+    const isDeleted = await this.postsRepository.deletePostById(blogId);
 
     if (isDeleted) {
       return postsObjectResult.success();
     }
 
     return postsObjectResult.notFoundPost();
-  },
-};
+  }
+}
