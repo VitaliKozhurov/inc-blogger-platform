@@ -1,19 +1,15 @@
 import { Router } from 'express';
 
 import { basicAuthMiddleware } from '../../auth/middleware';
+import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware, idUriParamMiddleware } from '../../core/middleware';
 import { postByBlogIdInputModelMiddleware, postInputQueryMiddleware } from '../../posts/middleware';
+import { BlogsController } from '../controller';
 import { blogInputModelMiddleware } from '../middleware/blog-input-model.middleware';
 import { blogInputQueryMiddleware } from '../middleware/blog-input-query.middleware';
 
-import { createBlogHandler } from './handlers/create-blog.handler';
-import { createPostByBlogIdHandler } from './handlers/create-post-by-blog-id.handler';
-import { deleteBlogByIdHandler } from './handlers/delete-blog-by-id.handler';
-import { getBlogByIdHandler } from './handlers/get-blog-by-id.handler';
-import { getBlogsHandler } from './handlers/get-blogs.handler';
-import { getPostsByBlogIdHandler } from './handlers/get-posts-by-blog-id.handler';
-import { updateBlogByIdHandler } from './handlers/update-blog-by-id.handler';
+const blogsController = iocContainer.get(BlogsController);
 
 export const blogRouter = Router();
 
@@ -21,17 +17,22 @@ blogRouter.get(
   APP_ROUTES.ROOT,
   blogInputQueryMiddleware,
   checkValidationMiddleware,
-  getBlogsHandler
+  blogsController.getBlogs
 );
 
-blogRouter.get(APP_ROUTES.ID, idUriParamMiddleware, checkValidationMiddleware, getBlogByIdHandler);
+blogRouter.get(
+  APP_ROUTES.ID,
+  idUriParamMiddleware,
+  checkValidationMiddleware,
+  blogsController.getBlogById
+);
 
 blogRouter.post(
   APP_ROUTES.ROOT,
   basicAuthMiddleware,
   blogInputModelMiddleware,
   checkValidationMiddleware,
-  createBlogHandler
+  blogsController.createBlog
 );
 
 blogRouter.put(
@@ -40,7 +41,7 @@ blogRouter.put(
   idUriParamMiddleware,
   blogInputModelMiddleware,
   checkValidationMiddleware,
-  updateBlogByIdHandler
+  blogsController.updateBlogById
 );
 
 blogRouter.delete(
@@ -48,7 +49,7 @@ blogRouter.delete(
   basicAuthMiddleware,
   idUriParamMiddleware,
   checkValidationMiddleware,
-  deleteBlogByIdHandler
+  blogsController.deleteBlogById
 );
 
 blogRouter.get(
@@ -56,7 +57,7 @@ blogRouter.get(
   idUriParamMiddleware,
   postInputQueryMiddleware,
   checkValidationMiddleware,
-  getPostsByBlogIdHandler
+  blogsController.getPostsByBlogId
 );
 
 blogRouter.post(
@@ -65,5 +66,5 @@ blogRouter.post(
   idUriParamMiddleware,
   postByBlogIdInputModelMiddleware,
   checkValidationMiddleware,
-  createPostByBlogIdHandler
+  blogsController.createPostByBlogId
 );

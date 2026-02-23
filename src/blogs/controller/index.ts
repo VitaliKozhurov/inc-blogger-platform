@@ -1,0 +1,1 @@
+export {BlogsController} from './blogs.controller'

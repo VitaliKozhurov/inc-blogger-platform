@@ -3,6 +3,9 @@ import { Container } from 'inversify';
 import { AuthTokenAdapter, EmailRegistrationAdapter } from './auth/adapters';
 import { AuthService } from './auth/application';
 import { AuthController } from './auth/controller';
+import { BlogsService } from './blogs/application';
+import { BlogsController } from './blogs/controller';
+import { BlogsQueryRepository, BlogsRepository } from './blogs/repository';
 import { CommentsService } from './comments/application';
 import { CommentsController } from './comments/controller';
 import { CommentsQueryRepository, CommentsRepository } from './comments/repository';
@@ -41,6 +44,12 @@ iocContainer.bind(UsersRepository).toSelf();
 iocContainer.bind(UsersQueryRepository).toSelf();
 iocContainer.bind(UsersService).toSelf();
 iocContainer.bind(UsersController).toSelf();
+
+// blogs
+iocContainer.bind(BlogsRepository).toSelf();
+iocContainer.bind(BlogsQueryRepository).toSelf();
+iocContainer.bind(BlogsService).toSelf();
+iocContainer.bind(BlogsController).toSelf();
 
 // comments
 iocContainer.bind(CommentsRepository).toSelf();
