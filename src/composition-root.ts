@@ -26,42 +26,42 @@ import { UsersQueryRepository, UsersRepository } from './users/repository';
 export const iocContainer = new Container();
 
 // adapters
-iocContainer.bind(EmailAdapter).toSelf();
-iocContainer.bind(JWTAdapter).toSelf();
-iocContainer.bind(PasswordHashAdapter).toSelf();
+iocContainer.bind(EmailAdapter).toSelf().inSingletonScope();
+iocContainer.bind(JWTAdapter).toSelf().inSingletonScope();
+iocContainer.bind(PasswordHashAdapter).toSelf().inSingletonScope();
 
 // auth
-iocContainer.bind(AuthTokenAdapter).toSelf();
-iocContainer.bind(EmailRegistrationAdapter).toSelf();
-iocContainer.bind(AuthService).toSelf();
-iocContainer.bind(AuthController).toSelf();
+iocContainer.bind(AuthTokenAdapter).toSelf().inSingletonScope();
+iocContainer.bind(EmailRegistrationAdapter).toSelf().inSingletonScope();
+iocContainer.bind(AuthService).toSelf().inSingletonScope();
+iocContainer.bind(AuthController).toSelf().inSingletonScope();
 
 // sessions
-iocContainer.bind(UserDeviceSessionsRepository).toSelf();
-iocContainer.bind(UserDeviceSessionsQueryRepository).toSelf();
-iocContainer.bind(UserDeviceSessionsService).toSelf();
-iocContainer.bind(UserDeviceSessionsController).toSelf();
+iocContainer.bind(UserDeviceSessionsRepository).toSelf().inSingletonScope();
+iocContainer.bind(UserDeviceSessionsQueryRepository).toSelf().inSingletonScope();
+iocContainer.bind(UserDeviceSessionsService).toSelf().inSingletonScope();
+iocContainer.bind(UserDeviceSessionsController).toSelf().inSingletonScope();
 
 // users
-iocContainer.bind(UsersRepository).toSelf();
-iocContainer.bind(UsersQueryRepository).toSelf();
-iocContainer.bind(UsersService).toSelf();
-iocContainer.bind(UsersController).toSelf();
+iocContainer.bind(UsersRepository).toSelf().inSingletonScope();
+iocContainer.bind(UsersQueryRepository).toSelf().inSingletonScope();
+iocContainer.bind(UsersService).toSelf().inSingletonScope();
+iocContainer.bind(UsersController).toSelf().inSingletonScope();
 
 // blogs
-iocContainer.bind(BlogsRepository).toSelf();
-iocContainer.bind(BlogsQueryRepository).toSelf();
-iocContainer.bind(BlogsService).toSelf();
-iocContainer.bind(BlogsController).toSelf();
+iocContainer.bind(BlogsRepository).toSelf().inSingletonScope();
+iocContainer.bind(BlogsQueryRepository).toSelf().inSingletonScope();
+iocContainer.bind(BlogsService).toSelf().inSingletonScope();
+iocContainer.bind(BlogsController).toSelf().inSingletonScope();
 
 //posts
-iocContainer.bind(PostsRepository).toSelf();
-iocContainer.bind(PostsQueryRepository).toSelf();
-iocContainer.bind(PostsService).toSelf();
-iocContainer.bind(PostsController).toSelf();
+iocContainer.bind(PostsRepository).toSelf().inSingletonScope();
+iocContainer.bind(PostsQueryRepository).toSelf().inSingletonScope();
+iocContainer.bind(PostsService).toSelf().inSingletonScope();
+iocContainer.bind(PostsController).toSelf().inSingletonScope();
 
 // comments
-iocContainer.bind(CommentsRepository).toSelf();
-iocContainer.bind(CommentsQueryRepository).toSelf();
-iocContainer.bind(CommentsService).toSelf();
-iocContainer.bind(CommentsController).toSelf();
+iocContainer.bind(CommentsRepository).toSelf().inSingletonScope();
+iocContainer.bind(CommentsQueryRepository).toSelf().inSingletonScope();
+iocContainer.bind(CommentsService).toSelf().inSingletonScope();
+iocContainer.bind(CommentsController).toSelf().inSingletonScope();

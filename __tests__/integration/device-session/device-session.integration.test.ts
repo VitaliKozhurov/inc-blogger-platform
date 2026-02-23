@@ -2,7 +2,8 @@ import { randomUUID } from 'crypto';
 
 import { ObjectId, WithId } from 'mongodb';
 
-import { authTokenAdapter } from '../../../src/auth/adapters';
+import { AuthTokenAdapter } from '../../../src/auth/adapters';
+import { iocContainer } from '../../../src/composition-root';
 import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES } from '../../../src/core/types';
 import { UserSessionDBType } from '../../../src/sessions/types';
@@ -10,6 +11,7 @@ import { TestManagerMockDB } from '../../utils/test-manager-mock-db';
 
 describe('User sessions test', () => {
   const testManager = new TestManagerMockDB();
+  const authTokenAdapter = iocContainer.get(AuthTokenAdapter);
 
   const createSession = async (refreshToken: string) => {
     const {

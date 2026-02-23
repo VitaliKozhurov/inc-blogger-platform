@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
 
-import { authTokenAdapter } from '../../../src/auth/adapters';
+import { AuthTokenAdapter } from '../../../src/auth/adapters';
+import { iocContainer } from '../../../src/composition-root';
 import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES } from '../../../src/core/types';
 import { mockComment } from '../../utils/comments/mock';
@@ -10,6 +11,7 @@ import { loginUser } from '../../utils/users/login-user';
 
 describe('Comments test', () => {
   const testManager = new TestManager();
+  const authTokenAdapter = iocContainer.get(AuthTokenAdapter);
 
   beforeAll(async () => {
     await testManager.init();

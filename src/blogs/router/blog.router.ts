@@ -17,14 +17,14 @@ blogRouter.get(
   APP_ROUTES.ROOT,
   blogInputQueryMiddleware,
   checkValidationMiddleware,
-  blogsController.getBlogs
+  blogsController.getBlogs.bind(blogsController)
 );
 
 blogRouter.get(
   APP_ROUTES.ID,
   idUriParamMiddleware,
   checkValidationMiddleware,
-  blogsController.getBlogById
+  blogsController.getBlogById.bind(blogsController)
 );
 
 blogRouter.post(
@@ -32,7 +32,7 @@ blogRouter.post(
   basicAuthMiddleware,
   blogInputModelMiddleware,
   checkValidationMiddleware,
-  blogsController.createBlog
+  blogsController.createBlog.bind(blogsController)
 );
 
 blogRouter.put(
@@ -41,7 +41,7 @@ blogRouter.put(
   idUriParamMiddleware,
   blogInputModelMiddleware,
   checkValidationMiddleware,
-  blogsController.updateBlogById
+  blogsController.updateBlogById.bind(blogsController)
 );
 
 blogRouter.delete(
@@ -49,7 +49,7 @@ blogRouter.delete(
   basicAuthMiddleware,
   idUriParamMiddleware,
   checkValidationMiddleware,
-  blogsController.deleteBlogById
+  blogsController.deleteBlogById.bind(blogsController)
 );
 
 blogRouter.get(
@@ -57,7 +57,7 @@ blogRouter.get(
   idUriParamMiddleware,
   postInputQueryMiddleware,
   checkValidationMiddleware,
-  blogsController.getPostsByBlogId
+  blogsController.getPostsByBlogId.bind(blogsController)
 );
 
 blogRouter.post(
@@ -66,5 +66,5 @@ blogRouter.post(
   idUriParamMiddleware,
   postByBlogIdInputModelMiddleware,
   checkValidationMiddleware,
-  blogsController.createPostByBlogId
+  blogsController.createPostByBlogId.bind(blogsController)
 );

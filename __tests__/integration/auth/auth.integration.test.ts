@@ -2,17 +2,23 @@ import { add } from 'date-fns';
 import { Db, ObjectId } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-import { authTokenAdapter, emailRegistrationAdapter } from '../../../src/auth/adapters';
-import { authService } from '../../../src/auth/application';
+import { AuthTokenAdapter, EmailRegistrationAdapter } from '../../../src/auth/adapters';
+import { AuthService } from '../../../src/auth/application';
+import { iocContainer } from '../../../src/composition-root';
 import { HTTP_STATUSES } from '../../../src/core/types';
 import { RESULT_STATUSES } from '../../../src/core/utils';
 import { runDB, stopDb } from '../../../src/db/mongo.db';
-import { userDeviceSessionService } from '../../../src/sessions/application';
+import { UserDeviceSessionsService } from '../../../src/sessions/application';
 import { UserDBType } from '../../../src/users/types';
 
 import { SETTINGS } from './../../../src/core/settings/settings';
 
 describe('Auth test', () => {
+  const authTokenAdapter = iocContainer.get(AuthTokenAdapter);
+  const emailRegistrationAdapter = iocContainer.get(EmailRegistrationAdapter);
+  const authService = iocContainer.get(AuthService);
+  const userDeviceSessionService = iocContainer.get(UserDeviceSessionsService);
+
   const confirmationCode = '123';
   let DB: Db;
 

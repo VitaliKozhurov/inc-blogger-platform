@@ -14,7 +14,7 @@ import {
   registrationInputModelMiddleware,
 } from '../middleware';
 
-const authService = iocContainer.get(AuthController);
+const authController = iocContainer.get(AuthController);
 
 export const authRouter = Router();
 
@@ -23,17 +23,17 @@ authRouter.post(
   getRateLimitMiddleware(),
   loginInputModelMiddleware,
   checkValidationMiddleware,
-  authService.login
+  authController.login.bind(authController)
 );
 
-authRouter.get(APP_ROUTES.AUTH_ME, accessTokenMiddleware, authService.me);
+authRouter.get(APP_ROUTES.AUTH_ME, accessTokenMiddleware, authController.me.bind(authController));
 
 authRouter.post(
   APP_ROUTES.AUTH_REGISTRATION,
   getRateLimitMiddleware(),
   registrationInputModelMiddleware,
   checkValidationMiddleware,
-  authService.registration
+  authController.registration.bind(authController)
 );
 
 authRouter.post(
@@ -41,7 +41,7 @@ authRouter.post(
   getRateLimitMiddleware(),
   registrationConfirmationInputModelMiddleware,
   checkValidationMiddleware,
-  authService.registrationConfirmation
+  authController.registrationConfirmation.bind(authController)
 );
 
 authRouter.post(
@@ -49,9 +49,17 @@ authRouter.post(
   getRateLimitMiddleware(),
   registrationEmailResendingInputModelMiddleware,
   checkValidationMiddleware,
-  authService.registrationEmailResending
+  authController.registrationEmailResending.bind(authController)
 );
 
-authRouter.post(APP_ROUTES.AUTH_REFRESH_TOKEN, refreshTokenMiddleware, authService.refreshToken);
+authRouter.post(
+  APP_ROUTES.AUTH_REFRESH_TOKEN,
+  refreshTokenMiddleware,
+  authController.refreshToken.bind(authController)
+);
 
-authRouter.post(APP_ROUTES.AUTH_LOGOUT, refreshTokenMiddleware, authService.logout);
+authRouter.post(
+  APP_ROUTES.AUTH_LOGOUT,
+  refreshTokenMiddleware,
+  authController.logout.bind(authController)
+);

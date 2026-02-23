@@ -20,14 +20,14 @@ postRouter.get(
   APP_ROUTES.ROOT,
   postInputQueryMiddleware,
   checkValidationMiddleware,
-  postsController.getPosts
+  postsController.getPosts.bind(postsController)
 );
 
 postRouter.get(
   APP_ROUTES.ID,
   idUriParamMiddleware,
   checkValidationMiddleware,
-  postsController.getPostById
+  postsController.getPostById.bind(postsController)
 );
 
 postRouter.post(
@@ -35,7 +35,7 @@ postRouter.post(
   basicAuthMiddleware,
   postInputModelMiddleware,
   checkValidationMiddleware,
-  postsController.createPost
+  postsController.createPost.bind(postsController)
 );
 
 postRouter.put(
@@ -44,7 +44,7 @@ postRouter.put(
   idUriParamMiddleware,
   postInputModelMiddleware,
   checkValidationMiddleware,
-  postsController.updatePostById
+  postsController.updatePostById.bind(postsController)
 );
 
 postRouter.delete(
@@ -52,7 +52,7 @@ postRouter.delete(
   basicAuthMiddleware,
   idUriParamMiddleware,
   checkValidationMiddleware,
-  postsController.deletePostById
+  postsController.deletePostById.bind(postsController)
 );
 
 postRouter.get(
@@ -60,7 +60,7 @@ postRouter.get(
   idUriParamMiddleware,
   commentInputQueryMiddleware,
   checkValidationMiddleware,
-  postsController.getCommentsByPostId
+  postsController.getCommentsByPostId.bind(postsController)
 );
 
 postRouter.post(
@@ -69,5 +69,5 @@ postRouter.post(
   idUriParamMiddleware,
   commentInputModelMiddleware,
   checkValidationMiddleware,
-  postsController.createCommentByPostId
+  postsController.createCommentByPostId.bind(postsController)
 );

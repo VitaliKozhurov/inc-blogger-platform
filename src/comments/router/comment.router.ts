@@ -15,7 +15,7 @@ commentRouter.get(
   APP_ROUTES.ID,
   idUriParamMiddleware,
   checkValidationMiddleware,
-  commentsController.getCommentById
+  commentsController.getCommentById.bind(commentsController)
 );
 
 commentRouter.put(
@@ -24,7 +24,7 @@ commentRouter.put(
   idUriParamMiddleware,
   commentInputModelMiddleware,
   checkValidationMiddleware,
-  commentsController.updateCommentById
+  commentsController.updateCommentById.bind(commentsController)
 );
 
 commentRouter.delete(
@@ -32,5 +32,5 @@ commentRouter.delete(
   accessTokenMiddleware,
   idUriParamMiddleware,
   checkValidationMiddleware,
-  commentsController.deleteCommentById
+  commentsController.deleteCommentById.bind(commentsController)
 );
