@@ -8,7 +8,12 @@ import { UserDeviceSessionsService } from '../../sessions/application';
 import { UsersRepository } from '../../users/repository';
 import { UserDBType } from '../../users/types';
 import { AuthTokenAdapter, EmailRegistrationAdapter } from '../adapters';
-import { LoginInputType, RegistrationEmailResendingType, RegistrationInputType } from '../types';
+import {
+  LoginInputType,
+  PasswordRecoveryType,
+  RegistrationEmailResendingType,
+  RegistrationInputType,
+} from '../types';
 import { authObjectResult } from '../utils/auth-object-result';
 
 type LoginArgs = {
@@ -202,4 +207,6 @@ export class AuthService {
 
     return authObjectResult.success();
   }
+
+  async passwordRecovery(credentials: PasswordRecoveryType) {}
 }

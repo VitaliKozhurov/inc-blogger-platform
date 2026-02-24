@@ -1,5 +1,6 @@
 export {
   LoginInputType,
+  PasswordRecoveryType,
   RegistrationConfirmationInputType,
   RegistrationEmailResendingType,
   RegistrationInputType,
