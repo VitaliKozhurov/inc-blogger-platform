@@ -10,6 +10,7 @@ import { UserDBType } from '../../users/types';
 import { AuthTokenAdapter, EmailRegistrationAdapter } from '../adapters';
 import {
   LoginInputType,
+  NewPasswordInputType,
   PasswordRecoveryType,
   RegistrationEmailResendingType,
   RegistrationInputType,
@@ -208,5 +209,33 @@ export class AuthService {
     return authObjectResult.success();
   }
 
-  async passwordRecovery(credentials: PasswordRecoveryType) {}
+  async passwordRecovery(credentials: PasswordRecoveryType) {
+    const { email } = credentials;
+
+    const user = await this.usersRepository.getUserByLoginOrEmail(email);
+
+    if (user) {
+      const recoveryCode = randomUUID();
+
+      const userData = {
+        ...user,
+        passwordRecovery: {
+          recoveryCode,
+          expirationDate: add(new Date(), { hours: 1 }).toISOString(),
+        },
+      };
+
+      await this.usersRepository.updateUserById({ id: user.toString(), userData });
+
+      this.emailRegistrationAdapter
+        .sendPasswordRecoveryCode({ email, code: recoveryCode })
+        .catch(err => console.log(err));
+    }
+
+    return authObjectResult.success();
+  }
+
+  async createNewPassword(credentials: NewPasswordInputType) {
+    const { newPassword, recoveryCode } = credentials;
+  }
 }

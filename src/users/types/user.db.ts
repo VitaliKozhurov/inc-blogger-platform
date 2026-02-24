@@ -8,4 +8,8 @@ export type UserDBType = {
     expirationDate: string;
     isConfirmed: boolean;
   };
+  passwordRecovery?: {
+    recoveryCode: string;
+    expirationDate: string;
+  };
 };

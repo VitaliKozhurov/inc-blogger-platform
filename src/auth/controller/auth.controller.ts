@@ -8,6 +8,7 @@ import { UsersQueryRepository } from '../../users/repository';
 import { AuthService } from '../application';
 import {
   LoginInputType,
+  PasswordRecoveryType,
   RegistrationConfirmationInputType,
   RegistrationEmailResendingType,
   RegistrationInputType,
@@ -114,6 +115,12 @@ export class AuthController {
         .status(resultCodeToHttpException(result.status))
         .send({ errorsMessages: result.extensions });
     }
+
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT);
+  }
+
+  async recoveryPassword(req: RequestWithBodyType<PasswordRecoveryType>, res: Response) {
+    await this.authService.registrationEmailResending(req.body);
 
     res.sendStatus(HTTP_STATUSES.NO_CONTENT);
   }
