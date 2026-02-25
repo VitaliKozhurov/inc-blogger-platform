@@ -225,7 +225,7 @@ export class AuthService {
         },
       };
 
-      await this.usersRepository.updateUserById({ id: user.toString(), userData });
+      await this.usersRepository.updateUserById({ id: user._id.toString(), userData });
 
       this.emailRegistrationAdapter
         .sendPasswordRecoveryCode({ email, code: recoveryCode })
@@ -237,5 +237,24 @@ export class AuthService {
 
   async createNewPassword(credentials: NewPasswordInputType) {
     const { newPassword, recoveryCode } = credentials;
+
+    const user = await this.usersRepository.getUserByRecoveryCode(recoveryCode);
+
+    if (!user || !user.passwordRecovery) {
+      return authObjectResult.invalidRecoveryCode();
+    }
+
+    if (new Date(user.passwordRecovery.expirationDate) < new Date()) {
+      return authObjectResult.invalidRecoveryCode();
+    }
+
+    const passwordHash = await this.passwordHashAdapter.createPasswordHash(newPassword);
+
+    await this.usersRepository.updateUserPasswordByUserId({
+      id: user._id.toString(),
+      passwordHash,
+    });
+
+    return authObjectResult.success();
   }
 }

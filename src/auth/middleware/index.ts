@@ -6,3 +6,4 @@ export { registrationConfirmationInputModelMiddleware } from './registration-con
 export { registrationEmailResendingInputModelMiddleware } from './registration-email-resending-input-model.middleware';
 export { registrationInputModelMiddleware } from './registration-input-model.middleware';
 export { passwordRecoveryInputModelMiddleware } from './password-recovery-input-model.middleware';
+export { newPasswordInputModelMiddleware } from './new-password-input-model.middleware';

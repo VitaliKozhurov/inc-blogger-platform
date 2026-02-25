@@ -8,6 +8,7 @@ import { AuthController } from '../controller/auth.controller';
 import {
   accessTokenMiddleware,
   loginInputModelMiddleware,
+  newPasswordInputModelMiddleware,
   passwordRecoveryInputModelMiddleware,
   refreshTokenMiddleware,
   registrationConfirmationInputModelMiddleware,
@@ -71,4 +72,12 @@ authRouter.post(
   passwordRecoveryInputModelMiddleware,
   checkValidationMiddleware,
   authController.recoveryPassword.bind(authController)
+);
+
+authRouter.post(
+  APP_ROUTES.AUTH_NEW_PASSWORD,
+  getRateLimitMiddleware(),
+  newPasswordInputModelMiddleware,
+  checkValidationMiddleware,
+  authController.createNewPassword.bind(authController)
 );

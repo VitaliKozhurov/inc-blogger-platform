@@ -39,4 +39,11 @@ export const authObjectResult = {
       extensions: [{ field: 'code', message: 'Incorrect confirmation code' }],
     });
   },
+  invalidRecoveryCode() {
+    return new ResultObject({
+      status: RESULT_STATUSES.BAD_REQUEST,
+      data: null,
+      extensions: [{ field: 'recoveryCode', message: 'Incorrect recovery code' }],
+    });
+  },
 };
