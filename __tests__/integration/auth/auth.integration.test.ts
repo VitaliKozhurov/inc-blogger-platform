@@ -162,4 +162,15 @@ describe('Auth test', () => {
       expect(result.data?.refreshToken).toBeDefined();
     });
   });
+
+  describe('POST /password-recovery', () => {
+    jest.spyOn(emailRegistrationAdapter, 'sendPasswordRecoveryCode').mockResolvedValue(true);
+
+    it('should return a 200 status code', async () => {
+      const result = await authService.passwordRecovery({ email: SETTINGS.APP_EMAIL_ADDRESS });
+
+      expect(result.status).toBe(RESULT_STATUSES.OK);
+      expect(emailRegistrationAdapter.sendPasswordRecoveryCode).toHaveBeenCalled();
+    });
+  });
 });
