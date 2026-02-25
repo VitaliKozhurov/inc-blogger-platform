@@ -211,4 +211,24 @@ describe('Auth test', () => {
         .expect(HTTP_STATUSES.NO_CONTENT);
     });
   });
+
+  describe('POST /auth/password-recovery', () => {
+    it('should return a 204 status code if send correct email', async () => {
+      await testManager.context
+        .request()
+        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_PASSWORD_RECOVERY}`)
+        .send(mockUser)
+        .expect(HTTP_STATUSES.NO_CONTENT);
+    });
+
+    it('should return a 400 status code if send incorrect email', async () => {
+      const res = await testManager.context
+        .request()
+        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_PASSWORD_RECOVERY}`)
+        .send({ email: '' })
+        .expect(HTTP_STATUSES.BAD_REQUEST);
+
+      expect(res.body.errorsMessages.length).toBe(1);
+    });
+  });
 });
