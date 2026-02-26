@@ -1,1 +1,1 @@
-export { commentsService } from './comments.service';
+export { CommentsService } from './comments.service';

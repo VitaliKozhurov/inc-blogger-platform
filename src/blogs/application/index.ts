@@ -1,1 +1,1 @@
-export { blogsService } from './blogs.service';
+export { BlogsService } from './blogs.service';

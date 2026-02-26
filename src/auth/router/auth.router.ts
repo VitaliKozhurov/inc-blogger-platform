@@ -1,24 +1,22 @@
 import { Router } from 'express';
 
+import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware } from '../../core/middleware';
 import { getRateLimitMiddleware } from '../../logs/middleware';
+import { AuthController } from '../controller/auth.controller';
 import {
   accessTokenMiddleware,
   loginInputModelMiddleware,
+  newPasswordInputModelMiddleware,
+  passwordRecoveryInputModelMiddleware,
   refreshTokenMiddleware,
   registrationConfirmationInputModelMiddleware,
   registrationEmailResendingInputModelMiddleware,
   registrationInputModelMiddleware,
 } from '../middleware';
 
-import { loginHandler } from './handlers/login.handler';
-import { logoutHandler } from './handlers/logout.handler';
-import { meHandler } from './handlers/me.handler';
-import { refreshTokenHandler } from './handlers/refresh-token.handler';
-import { registrationConfirmationHandler } from './handlers/registration-confirmation.handler';
-import { registrationEmailResendingHandler } from './handlers/registration-email-resending.handler';
-import { registrationHandler } from './handlers/registration.handler';
+const authController = iocContainer.get(AuthController);
 
 export const authRouter = Router();
 
@@ -27,17 +25,17 @@ authRouter.post(
   getRateLimitMiddleware(),
   loginInputModelMiddleware,
   checkValidationMiddleware,
-  loginHandler
+  authController.login.bind(authController)
 );
 
-authRouter.get(APP_ROUTES.AUTH_ME, accessTokenMiddleware, meHandler);
+authRouter.get(APP_ROUTES.AUTH_ME, accessTokenMiddleware, authController.me.bind(authController));
 
 authRouter.post(
   APP_ROUTES.AUTH_REGISTRATION,
   getRateLimitMiddleware(),
   registrationInputModelMiddleware,
   checkValidationMiddleware,
-  registrationHandler
+  authController.registration.bind(authController)
 );
 
 authRouter.post(
@@ -45,7 +43,7 @@ authRouter.post(
   getRateLimitMiddleware(),
   registrationConfirmationInputModelMiddleware,
   checkValidationMiddleware,
-  registrationConfirmationHandler
+  authController.registrationConfirmation.bind(authController)
 );
 
 authRouter.post(
@@ -53,9 +51,33 @@ authRouter.post(
   getRateLimitMiddleware(),
   registrationEmailResendingInputModelMiddleware,
   checkValidationMiddleware,
-  registrationEmailResendingHandler
+  authController.registrationEmailResending.bind(authController)
 );
 
-authRouter.post(APP_ROUTES.AUTH_REFRESH_TOKEN, refreshTokenMiddleware, refreshTokenHandler);
+authRouter.post(
+  APP_ROUTES.AUTH_REFRESH_TOKEN,
+  refreshTokenMiddleware,
+  authController.refreshToken.bind(authController)
+);
 
-authRouter.post(APP_ROUTES.AUTH_LOGOUT, refreshTokenMiddleware, logoutHandler);
+authRouter.post(
+  APP_ROUTES.AUTH_LOGOUT,
+  refreshTokenMiddleware,
+  authController.logout.bind(authController)
+);
+
+authRouter.post(
+  APP_ROUTES.AUTH_PASSWORD_RECOVERY,
+  getRateLimitMiddleware(),
+  passwordRecoveryInputModelMiddleware,
+  checkValidationMiddleware,
+  authController.recoveryPassword.bind(authController)
+);
+
+authRouter.post(
+  APP_ROUTES.AUTH_NEW_PASSWORD,
+  getRateLimitMiddleware(),
+  newPasswordInputModelMiddleware,
+  checkValidationMiddleware,
+  authController.createNewPassword.bind(authController)
+);

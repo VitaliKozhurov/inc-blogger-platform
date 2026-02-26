@@ -1,3 +1,3 @@
-export { passwordHashAdapter } from './password-hash.adapter';
-export { jwtAdapter } from './jwt.adapter';
-export { emailAdapter } from './email.adapter';
+export { PasswordHashAdapter } from './password-hash.adapter';
+export { JWTAdapter } from './jwt.adapter';
+export { EmailAdapter } from './email.adapter';

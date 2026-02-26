@@ -1,17 +1,18 @@
-import { ObjectId, WithId } from 'mongodb';
+import { injectable } from 'inversify';
+import { ObjectId } from 'mongodb';
 
-import { Nullable } from '../../core/types';
 import { postsCollection } from '../../db';
 import { PostDBType, UpdatePostInputType } from '../types';
 
-export const postsRepository = {
-  createPost: async (post: PostDBType): Promise<string> => {
+@injectable()
+export class PostsRepository {
+  async createPost(post: PostDBType) {
     const { insertedId } = await postsCollection.insertOne(post);
 
     return insertedId.toString();
-  },
+  }
 
-  updatePostById: async (args: { id: string; postData: UpdatePostInputType }): Promise<boolean> => {
+  async updatePostById(args: { id: string; postData: UpdatePostInputType }) {
     const { id, postData } = args;
 
     const { modifiedCount } = await postsCollection.updateOne(
@@ -20,15 +21,15 @@ export const postsRepository = {
     );
 
     return modifiedCount > 0;
-  },
+  }
 
-  deletePostById: async (id: string): Promise<boolean> => {
+  async deletePostById(id: string) {
     const { deletedCount } = await postsCollection.deleteOne({ _id: new ObjectId(id) });
 
     return deletedCount > 0;
-  },
+  }
 
-  async getPostById(id: string): Promise<Nullable<WithId<PostDBType>>> {
+  async getPostById(id: string) {
     return postsCollection.findOne({ _id: new ObjectId(id) });
-  },
-};
+  }
+}

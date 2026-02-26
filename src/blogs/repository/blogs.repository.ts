@@ -1,17 +1,22 @@
-import { ObjectId, WithId } from 'mongodb';
+import { injectable } from 'inversify';
+import { ObjectId } from 'mongodb';
 
-import { Nullable } from '../../core/types';
 import { blogsCollection } from '../../db';
 import { BlogDBType, UpdateBlogInputType } from '../types';
 
-export const blogsRepository = {
-  createBlog: async (blogData: BlogDBType): Promise<string> => {
+@injectable()
+export class BlogsRepository {
+  async getBlogById(id: string) {
+    return blogsCollection.findOne({ _id: new ObjectId(id) });
+  }
+
+  async createBlog(blogData: BlogDBType) {
     const { insertedId } = await blogsCollection.insertOne(blogData);
 
     return insertedId.toString();
-  },
+  }
 
-  updateBlogById: async (args: { id: string; blogData: UpdateBlogInputType }): Promise<boolean> => {
+  async updateBlogById(args: { id: string; blogData: UpdateBlogInputType }) {
     const { id, blogData } = args;
 
     const { modifiedCount } = await blogsCollection.updateOne(
@@ -20,15 +25,11 @@ export const blogsRepository = {
     );
 
     return modifiedCount > 0;
-  },
+  }
 
-  deleteBlogById: async (id: string): Promise<boolean> => {
+  async deleteBlogById(id: string) {
     const { deletedCount } = await blogsCollection.deleteOne({ _id: new ObjectId(id) });
 
     return deletedCount > 0;
-  },
-
-  async getBlogById(id: string): Promise<Nullable<WithId<BlogDBType>>> {
-    return blogsCollection.findOne({ _id: new ObjectId(id) });
-  },
-};
+  }
+}

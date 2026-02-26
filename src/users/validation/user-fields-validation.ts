@@ -13,7 +13,10 @@ export const USER_VALIDATION_LENGTH = {
 
 export const USER_LOGIN_REG_EXP = /^[a-zA-Z0-9_-]*$/;
 
-export const userFieldsValidation: Omit<UserFieldsValidationType, 'emailConfirmation'> = {
+export const userFieldsValidation: Omit<
+  UserFieldsValidationType,
+  'emailConfirmation' | 'passwordRecovery'
+> = {
   [UserFields.LOGIN]: body(UserFields.LOGIN)
     .exists()
     .withMessage(ERROR_FIELD_MESSAGES.REQUIRED(UserFields.LOGIN))

@@ -1,1 +1,1 @@
-export { userDeviceSessionService } from './user-device-session.service';
+export { UserDeviceSessionsService } from './user-device-session.service';

@@ -1,13 +1,20 @@
 import { randomUUID } from 'crypto';
 
 import { add } from 'date-fns/add';
+import { inject, injectable } from 'inversify';
 
-import { passwordHashAdapter } from '../../core/adapters';
-import { userDeviceSessionService } from '../../sessions/application';
-import { usersRepository } from '../../users/repository/users.repository';
+import { PasswordHashAdapter } from '../../core/adapters';
+import { UserDeviceSessionsService } from '../../sessions/application';
+import { UsersRepository } from '../../users/repository';
 import { UserDBType } from '../../users/types';
-import { authTokenAdapter, emailRegistrationAdapter } from '../adapters';
-import { LoginInputType, RegistrationEmailResendingType, RegistrationInputType } from '../types';
+import { AuthTokenAdapter, EmailRegistrationAdapter } from '../adapters';
+import {
+  LoginInputType,
+  NewPasswordInputType,
+  PasswordRecoveryType,
+  RegistrationEmailResendingType,
+  RegistrationInputType,
+} from '../types';
 import { authObjectResult } from '../utils/auth-object-result';
 
 type LoginArgs = {
@@ -18,17 +25,26 @@ type LoginArgs = {
 
 type RefreshTokenArgs = { ip: string; refreshToken: string };
 
-export const authService = {
+@injectable()
+export class AuthService {
+  constructor(
+    @inject(UsersRepository) protected usersRepository: UsersRepository,
+    @inject(AuthTokenAdapter) protected authTokenAdapter: AuthTokenAdapter,
+    @inject(EmailRegistrationAdapter) protected emailRegistrationAdapter: EmailRegistrationAdapter,
+    @inject(PasswordHashAdapter) protected passwordHashAdapter: PasswordHashAdapter,
+    @inject(UserDeviceSessionsService) protected userDeviceSessionService: UserDeviceSessionsService
+  ) {}
+
   async login({ credentials, ...restArgs }: LoginArgs) {
     const { loginOrEmail, password } = credentials;
 
-    const user = await usersRepository.getUserByLoginOrEmail(loginOrEmail);
+    const user = await this.usersRepository.getUserByLoginOrEmail(loginOrEmail);
 
     if (!user) {
       return authObjectResult.invalidCredentials();
     }
 
-    const isVerified = await passwordHashAdapter.verifyPassword({
+    const isVerified = await this.passwordHashAdapter.verifyPassword({
       password,
       hash: user.passwordHash,
     });
@@ -44,21 +60,27 @@ export const authService = {
     const userId = user._id.toString();
     const deviceId = randomUUID();
 
-    const accessToken = authTokenAdapter.createAccessToken({ userId });
-    const refreshToken = authTokenAdapter.createRefreshToken({ userId, deviceId });
+    const accessToken = this.authTokenAdapter.createAccessToken({ userId });
+    const refreshToken = this.authTokenAdapter.createRefreshToken({ userId, deviceId });
 
-    await userDeviceSessionService.saveUserSession({ userId, refreshToken, deviceId, ...restArgs });
+    await this.userDeviceSessionService.saveUserSession({
+      userId,
+      refreshToken,
+      deviceId,
+      ...restArgs,
+    });
 
     return authObjectResult.success({ accessToken, refreshToken });
-  },
+  }
+
   async refreshToken({ ip, refreshToken }: RefreshTokenArgs) {
-    const tokenResult = authTokenAdapter.decodeRefreshToken(refreshToken);
+    const tokenResult = this.authTokenAdapter.decodeRefreshToken(refreshToken);
 
     if (!tokenResult) {
       return authObjectResult.invalidCredentials();
     }
 
-    const user = await usersRepository.getUserById(tokenResult.userId);
+    const user = await this.usersRepository.getUserById(tokenResult.userId);
 
     if (!user) {
       return authObjectResult.invalidCredentials();
@@ -68,10 +90,10 @@ export const authService = {
     const deviceId = tokenResult.deviceId;
     const prevIat = tokenResult.iat;
 
-    const newAccessToken = authTokenAdapter.createAccessToken({ userId });
-    const newRefreshToken = authTokenAdapter.createRefreshToken({ userId, deviceId });
+    const newAccessToken = this.authTokenAdapter.createAccessToken({ userId });
+    const newRefreshToken = this.authTokenAdapter.createRefreshToken({ userId, deviceId });
 
-    const isUpdated = await userDeviceSessionService.updateUserSession({
+    const isUpdated = await this.userDeviceSessionService.updateUserSession({
       prevIat,
       ip,
       refreshToken: newRefreshToken,
@@ -85,13 +107,14 @@ export const authService = {
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,
     });
-  },
+  }
+
   async registration(credentials: RegistrationInputType) {
     const { login, email, password } = credentials;
 
     const [useByLogin, userByEmail] = await Promise.all([
-      usersRepository.getUserByLoginOrEmail(login),
-      usersRepository.getUserByLoginOrEmail(email),
+      this.usersRepository.getUserByLoginOrEmail(login),
+      this.usersRepository.getUserByLoginOrEmail(email),
     ]);
 
     if (useByLogin) {
@@ -102,7 +125,7 @@ export const authService = {
       return authObjectResult.registrationInvalidCredentials('email');
     }
 
-    const passwordHash = await passwordHashAdapter.createPasswordHash(password);
+    const passwordHash = await this.passwordHashAdapter.createPasswordHash(password);
 
     const confirmationCode = randomUUID();
 
@@ -118,14 +141,17 @@ export const authService = {
       },
     };
 
-    const userId = await usersRepository.createUser(newUser);
+    const userId = await this.usersRepository.createUser(newUser);
 
-    emailRegistrationAdapter.sendConfirmationCode({ email, code: confirmationCode });
+    this.emailRegistrationAdapter
+      .sendConfirmationCode({ email, code: confirmationCode })
+      .catch(err => console.log(err));
 
     return authObjectResult.success(userId);
-  },
+  }
+
   async registrationConfirmation(code: string) {
-    const user = await usersRepository.getUserByConfirmationCode(code);
+    const user = await this.usersRepository.getUserByConfirmationCode(code);
 
     if (!user) {
       return authObjectResult.invalidConfirmationCode();
@@ -144,12 +170,13 @@ export const authService = {
       emailConfirmation: { isConfirmed: true, confirmationCode: '', expirationDate: '' },
     };
 
-    await usersRepository.updateUserById({ id: user._id.toString(), userData });
+    await this.usersRepository.updateUserById({ id: user._id.toString(), userData });
 
     return authObjectResult.success();
-  },
+  }
+
   async registrationEmailResending(credentials: RegistrationEmailResendingType) {
-    const userByEmail = await usersRepository.getUserByLoginOrEmail(credentials.email);
+    const userByEmail = await this.usersRepository.getUserByLoginOrEmail(credentials.email);
 
     if (!userByEmail) {
       return authObjectResult.registrationInvalidCredentials('email');
@@ -170,13 +197,64 @@ export const authService = {
       },
     };
 
-    await usersRepository.updateUserById({ id: userByEmail._id.toString(), userData });
+    await this.usersRepository.updateUserById({ id: userByEmail._id.toString(), userData });
 
-    emailRegistrationAdapter.resendConfirmationCode({
-      email: credentials.email,
-      code: confirmationCode,
+    this.emailRegistrationAdapter
+      .resendConfirmationCode({
+        email: credentials.email,
+        code: confirmationCode,
+      })
+      .catch(err => console.log(err));
+
+    return authObjectResult.success();
+  }
+
+  async passwordRecovery(credentials: PasswordRecoveryType) {
+    const { email } = credentials;
+
+    const user = await this.usersRepository.getUserByLoginOrEmail(email);
+
+    if (user) {
+      const recoveryCode = randomUUID();
+
+      const userData = {
+        ...user,
+        passwordRecovery: {
+          recoveryCode,
+          expirationDate: add(new Date(), { hours: 1 }).toISOString(),
+        },
+      };
+
+      await this.usersRepository.updateUserById({ id: user._id.toString(), userData });
+
+      this.emailRegistrationAdapter
+        .sendPasswordRecoveryCode({ email, code: recoveryCode })
+        .catch(err => console.log(err));
+    }
+
+    return authObjectResult.success();
+  }
+
+  async createNewPassword(credentials: NewPasswordInputType) {
+    const { newPassword, recoveryCode } = credentials;
+
+    const user = await this.usersRepository.getUserByRecoveryCode(recoveryCode);
+
+    if (!user || !user.passwordRecovery) {
+      return authObjectResult.invalidRecoveryCode();
+    }
+
+    if (new Date(user.passwordRecovery.expirationDate) < new Date()) {
+      return authObjectResult.invalidRecoveryCode();
+    }
+
+    const passwordHash = await this.passwordHashAdapter.createPasswordHash(newPassword);
+
+    await this.usersRepository.updateUserPasswordByUserId({
+      id: user._id.toString(),
+      passwordHash,
     });
 
     return authObjectResult.success();
-  },
-};
+  }
+}

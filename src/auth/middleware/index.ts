@@ -5,3 +5,5 @@ export { refreshTokenMiddleware } from './refresh-token.middleware';
 export { registrationConfirmationInputModelMiddleware } from './registration-confirmation-input-model.middleware';
 export { registrationEmailResendingInputModelMiddleware } from './registration-email-resending-input-model.middleware';
 export { registrationInputModelMiddleware } from './registration-input-model.middleware';
+export { passwordRecoveryInputModelMiddleware } from './password-recovery-input-model.middleware';
+export { newPasswordInputModelMiddleware } from './new-password-input-model.middleware';

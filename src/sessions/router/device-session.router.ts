@@ -1,28 +1,28 @@
 import { Router } from 'express';
 
 import { refreshTokenMiddleware } from '../../auth/middleware';
+import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
+import { UserDeviceSessionsController } from '../controller';
 
-import { deleteDeviceSessionByIdHandler } from './handlers/delete-device-session-by-id.handler';
-import { deleteDevicesSessionsHandler } from './handlers/delete-devices-sessions';
-import { getDevicesSessionsHandler } from './handlers/get-devices-sessions.handler';
+const userDeviceSessionsController = iocContainer.get(UserDeviceSessionsController);
 
 export const deviceSessionRouter = Router();
 
 deviceSessionRouter.get(
   APP_ROUTES.SECURITY_DEVICES,
   refreshTokenMiddleware,
-  getDevicesSessionsHandler
+  userDeviceSessionsController.getDeviceSessions.bind(userDeviceSessionsController)
 );
 
 deviceSessionRouter.delete(
   APP_ROUTES.SECURITY_DEVICES,
   refreshTokenMiddleware,
-  deleteDevicesSessionsHandler
+  userDeviceSessionsController.deleteDevicesSessions.bind(userDeviceSessionsController)
 );
 
 deviceSessionRouter.delete(
   `${APP_ROUTES.SECURITY_DEVICES}${APP_ROUTES.ID}`,
   refreshTokenMiddleware,
-  deleteDeviceSessionByIdHandler
+  userDeviceSessionsController.deleteDeviceSessionById.bind(userDeviceSessionsController)
 );

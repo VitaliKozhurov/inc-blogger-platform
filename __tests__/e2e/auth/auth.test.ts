@@ -1,6 +1,8 @@
 import { ObjectId } from 'mongodb';
 
-import { jwtAdapter } from '../../../src/core/adapters';
+import { AuthTokenAdapter } from '../../../src/auth/adapters';
+import { iocContainer } from '../../../src/composition-root';
+import { JWTAdapter } from '../../../src/core/adapters';
 import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
@@ -8,10 +10,10 @@ import { TestManager } from '../../utils/test-manager';
 import { createUser } from '../../utils/users/create-user';
 import { mockUser } from '../../utils/users/mock';
 
-import { authTokenAdapter } from './../../../src/auth/adapters/auth-token.adapter';
-
 describe('Auth test', () => {
   const testManager = new TestManager();
+  const jwtAdapter = iocContainer.get(JWTAdapter);
+  const authTokenAdapter = iocContainer.get(AuthTokenAdapter);
 
   beforeAll(async () => {
     await testManager.init();
@@ -193,16 +195,40 @@ describe('Auth test', () => {
     it('should return a 204 status code', async () => {
       const createdUser = await createUser(testManager);
 
-      const refreshToken = authTokenAdapter.createRefreshToken({
-        userId: createdUser.id,
-        deviceId: 'device id',
-      });
+      const response = await testManager.context
+        .request()
+        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGIN}`)
+        .send({ loginOrEmail: createdUser.login, password: mockUser.password });
+
+      const cookies = response.headers['set-cookie'];
+
+      const refreshToken = cookies[0].split(';')[0].split('=')[1];
 
       await testManager.context
         .request()
         .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_LOGOUT}`)
         .set('Cookie', `refreshToken=${refreshToken}`)
         .expect(HTTP_STATUSES.NO_CONTENT);
+    });
+  });
+
+  describe('POST /auth/password-recovery', () => {
+    it('should return a 204 status code if send correct email', async () => {
+      await testManager.context
+        .request()
+        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_PASSWORD_RECOVERY}`)
+        .send(mockUser)
+        .expect(HTTP_STATUSES.NO_CONTENT);
+    });
+
+    it('should return a 400 status code if send incorrect email', async () => {
+      const res = await testManager.context
+        .request()
+        .post(`${APP_ROUTES.AUTH}${APP_ROUTES.AUTH_PASSWORD_RECOVERY}`)
+        .send({ email: '' })
+        .expect(HTTP_STATUSES.BAD_REQUEST);
+
+      expect(res.body.errorsMessages.length).toBe(1);
     });
   });
 });

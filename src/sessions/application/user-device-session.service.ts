@@ -1,7 +1,8 @@
-import { authTokenAdapter } from '../../auth/adapters';
-import { userDeviceSessionRepository } from '../repository';
-import { sessionObjectResult } from '../utils/session-object-result';
+import { inject, injectable } from 'inversify';
 
+import { AuthTokenAdapter } from '../../auth/adapters';
+import { UserDeviceSessionsRepository } from '../repository';
+import { sessionObjectResult } from '../utils/session-object-result';
 type SaveSessionArgs = {
   refreshToken: string;
   userId: string;
@@ -16,11 +17,18 @@ type UpdateSessionArgs = {
   refreshToken: string;
 };
 
-export const userDeviceSessionService = {
+@injectable()
+export class UserDeviceSessionsService {
+  constructor(
+    @inject(AuthTokenAdapter) private authTokenAdapter: AuthTokenAdapter,
+    @inject(UserDeviceSessionsRepository)
+    private userDeviceSessionsRepository: UserDeviceSessionsRepository
+  ) {}
+
   async saveUserSession(args: SaveSessionArgs) {
     const { ip, deviceId, deviceName, refreshToken, userId } = args;
 
-    const { iat, exp: expirationAt } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
+    const { iat, exp: expirationAt } = this.authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
     const userSessionData = {
       userId,
@@ -32,12 +40,16 @@ export const userDeviceSessionService = {
       expirationDate: new Date(expirationAt * 1000),
     };
 
-    await userDeviceSessionRepository.addUserSession(userSessionData);
-  },
+    await this.userDeviceSessionsRepository.addUserSession(userSessionData);
+  }
   async updateUserSession({ prevIat, ip, refreshToken }: UpdateSessionArgs) {
-    const { deviceId, iat, exp: expirationAt } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
+    const {
+      deviceId,
+      iat,
+      exp: expirationAt,
+    } = this.authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
-    return userDeviceSessionRepository.updateUserSession({
+    return this.userDeviceSessionsRepository.updateUserSession({
       deviceId,
       prevIat,
       ip,
@@ -45,19 +57,19 @@ export const userDeviceSessionService = {
       expirationAt,
       expirationDate: new Date(expirationAt * 1000),
     });
-  },
+  }
   async deleteUserSessionsExceptTheCurrent(refreshToken: string) {
-    const { deviceId } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
+    const { deviceId } = this.authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
-    await userDeviceSessionRepository.deleteUserSessionsExceptTheCurrent({ deviceId });
-  },
+    await this.userDeviceSessionsRepository.deleteUserSessionsExceptTheCurrent({ deviceId });
+  }
   async deleteUserSessionByRefreshToken(refreshToken: string) {
-    const { deviceId } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
+    const { deviceId } = this.authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
-    await userDeviceSessionRepository.deleteUserSession({ deviceId });
+    await this.userDeviceSessionsRepository.deleteUserSession({ deviceId });
 
     return sessionObjectResult.success();
-  },
+  }
   async deleteUserSessionByDeviceId({
     deviceId,
     refreshToken,
@@ -65,9 +77,9 @@ export const userDeviceSessionService = {
     deviceId: string;
     refreshToken: string;
   }) {
-    const decodedToken = authTokenAdapter.decodeRefreshToken(refreshToken)!;
+    const decodedToken = this.authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
-    const sessionForDeleting = await userDeviceSessionRepository.getUserSessionByFilter({
+    const sessionForDeleting = await this.userDeviceSessionsRepository.getUserSessionByFilter({
       deviceId,
     });
 
@@ -75,17 +87,19 @@ export const userDeviceSessionService = {
       return sessionObjectResult.notFound();
     }
 
-    const isMySession = !!(await userDeviceSessionRepository.getUserSessionByFilter({
+    const session = await this.userDeviceSessionsRepository.getUserSessionByFilter({
       deviceId,
       userId: decodedToken.userId,
-    }));
+    });
+
+    const isMySession = !!session;
 
     if (!isMySession) {
       return sessionObjectResult.forbidden();
     }
 
-    await userDeviceSessionRepository.deleteUserSession({ deviceId });
+    await this.userDeviceSessionsRepository.deleteUserSession({ deviceId });
 
     return sessionObjectResult.success();
-  },
-};
+  }
+}

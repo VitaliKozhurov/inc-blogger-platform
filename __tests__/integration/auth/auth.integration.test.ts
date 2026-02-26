@@ -2,17 +2,23 @@ import { add } from 'date-fns';
 import { Db, ObjectId } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
-import { authTokenAdapter, emailRegistrationAdapter } from '../../../src/auth/adapters';
-import { authService } from '../../../src/auth/application';
+import { AuthTokenAdapter, EmailRegistrationAdapter } from '../../../src/auth/adapters';
+import { AuthService } from '../../../src/auth/application';
+import { iocContainer } from '../../../src/composition-root';
 import { HTTP_STATUSES } from '../../../src/core/types';
 import { RESULT_STATUSES } from '../../../src/core/utils';
 import { runDB, stopDb } from '../../../src/db/mongo.db';
-import { userDeviceSessionService } from '../../../src/sessions/application';
+import { UserDeviceSessionsService } from '../../../src/sessions/application';
 import { UserDBType } from '../../../src/users/types';
 
 import { SETTINGS } from './../../../src/core/settings/settings';
 
 describe('Auth test', () => {
+  const authService = iocContainer.get(AuthService);
+  const authTokenAdapter = iocContainer.get(AuthTokenAdapter);
+  const userDeviceSessionService = iocContainer.get(UserDeviceSessionsService);
+  const emailRegistrationAdapter = iocContainer.get(EmailRegistrationAdapter);
+
   const confirmationCode = '123';
   let DB: Db;
 
@@ -154,6 +160,30 @@ describe('Auth test', () => {
 
       expect(result.data?.accessToken).toBeDefined();
       expect(result.data?.refreshToken).toBeDefined();
+    });
+  });
+
+  describe('POST /password-recovery', () => {
+    jest.spyOn(emailRegistrationAdapter, 'sendPasswordRecoveryCode').mockResolvedValue(true);
+
+    it('should return a 200 status code', async () => {
+      const createdUser = await createUser();
+      const result = await authService.passwordRecovery({ email: createdUser.email });
+
+      expect(result.status).toBe(RESULT_STATUSES.OK);
+      expect(emailRegistrationAdapter.sendPasswordRecoveryCode).toHaveBeenCalled();
+    });
+  });
+
+  describe('POST /new-password', () => {
+    it('should return a 200 status code', async () => {
+      const createdUser = await createUser();
+
+      await authService.passwordRecovery({ email: createdUser.email });
+
+      const user = await DB.collection('users').findOne({ _id: createdUser._id });
+
+      expect(user?.passwordRecovery.recoveryCode).toBeDefined();
     });
   });
 });

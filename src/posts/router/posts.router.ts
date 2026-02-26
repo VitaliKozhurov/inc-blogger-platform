@@ -5,18 +5,14 @@ import {
   commentInputModelMiddleware,
   commentInputQueryMiddleware,
 } from '../../comments/middleware';
+import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware, idUriParamMiddleware } from '../../core/middleware';
+import { PostsController } from '../controller';
 import { postInputQueryMiddleware } from '../middleware';
 import { postInputModelMiddleware } from '../middleware/post-input-model.middleware';
 
-import { createCommentByPostIdHandler } from './handlers/create-comment-by-post-id.handler';
-import { createPostHandler } from './handlers/create-post.handler';
-import { deletePostByIdHandler } from './handlers/delete-post-by-id.handler';
-import { getCommentsByPostIdHandler } from './handlers/get-comments-by-post-id.handler';
-import { getPostByIdHandler } from './handlers/get-post-by-id.handler';
-import { getPostsHandler } from './handlers/get-posts.handler';
-import { updatePostByIdHandler } from './handlers/update-post-by-id.handler';
+const postsController = iocContainer.get(PostsController);
 
 export const postRouter = Router();
 
@@ -24,17 +20,22 @@ postRouter.get(
   APP_ROUTES.ROOT,
   postInputQueryMiddleware,
   checkValidationMiddleware,
-  getPostsHandler
+  postsController.getPosts.bind(postsController)
 );
 
-postRouter.get(APP_ROUTES.ID, idUriParamMiddleware, checkValidationMiddleware, getPostByIdHandler);
+postRouter.get(
+  APP_ROUTES.ID,
+  idUriParamMiddleware,
+  checkValidationMiddleware,
+  postsController.getPostById.bind(postsController)
+);
 
 postRouter.post(
   APP_ROUTES.ROOT,
   basicAuthMiddleware,
   postInputModelMiddleware,
   checkValidationMiddleware,
-  createPostHandler
+  postsController.createPost.bind(postsController)
 );
 
 postRouter.put(
@@ -43,7 +44,7 @@ postRouter.put(
   idUriParamMiddleware,
   postInputModelMiddleware,
   checkValidationMiddleware,
-  updatePostByIdHandler
+  postsController.updatePostById.bind(postsController)
 );
 
 postRouter.delete(
@@ -51,7 +52,7 @@ postRouter.delete(
   basicAuthMiddleware,
   idUriParamMiddleware,
   checkValidationMiddleware,
-  deletePostByIdHandler
+  postsController.deletePostById.bind(postsController)
 );
 
 postRouter.get(
@@ -59,7 +60,7 @@ postRouter.get(
   idUriParamMiddleware,
   commentInputQueryMiddleware,
   checkValidationMiddleware,
-  getCommentsByPostIdHandler
+  postsController.getCommentsByPostId.bind(postsController)
 );
 
 postRouter.post(
@@ -68,5 +69,5 @@ postRouter.post(
   idUriParamMiddleware,
   commentInputModelMiddleware,
   checkValidationMiddleware,
-  createCommentByPostIdHandler
+  postsController.createCommentByPostId.bind(postsController)
 );

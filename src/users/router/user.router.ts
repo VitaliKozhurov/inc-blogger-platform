@@ -1,22 +1,22 @@
 import { Router } from 'express';
 
 import { basicAuthMiddleware } from '../../auth/middleware';
+import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware, idUriParamMiddleware } from '../../core/middleware';
+import { UsersController } from '../controller/users.controller';
 import { userInputModelMiddleware, usersInputQueryMiddleware } from '../middleware';
 
-import { createUserHandler } from './handlers/create-user-handler';
-import { deleteUserByIdHandler } from './handlers/delete-user-by-id.handler';
-import { getUsersHandler } from './handlers/get-users.handler';
-
 export const userRouter = Router();
+
+const usersController = iocContainer.get(UsersController);
 
 userRouter.get(
   APP_ROUTES.ROOT,
   basicAuthMiddleware,
   usersInputQueryMiddleware,
   checkValidationMiddleware,
-  getUsersHandler
+  usersController.getUsers.bind(usersController)
 );
 
 userRouter.post(
@@ -24,7 +24,7 @@ userRouter.post(
   basicAuthMiddleware,
   userInputModelMiddleware,
   checkValidationMiddleware,
-  createUserHandler
+  usersController.createUser.bind(usersController)
 );
 
 userRouter.delete(
@@ -32,5 +32,5 @@ userRouter.delete(
   basicAuthMiddleware,
   idUriParamMiddleware,
   checkValidationMiddleware,
-  deleteUserByIdHandler
+  usersController.deleteUserById.bind(usersController)
 );

@@ -3,6 +3,8 @@ declare namespace NodeJS {
     AUTH_TOKEN: string;
     JWT_ACCESS_SECRET: string;
     JWT_ACCESS_TIME: number;
+    JWT_REFRESH_SECRET: string;
+    JWT_REFRESH_TIME: number;
     PORT: number;
     MONGO_URL: string;
     DB_NAME: string;

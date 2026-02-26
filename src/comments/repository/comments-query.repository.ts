@@ -1,3 +1,4 @@
+import { injectable } from 'inversify';
 import { ObjectId, WithId } from 'mongodb';
 
 import { Nullable } from '../../core/types';
@@ -6,7 +7,8 @@ import { commentsCollection } from '../../db/mongo.db';
 import { CommentDbType, CommentsRequestQueryType } from '../types';
 import { CommentViewModelType } from '../types/comment.view-model';
 
-export const commentsQWRepository = {
+@injectable()
+export class CommentsQueryRepository {
   async getCommentsByPostId({
     postId,
     query,
@@ -25,20 +27,22 @@ export const commentsQWRepository = {
     const totalCount = await commentsCollection.countDocuments({ postId });
 
     const paginationData = getPaginationData({
-      items: items.map(this._mapToViewModel),
+      items: items.map(this.mapToViewModel),
       pageNumber: query.pageNumber,
       pageSize: query.pageSize,
       totalCount,
     });
 
     return paginationData;
-  },
+  }
+
   async getCommentById(id: string): Promise<Nullable<CommentViewModelType>> {
     const comment = await commentsCollection.findOne({ _id: new ObjectId(id) });
 
-    return comment ? this._mapToViewModel(comment) : comment;
-  },
-  _mapToViewModel({ _id, postId: _, ...restComment }: WithId<CommentDbType>) {
+    return comment ? this.mapToViewModel(comment) : comment;
+  }
+
+  private mapToViewModel({ _id, postId: _, ...restComment }: WithId<CommentDbType>) {
     return { id: _id.toString(), ...restComment };
-  },
-};
+  }
+}

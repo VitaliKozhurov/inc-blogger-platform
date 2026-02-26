@@ -1,3 +1,4 @@
+import { injectable } from 'inversify';
 import { Filter, ObjectId, WithId } from 'mongodb';
 
 import { Nullable, ResponseWithPaginationType } from '../../core/types';
@@ -11,7 +12,8 @@ import {
 } from '../types';
 import { UserFields } from '../types/user-fields';
 
-export const usersQWRepository = {
+@injectable()
+export class UsersQueryRepository {
   async getUsers(
     args: UsersRequestQueryType
   ): Promise<ResponseWithPaginationType<UserViewModelType>> {
@@ -53,11 +55,11 @@ export const usersQWRepository = {
       totalCount,
       pageNumber: restArgs.pageNumber,
       pageSize: restArgs.pageSize,
-      items: items.map(this._mapToViewModel),
+      items: items.map(this.mapToViewModel),
     });
 
     return paginationData;
-  },
+  }
   async getUserById(id: string): Promise<Nullable<UserViewModelType>> {
     const user = await usersCollection.findOne({ _id: new ObjectId(id) });
 
@@ -65,8 +67,8 @@ export const usersQWRepository = {
       return null;
     }
 
-    return this._mapToViewModel(user);
-  },
+    return this.mapToViewModel(user);
+  }
   async getMeUserById(id: string): Promise<Nullable<MeUserViewModelType>> {
     const user = await usersCollection.findOne({ _id: new ObjectId(id) });
 
@@ -75,13 +77,13 @@ export const usersQWRepository = {
     }
 
     return { userId: user._id.toString(), email: user.email, login: user.login };
-  },
-  _mapToViewModel(user: WithId<UserDBType>): UserViewModelType {
+  }
+  private mapToViewModel(user: WithId<UserDBType>): UserViewModelType {
     return {
       id: user._id.toString(),
       login: user.login,
       email: user.email,
       createdAt: user.createdAt,
     };
-  },
-};
+  }
+}

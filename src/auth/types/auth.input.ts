@@ -12,3 +12,9 @@ export type RegistrationConfirmationInputType = {
 };
 
 export type RegistrationEmailResendingType = Pick<RegistrationInputType, 'email'>;
+export type PasswordRecoveryType = Pick<RegistrationInputType, 'email'>;
+
+export type NewPasswordInputType = {
+  newPassword: string;
+  recoveryCode: string;
+};

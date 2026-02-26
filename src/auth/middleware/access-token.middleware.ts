@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { iocContainer } from '../../composition-root';
 import { HTTP_STATUSES } from '../../core/types';
-import { authTokenAdapter } from '../adapters';
+import { AuthTokenAdapter } from '../adapters';
+
+const authTokenAdapter = iocContainer.get(AuthTokenAdapter);
 
 export const accessTokenMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const authToken = req.headers.authorization;

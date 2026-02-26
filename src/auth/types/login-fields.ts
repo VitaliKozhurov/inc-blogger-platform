@@ -3,4 +3,5 @@ export enum AuthFields {
   PASSWORD = 'password',
   LOGIN = 'login',
   EMAIL = 'email',
+  NEW_PASSWORD = 'newPassword',
 }
