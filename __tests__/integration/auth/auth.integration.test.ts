@@ -14,10 +14,10 @@ import { UserDBType } from '../../../src/users/types';
 import { SETTINGS } from './../../../src/core/settings/settings';
 
 describe('Auth test', () => {
-  const authTokenAdapter = iocContainer.get(AuthTokenAdapter);
-  const emailRegistrationAdapter = iocContainer.get(EmailRegistrationAdapter);
   const authService = iocContainer.get(AuthService);
+  const authTokenAdapter = iocContainer.get(AuthTokenAdapter);
   const userDeviceSessionService = iocContainer.get(UserDeviceSessionsService);
+  const emailRegistrationAdapter = iocContainer.get(EmailRegistrationAdapter);
 
   const confirmationCode = '123';
   let DB: Db;
@@ -167,10 +167,23 @@ describe('Auth test', () => {
     jest.spyOn(emailRegistrationAdapter, 'sendPasswordRecoveryCode').mockResolvedValue(true);
 
     it('should return a 200 status code', async () => {
-      const result = await authService.passwordRecovery({ email: SETTINGS.APP_EMAIL_ADDRESS });
+      const createdUser = await createUser();
+      const result = await authService.passwordRecovery({ email: createdUser.email });
 
       expect(result.status).toBe(RESULT_STATUSES.OK);
       expect(emailRegistrationAdapter.sendPasswordRecoveryCode).toHaveBeenCalled();
+    });
+  });
+
+  describe('POST /new-password', () => {
+    it('should return a 200 status code', async () => {
+      const createdUser = await createUser();
+
+      await authService.passwordRecovery({ email: createdUser.email });
+
+      const user = await DB.collection('users').findOne({ _id: createdUser._id });
+
+      expect(user?.passwordRecovery.recoveryCode).toBeDefined();
     });
   });
 });
