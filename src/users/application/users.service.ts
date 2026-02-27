@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 
 import { PasswordHashAdapter } from '../../core/adapters';
 import { UsersRepository } from '../repository';
-import { CreateUserInputType, UserDBType } from '../types';
+import { CreateUserInputType } from '../types';
 import { usersObjectResult } from '../utils/users-object-result';
 
 @injectable()
@@ -30,15 +30,15 @@ export class UsersService {
 
     const passwordHash = await this.passwordHashAdapter.createPasswordHash(password);
 
-    const newUser: UserDBType = {
+    const newUser = {
       login,
       email,
       passwordHash,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
       emailConfirmation: {
         isConfirmed: true,
         confirmationCode: '',
-        expirationDate: '',
+        expirationDate: null,
       },
     };
 

@@ -3,7 +3,7 @@ import superTestRequest from 'supertest';
 
 import { APP_ROUTES } from '../../src/core/constants';
 import { SETTINGS } from '../../src/core/settings';
-import { runDB, stopDb } from '../../src/db';
+import { runDB, stopDb } from '../../src/db/mongo.db';
 import { initApp } from '../../src/init-app';
 
 export const setupTestContext = async () => {
@@ -19,8 +19,8 @@ export const setupTestContext = async () => {
 
   const closeSession = async () => {
     await clearDb();
-    server.close();
     await stopDb();
+    server.close();
   };
 
   return {
