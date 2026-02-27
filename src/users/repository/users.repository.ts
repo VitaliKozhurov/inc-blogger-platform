@@ -2,7 +2,6 @@ import { injectable } from 'inversify';
 import { ObjectId, WithId } from 'mongodb';
 
 import { Nullable } from '../../core/types';
-import { usersCollection } from '../../db/mongo.db';
 import { UserDBType } from '../types';
 
 @injectable()
