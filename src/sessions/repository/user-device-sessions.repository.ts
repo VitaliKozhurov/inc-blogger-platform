@@ -3,12 +3,18 @@ import { QueryFilter } from 'mongoose';
 
 import { UserDeviceSessionDocument, UserDeviceSessionModel, UserDeviceSessionType } from '../model';
 
+type GetUserDeviceArgs = {
+  userId?: string;
+  deviceId?: string;
+  iat?: Date;
+};
+
 @injectable()
 export class UserDeviceSessionsRepository {
-  async getUserDeviceSessionsByUserId(userId: string) {
+  async getSessionsByUserId(userId: string) {
     return UserDeviceSessionModel.find({ userId }).exec();
   }
-  async getUserDeviceSessionByFilter({ userId, deviceId }: { userId?: string; deviceId?: string }) {
+  async getSessionByFilter({ userId, deviceId, iat }: GetUserDeviceArgs) {
     const queryFilter: QueryFilter<UserDeviceSessionType> = {};
 
     if (userId) {
@@ -19,6 +25,10 @@ export class UserDeviceSessionsRepository {
       queryFilter.deviceId = deviceId;
     }
 
+    if (iat) {
+      queryFilter.iat = iat;
+    }
+
     if (Object.keys(queryFilter).length === 0) {
       return null;
     }
@@ -26,19 +36,19 @@ export class UserDeviceSessionsRepository {
     return UserDeviceSessionModel.findOne(queryFilter).exec();
   }
 
-  async createUserDeviceSession(session: Omit<UserDeviceSessionType, '_id'>): Promise<string> {
+  async createSession(session: Omit<UserDeviceSessionType, '_id'>): Promise<string> {
     const { id } = await UserDeviceSessionModel.create(session);
 
     return id;
   }
 
-  async deleteUserDeviceSession(deviceId: string) {
+  async deleteSessionByDeviceId(deviceId: string) {
     const { deletedCount } = await UserDeviceSessionModel.deleteOne({ deviceId });
 
     return deletedCount > 0;
   }
 
-  async deleteUserDeviceSessionsExceptTheCurrent({ deviceId }: { deviceId: string }) {
+  async deleteSessionsExceptTheCurrent({ deviceId }: { deviceId: string }) {
     const { deletedCount } = await UserDeviceSessionModel.deleteMany({
       deviceId: { $ne: deviceId },
     });
@@ -46,7 +56,7 @@ export class UserDeviceSessionsRepository {
     return deletedCount > 0;
   }
 
-  async saveUserDeviceSession(userDeviceSession: UserDeviceSessionDocument) {
+  async saveSession(userDeviceSession: UserDeviceSessionDocument) {
     await userDeviceSession.save();
   }
 }

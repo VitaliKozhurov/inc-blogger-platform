@@ -16,6 +16,6 @@ export class UserDeviceSessionsQueryRepository {
     deviceId,
     iat,
   }: UserDeviceSessionType): SessionViewModelType {
-    return { ip, title: deviceName, deviceId, lastActiveDate: new Date(iat * 1000).toISOString() };
+    return { ip, title: deviceName, deviceId, lastActiveDate: iat.toISOString() };
   }
 }

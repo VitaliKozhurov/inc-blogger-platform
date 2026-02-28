@@ -11,7 +11,7 @@ const userDeviceSessionSchema = new Schema(
       required: true,
     },
     iat: {
-      type: Number,
+      type: Date,
       required: true,
     },
     deviceName: {
@@ -23,10 +23,6 @@ const userDeviceSessionSchema = new Schema(
       required: true,
     },
     expirationAt: {
-      type: Number,
-      required: true,
-    },
-    expirationDate: {
       type: Date,
       required: true,
     },

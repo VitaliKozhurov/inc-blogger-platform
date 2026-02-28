@@ -10,3 +10,4 @@ export {
   ResultObject,
   ResultType,
 } from './result-object';
+export { convertUnixTimeToDate } from './convertUnixTimeToDate';
