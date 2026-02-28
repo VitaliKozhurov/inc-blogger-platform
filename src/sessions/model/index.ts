@@ -1,5 +1,5 @@
 export {
-  DeviceSessionDocument,
-  DeviceSessionModel,
-  DeviceSessionType,
-} from './device-session.model';
+  UserDeviceSessionDocument,
+  UserDeviceSessionModel,
+  UserDeviceSessionType,
+} from './user-device-session.model';

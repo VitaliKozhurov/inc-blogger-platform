@@ -1,6 +1,6 @@
-import { HydratedDocument, InferSchemaType, model, Schema } from 'mongoose';
+import { HydratedDocument, InferSchemaType, model, Schema, Types } from 'mongoose';
 
-const deviceSessionSchema = new Schema(
+const userDeviceSessionSchema = new Schema(
   {
     userId: {
       type: String,
@@ -34,7 +34,12 @@ const deviceSessionSchema = new Schema(
   { collection: 'device-sessions' }
 );
 
-export type DeviceSessionType = InferSchemaType<typeof deviceSessionSchema>;
-export type DeviceSessionDocument = HydratedDocument<DeviceSessionType>;
+export type UserDeviceSessionType = InferSchemaType<typeof userDeviceSessionSchema> & {
+  _id: Types.ObjectId;
+};
+export type UserDeviceSessionDocument = HydratedDocument<UserDeviceSessionType>;
 
-export const DeviceSessionModel = model<DeviceSessionType>('device-session', deviceSessionSchema);
+export const UserDeviceSessionModel = model<UserDeviceSessionType>(
+  'device-session',
+  userDeviceSessionSchema
+);

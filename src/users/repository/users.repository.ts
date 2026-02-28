@@ -6,22 +6,6 @@ import { UserDocument, UserModel, UserType } from '../model';
 
 @injectable()
 export class UsersRepository {
-  async createUser(userData: Omit<UserType, '_id'>) {
-    const { id } = await UserModel.create(userData);
-
-    return id;
-  }
-
-  async deleteUserById(id: string) {
-    const { deletedCount } = await UserModel.deleteOne({ _id: new ObjectId(id) });
-
-    return deletedCount > 0;
-  }
-
-  async saveUser(user: UserDocument) {
-    await user.save();
-  }
-
   async getUserById(id: string): Promise<Nullable<UserDocument>> {
     return UserModel.findById(id).exec();
   }
@@ -36,5 +20,21 @@ export class UsersRepository {
 
   async getUserByRecoveryCode(code: string): Promise<Nullable<UserDocument>> {
     return UserModel.findOne({ 'passwordRecovery.recoveryCode': code });
+  }
+
+  async createUser(userData: Omit<UserType, '_id'>) {
+    const { id } = await UserModel.create(userData);
+
+    return id;
+  }
+
+  async deleteUserById(id: string) {
+    const { deletedCount } = await UserModel.deleteOne({ _id: new ObjectId(id) });
+
+    return deletedCount > 0;
+  }
+
+  async saveUser(user: UserDocument) {
+    await user.save();
   }
 }
