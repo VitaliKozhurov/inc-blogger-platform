@@ -55,7 +55,7 @@ export class UserDeviceSessionsService {
     });
 
     if (!session) {
-      return sessionObjectResult.notFound();
+      return sessionObjectResult.notFoundSession();
     }
 
     session.ip = ip;
@@ -84,7 +84,7 @@ export class UserDeviceSessionsService {
       return sessionObjectResult.success();
     }
 
-    return sessionObjectResult.notFound();
+    return sessionObjectResult.notFoundSession();
   }
 
   async deleteSessionByDeviceId({
@@ -101,7 +101,7 @@ export class UserDeviceSessionsService {
     });
 
     if (!sessionForDeleting) {
-      return sessionObjectResult.notFound();
+      return sessionObjectResult.notFoundSession();
     }
 
     const isForeignSession = sessionForDeleting.userId !== decodedToken.userId;

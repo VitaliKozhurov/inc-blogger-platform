@@ -18,31 +18,30 @@ export class UserDeviceSessionsController {
     private userDeviceSessionsService: UserDeviceSessionsService
   ) {}
 
-  async getDeviceSessions(req: Request, res: Response) {
+  async getSessions(req: Request, res: Response) {
     const refreshToken = req.cookies.refreshToken;
     const decodedRefreshToken = this.authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
-    const usersSessionsViewModel =
-      await this.userDeviceSessionsQueryRepository.getUserSessionsForUserById(
-        decodedRefreshToken.userId
-      );
+    const usersSessionsViewModel = await this.userDeviceSessionsQueryRepository.getSessionsByUserId(
+      decodedRefreshToken.userId
+    );
 
     res.status(HTTP_STATUSES.OK).send(usersSessionsViewModel);
   }
 
-  async deleteDevicesSessions(req: Request, res: Response) {
+  async deleteSessionsExceptTheCurrent(req: Request, res: Response) {
     const refreshToken = req.cookies.refreshToken as string;
 
-    await this.userDeviceSessionsService.deleteUserSessionsExceptTheCurrent(refreshToken);
+    await this.userDeviceSessionsService.deleteSessionsExceptTheCurrent(refreshToken);
 
     res.sendStatus(HTTP_STATUSES.NO_CONTENT);
   }
 
-  async deleteDeviceSessionById(req: RequestWithUriParamType, res: Response) {
+  async deleteSessionByDeviceId(req: RequestWithUriParamType, res: Response) {
     const deviceId = req.params.id;
     const refreshToken = req.cookies.refreshToken;
 
-    const result = await this.userDeviceSessionsService.deleteUserSessionByDeviceId({
+    const result = await this.userDeviceSessionsService.deleteSessionByDeviceId({
       deviceId,
       refreshToken,
     });
