@@ -46,4 +46,11 @@ export const authObjectResult = {
       extensions: [{ field: 'recoveryCode', message: 'Incorrect recovery code' }],
     });
   },
+  notFoundSession() {
+    return new ResultObject({
+      status: RESULT_STATUSES.NOT_FOUND,
+      data: null,
+      extensions: [{ field: 'deviceId', message: 'Not found sessions with the same device id' }],
+    });
+  },
 };

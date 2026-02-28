@@ -4,9 +4,10 @@ import { add } from 'date-fns/add';
 import { inject, injectable } from 'inversify';
 
 import { PasswordHashAdapter } from '../../core/adapters';
+import { convertUnixTimeToDate } from '../../core/utils';
 import { UserDeviceSessionsService } from '../../sessions/application';
+import { UserDeviceSessionsRepository } from '../../sessions/repository';
 import { UsersRepository } from '../../users/repository';
-import { UserDBType } from '../../users/types';
 import { AuthTokenAdapter, EmailRegistrationAdapter } from '../adapters';
 import {
   LoginInputType,
@@ -32,7 +33,10 @@ export class AuthService {
     @inject(AuthTokenAdapter) protected authTokenAdapter: AuthTokenAdapter,
     @inject(EmailRegistrationAdapter) protected emailRegistrationAdapter: EmailRegistrationAdapter,
     @inject(PasswordHashAdapter) protected passwordHashAdapter: PasswordHashAdapter,
-    @inject(UserDeviceSessionsService) protected userDeviceSessionService: UserDeviceSessionsService
+    @inject(UserDeviceSessionsService)
+    protected userDeviceSessionService: UserDeviceSessionsService,
+    @inject(UserDeviceSessionsRepository)
+    protected userDeviceSessionsRepository: UserDeviceSessionsRepository
   ) {}
 
   async login({ credentials, ...restArgs }: LoginArgs) {
@@ -63,7 +67,7 @@ export class AuthService {
     const accessToken = this.authTokenAdapter.createAccessToken({ userId });
     const refreshToken = this.authTokenAdapter.createRefreshToken({ userId, deviceId });
 
-    await this.userDeviceSessionService.saveUserSession({
+    await this.userDeviceSessionService.createSession({
       userId,
       refreshToken,
       deviceId,
@@ -86,22 +90,30 @@ export class AuthService {
       return authObjectResult.invalidCredentials();
     }
 
-    const userId = user._id.toString();
-    const deviceId = tokenResult.deviceId;
-    const prevIat = tokenResult.iat;
-
-    const newAccessToken = this.authTokenAdapter.createAccessToken({ userId });
-    const newRefreshToken = this.authTokenAdapter.createRefreshToken({ userId, deviceId });
-
-    const isUpdated = await this.userDeviceSessionService.updateUserSession({
-      prevIat,
-      ip,
-      refreshToken: newRefreshToken,
+    const session = await this.userDeviceSessionsRepository.getSessionByFilter({
+      deviceId: tokenResult.deviceId,
+      iat: convertUnixTimeToDate(tokenResult.iat),
     });
 
-    if (!isUpdated) {
-      return authObjectResult.invalidRefreshToken();
+    if (!session) {
+      return authObjectResult.notFoundSession();
     }
+
+    const userId = user._id.toString();
+
+    const newAccessToken = this.authTokenAdapter.createAccessToken({ userId });
+    const newRefreshToken = this.authTokenAdapter.createRefreshToken({
+      userId,
+      deviceId: tokenResult.deviceId,
+    });
+
+    const { iat, exp } = this.authTokenAdapter.decodeRefreshToken(refreshToken)!;
+
+    session.ip = ip;
+    session.iat = convertUnixTimeToDate(iat);
+    session.expirationAt = convertUnixTimeToDate(exp);
+
+    await this.userDeviceSessionsRepository.saveSession(session);
 
     return authObjectResult.success({
       accessToken: newAccessToken,
@@ -129,15 +141,15 @@ export class AuthService {
 
     const confirmationCode = randomUUID();
 
-    const newUser: UserDBType = {
+    const newUser = {
       login,
       email,
       passwordHash,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
       emailConfirmation: {
         isConfirmed: false,
         confirmationCode,
-        expirationDate: add(new Date(), { hours: 1 }).toISOString(),
+        expirationDate: add(new Date(), { hours: 1 }),
       },
     };
 
@@ -161,43 +173,40 @@ export class AuthService {
       return authObjectResult.invalidConfirmationCode();
     }
 
-    if (new Date(user.emailConfirmation.expirationDate) < new Date()) {
+    if (
+      user.emailConfirmation.expirationDate &&
+      user.emailConfirmation.expirationDate < new Date()
+    ) {
       return authObjectResult.invalidConfirmationCode();
     }
 
-    const userData = {
-      ...user,
-      emailConfirmation: { isConfirmed: true, confirmationCode: '', expirationDate: '' },
-    };
+    user.emailConfirmation = { isConfirmed: true, confirmationCode: '', expirationDate: null };
 
-    await this.usersRepository.updateUserById({ id: user._id.toString(), userData });
+    await this.usersRepository.saveUser(user);
 
     return authObjectResult.success();
   }
 
   async registrationEmailResending(credentials: RegistrationEmailResendingType) {
-    const userByEmail = await this.usersRepository.getUserByLoginOrEmail(credentials.email);
+    const user = await this.usersRepository.getUserByLoginOrEmail(credentials.email);
 
-    if (!userByEmail) {
+    if (!user) {
       return authObjectResult.registrationInvalidCredentials('email');
     }
 
-    if (userByEmail.emailConfirmation.isConfirmed) {
+    if (user.emailConfirmation.isConfirmed) {
       return authObjectResult.registrationInvalidCredentials('email');
     }
 
     const confirmationCode = randomUUID();
 
-    const userData = {
-      ...userByEmail,
-      emailConfirmation: {
-        isConfirmed: false,
-        confirmationCode,
-        expirationDate: add(new Date(), { hours: 1 }).toISOString(),
-      },
+    user.emailConfirmation = {
+      isConfirmed: false,
+      confirmationCode,
+      expirationDate: add(new Date(), { hours: 1 }),
     };
 
-    await this.usersRepository.updateUserById({ id: userByEmail._id.toString(), userData });
+    await this.usersRepository.saveUser(user);
 
     this.emailRegistrationAdapter
       .resendConfirmationCode({
@@ -210,25 +219,23 @@ export class AuthService {
   }
 
   async passwordRecovery(credentials: PasswordRecoveryType) {
-    const { email } = credentials;
-
-    const user = await this.usersRepository.getUserByLoginOrEmail(email);
+    const user = await this.usersRepository.getUserByLoginOrEmail(credentials.email);
 
     if (user) {
       const recoveryCode = randomUUID();
 
-      const userData = {
-        ...user,
-        passwordRecovery: {
-          recoveryCode,
-          expirationDate: add(new Date(), { hours: 1 }).toISOString(),
-        },
+      user.passwordRecovery = {
+        recoveryCode,
+        expirationDate: add(new Date(), { hours: 1 }),
       };
 
-      await this.usersRepository.updateUserById({ id: user._id.toString(), userData });
+      await this.usersRepository.saveUser(user);
 
       this.emailRegistrationAdapter
-        .sendPasswordRecoveryCode({ email, code: recoveryCode })
+        .sendPasswordRecoveryCode({
+          email: credentials.email,
+          code: recoveryCode,
+        })
         .catch(err => console.log(err));
     }
 
@@ -244,16 +251,15 @@ export class AuthService {
       return authObjectResult.invalidRecoveryCode();
     }
 
-    if (new Date(user.passwordRecovery.expirationDate) < new Date()) {
+    if (user.passwordRecovery.expirationDate && user.passwordRecovery.expirationDate < new Date()) {
       return authObjectResult.invalidRecoveryCode();
     }
 
     const passwordHash = await this.passwordHashAdapter.createPasswordHash(newPassword);
 
-    await this.usersRepository.updateUserPasswordByUserId({
-      id: user._id.toString(),
-      passwordHash,
-    });
+    user.passwordHash = passwordHash;
+
+    await this.usersRepository.saveUser(user);
 
     return authObjectResult.success();
   }

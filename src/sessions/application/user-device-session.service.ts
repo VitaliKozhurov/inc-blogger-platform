@@ -46,27 +46,6 @@ export class UserDeviceSessionsService {
     return sessionObjectResult.success(id);
   }
 
-  async updateSession({ prevIat, ip, refreshToken }: UpdateSessionArgs) {
-    const { deviceId, iat, exp } = this.authTokenAdapter.decodeRefreshToken(refreshToken)!;
-
-    const session = await this.userDeviceSessionsRepository.getSessionByFilter({
-      deviceId,
-      iat: convertUnixTimeToDate(prevIat),
-    });
-
-    if (!session) {
-      return sessionObjectResult.notFoundSession();
-    }
-
-    session.ip = ip;
-    session.iat = convertUnixTimeToDate(iat);
-    session.expirationAt = convertUnixTimeToDate(exp);
-
-    await this.userDeviceSessionsRepository.saveSession(session);
-
-    return sessionObjectResult.success();
-  }
-
   async deleteSessionsExceptTheCurrent(refreshToken: string) {
     const { deviceId } = this.authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
