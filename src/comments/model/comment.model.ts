@@ -1,4 +1,4 @@
-import { HydratedDocument, InferSchemaType, model, Schema } from 'mongoose';
+import { HydratedDocument, InferSchemaType, model, Schema, Types } from 'mongoose';
 
 const commentSchema = new Schema(
   {
@@ -31,7 +31,9 @@ const commentSchema = new Schema(
   { collection: 'blogs' }
 );
 
-export type CommentType = InferSchemaType<typeof commentSchema>;
+export type CommentType = InferSchemaType<typeof commentSchema> & {
+  _id: Types.ObjectId;
+};
 export type CommentDocument = HydratedDocument<CommentType>;
 
 export const CommentModel = model<CommentType>('comment', commentSchema);

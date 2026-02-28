@@ -1,9 +1,8 @@
 import { injectable } from 'inversify';
-import { ObjectId, WithId } from 'mongodb';
 
 import { getPaginationParams } from '../../core/utils';
-import { postsCollection } from '../../db';
-import { PostDBType, PostsRequestQueryType, PostViewModelType } from '../types';
+import { PostModel, PostType } from '../model';
+import { PostsRequestQueryType, PostViewModelType } from '../types';
 
 import { getPaginationData } from './../../core/utils/get-pagination-data';
 
@@ -12,9 +11,10 @@ export class PostsQueryRepository {
   async getPosts(args: PostsRequestQueryType) {
     const { sort, limit, skip } = getPaginationParams(args);
 
-    const items = await postsCollection.find({}).sort(sort).skip(skip).limit(limit).toArray();
-
-    const totalCount = await postsCollection.countDocuments();
+    const [items, totalCount] = await Promise.all([
+      PostModel.find().lean().sort(sort).skip(skip).limit(limit),
+      PostModel.countDocuments(),
+    ]);
 
     const paginationData = getPaginationData({
       items: items.map(this.mapToViewModel),
@@ -27,7 +27,7 @@ export class PostsQueryRepository {
   }
 
   async getPostById(id: string) {
-    const post = await postsCollection.findOne({ _id: new ObjectId(id) });
+    const post = await PostModel.findById(id);
 
     return post ? this.mapToViewModel(post) : post;
   }
@@ -35,14 +35,10 @@ export class PostsQueryRepository {
   async getPostsByBlogId({ blogId, query }: { blogId: string; query: PostsRequestQueryType }) {
     const { sort, skip, limit } = getPaginationParams(query);
 
-    const items = await postsCollection
-      .find({ blogId })
-      .sort(sort)
-      .skip(skip)
-      .limit(limit)
-      .toArray();
-
-    const totalCount = await postsCollection.countDocuments({ blogId });
+    const [items, totalCount] = await Promise.all([
+      PostModel.find({ blogId }).lean().sort(sort).skip(skip).limit(limit),
+      PostModel.countDocuments({ blogId }),
+    ]);
 
     const paginationData = getPaginationData({
       items: items.map(this.mapToViewModel),
@@ -54,9 +50,10 @@ export class PostsQueryRepository {
     return paginationData;
   }
 
-  private mapToViewModel({ _id, ...restPost }: WithId<PostDBType>): PostViewModelType {
+  private mapToViewModel({ _id, createdAt, ...restPost }: PostType): PostViewModelType {
     return {
       id: _id.toString(),
+      createdAt: createdAt.toISOString(),
       ...restPost,
     };
   }

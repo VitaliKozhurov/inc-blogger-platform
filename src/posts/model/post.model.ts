@@ -1,4 +1,4 @@
-import { HydratedDocument, InferSchemaType, model, Schema } from 'mongoose';
+import { HydratedDocument, InferSchemaType, model, Schema, Types } from 'mongoose';
 
 const postSchema = new Schema(
   {
@@ -30,7 +30,9 @@ const postSchema = new Schema(
   { collection: 'posts' }
 );
 
-export type PostType = InferSchemaType<typeof postSchema>;
+export type PostType = InferSchemaType<typeof postSchema> & {
+  _id: Types.ObjectId;
+};
 export type PostDocument = HydratedDocument<PostType>;
 
 export const PostModel = model<PostType>('post', postSchema);

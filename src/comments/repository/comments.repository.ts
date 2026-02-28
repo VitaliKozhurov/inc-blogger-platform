@@ -1,34 +1,27 @@
 import { injectable } from 'inversify';
-import { ObjectId, WithId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
-import { Nullable } from '../../core/types';
-import { commentsCollection } from '../../db/mongo.db';
-import { CommentDbType } from '../types';
+import { CommentDocument, CommentModel, CommentType } from '../model';
 
 @injectable()
 export class CommentsRepository {
-  async createComment(comment: CommentDbType) {
-    const { insertedId } = await commentsCollection.insertOne(comment);
-
-    return insertedId.toString();
+  async getCommentById(id: string) {
+    return CommentModel.findById(id);
   }
 
-  async updateCommentById({ id, content }: { id: string; content: string }) {
-    const { modifiedCount } = await commentsCollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { content } }
-    );
+  async createComment(comment: Omit<CommentType, '_id'>) {
+    const { id } = await CommentModel.create(comment);
 
-    return modifiedCount > 0;
+    return id;
   }
 
   async deleteCommentById(id: string) {
-    const { deletedCount } = await commentsCollection.deleteOne({ _id: new ObjectId(id) });
+    const { deletedCount } = await CommentModel.deleteOne({ _id: new ObjectId(id) });
 
     return deletedCount > 0;
   }
 
-  async getCommentById(id: string): Promise<Nullable<WithId<CommentDbType>>> {
-    return commentsCollection.findOne({ _id: new ObjectId(id) });
+  async saveComment(commentDocument: CommentDocument) {
+    await commentDocument.save();
   }
 }

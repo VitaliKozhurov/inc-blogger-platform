@@ -1,35 +1,27 @@
 import { injectable } from 'inversify';
 import { ObjectId } from 'mongodb';
 
-import { postsCollection } from '../../db';
-import { PostDBType, UpdatePostInputType } from '../types';
+import { PostDocument, PostModel, PostType } from '../model';
 
 @injectable()
 export class PostsRepository {
-  async createPost(post: PostDBType) {
-    const { insertedId } = await postsCollection.insertOne(post);
-
-    return insertedId.toString();
+  async getPostById(id: string) {
+    return PostModel.findById(id);
   }
 
-  async updatePostById(args: { id: string; postData: UpdatePostInputType }) {
-    const { id, postData } = args;
+  async createPost(post: Omit<PostType, '_id'>) {
+    const { id } = await PostModel.create(post);
 
-    const { modifiedCount } = await postsCollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: postData }
-    );
-
-    return modifiedCount > 0;
+    return id;
   }
 
   async deletePostById(id: string) {
-    const { deletedCount } = await postsCollection.deleteOne({ _id: new ObjectId(id) });
+    const { deletedCount } = await PostModel.deleteOne({ _id: new ObjectId(id) });
 
     return deletedCount > 0;
   }
 
-  async getPostById(id: string) {
-    return postsCollection.findOne({ _id: new ObjectId(id) });
+  async savePost(postDocument: PostDocument) {
+    await postDocument.save();
   }
 }

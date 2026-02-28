@@ -4,7 +4,6 @@ import { PostsRepository } from '../../posts/repository';
 import { postsObjectResult } from '../../posts/utils/posts-object-result';
 import { UsersRepository } from '../../users/repository';
 import { CommentsRepository } from '../repository';
-import { CommentDbType } from '../types';
 import { commentsObjectResult } from '../utils/comments-object-result';
 
 @injectable()
@@ -36,9 +35,9 @@ export class CommentsService {
       return postsObjectResult.badRequest();
     }
 
-    const comment: CommentDbType = {
+    const comment = {
       content,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
       commentatorInfo: {
         userId: user._id.toString(),
         userLogin: user.login,
@@ -70,13 +69,11 @@ export class CommentsService {
       return commentsObjectResult.forbiddenCommentMutation();
     }
 
-    const isUpdated = await this.commentsRepository.updateCommentById({ id: commentId, content });
+    comment.content = content;
 
-    if (isUpdated) {
-      return postsObjectResult.success();
-    }
+    await this.commentsRepository.saveComment(comment);
 
-    return postsObjectResult.notFoundPost();
+    return postsObjectResult.success();
   }
 
   async deleteCommentById({ userId, commentId }: { userId: string; commentId: string }) {
