@@ -1,10 +1,8 @@
 import mongoose from 'mongoose';
 
-import { SETTINGS } from '../core/settings';
-
 export const runDB = async (dbUrl: string) => {
   try {
-    const mongooseDB = await mongoose.connect(`${dbUrl}/${SETTINGS.DB_NAME}`);
+    const mongooseDB = await mongoose.connect(`${dbUrl}`);
 
     console.log('✅ Connected to DB');
 

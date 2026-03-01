@@ -6,7 +6,7 @@ import { SessionViewModelType } from '../types';
 @injectable()
 export class UserDeviceSessionsQueryRepository {
   async getSessionsByUserId(userId: string): Promise<SessionViewModelType[]> {
-    const sessions = await UserDeviceSessionModel.find({ userId }).exec();
+    const sessions = await UserDeviceSessionModel.find({ userId }).lean().exec();
 
     return sessions.map(this.mapToViewModel);
   }

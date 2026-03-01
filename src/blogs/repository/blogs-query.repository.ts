@@ -9,7 +9,7 @@ import { BlogFields, BlogsRequestQueryType, BlogViewModelType } from '../types';
 @injectable()
 export class BlogsQueryRepository {
   async getBlogById(id: string): Promise<Nullable<BlogViewModelType>> {
-    const blog = await BlogModel.findById(id);
+    const blog = await BlogModel.findById(id).lean().exec();
 
     return blog ? this.mapToViewModel(blog) : blog;
   }

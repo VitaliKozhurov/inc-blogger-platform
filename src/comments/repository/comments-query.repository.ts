@@ -9,7 +9,7 @@ import { CommentViewModelType } from '../types/comment.view-model';
 @injectable()
 export class CommentsQueryRepository {
   async getCommentById(id: string): Promise<Nullable<CommentViewModelType>> {
-    const comment = await CommentModel.findById(id);
+    const comment = await CommentModel.findById(id).lean().exec();
 
     return comment ? this.mapToViewModel(comment) : comment;
   }

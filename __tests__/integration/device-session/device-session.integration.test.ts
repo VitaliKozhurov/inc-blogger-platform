@@ -1,12 +1,12 @@
 import { randomUUID } from 'crypto';
 
-import { ObjectId, WithId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
 import { AuthTokenAdapter } from '../../../src/auth/adapters';
 import { iocContainer } from '../../../src/composition-root';
 import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES } from '../../../src/core/types';
-import { UserSessionDBType } from '../../../src/sessions/types';
+import { UserDeviceSessionModel } from '../../../src/sessions/model';
 import { TestManagerMockDB } from '../../utils/test-manager-mock-db';
 
 describe('User sessions test', () => {
@@ -14,25 +14,18 @@ describe('User sessions test', () => {
   const authTokenAdapter = iocContainer.get(AuthTokenAdapter);
 
   const createSession = async (refreshToken: string) => {
-    const {
-      deviceId,
-      userId,
-      iat,
-      exp: expirationAt,
-    } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
+    const { deviceId, userId, iat, exp } = authTokenAdapter.decodeRefreshToken(refreshToken)!;
 
-    const session: WithId<UserSessionDBType> = {
-      _id: new ObjectId(),
+    const session = {
       deviceId,
       deviceName: 'Test device',
       ip: '0.0.0.0',
       userId,
-      expirationDate: new Date(expirationAt * 1000),
-      iat,
-      expirationAt,
+      iat: new Date(iat * 1000),
+      expirationAt: new Date(exp * 1000),
     };
 
-    await testManager.DB.collection('user_session').insertOne(session);
+    await UserDeviceSessionModel.create(session);
 
     return session;
   };
@@ -47,7 +40,7 @@ describe('User sessions test', () => {
   });
 
   afterAll(async () => {
-    await testManager.init();
+    await testManager.closeSession();
   });
 
   describe('GET /security/devices', () => {

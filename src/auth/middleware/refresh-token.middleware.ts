@@ -25,10 +25,7 @@ export const refreshTokenMiddleware = async (req: Request, res: Response, next: 
     deviceId: result.payload.deviceId,
   });
 
-  if (
-    !tokenSession ||
-    tokenSession.iat.toISOString() !== new Date(result.payload.iat).toISOString()
-  ) {
+  if (!tokenSession || tokenSession.iat.getTime() / 1000 !== result.payload.iat) {
     return res.sendStatus(HTTP_STATUSES.UNAUTHORIZED);
   }
 

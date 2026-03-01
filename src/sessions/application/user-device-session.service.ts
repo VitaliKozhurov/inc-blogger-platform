@@ -13,12 +13,6 @@ type SaveSessionArgs = {
   ip: string;
 };
 
-type UpdateSessionArgs = {
-  prevIat: number;
-  ip: string;
-  refreshToken: string;
-};
-
 @injectable()
 export class UserDeviceSessionsService {
   constructor(

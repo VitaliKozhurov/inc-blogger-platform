@@ -8,6 +8,11 @@ import { getPaginationData } from './../../core/utils/get-pagination-data';
 
 @injectable()
 export class PostsQueryRepository {
+  async getPostById(id: string) {
+    const post = await PostModel.findById(id).lean().exec();
+
+    return post ? this.mapToViewModel(post) : post;
+  }
   async getPosts(args: PostsRequestQueryType) {
     const { sort, limit, skip } = getPaginationParams(args);
 
@@ -24,12 +29,6 @@ export class PostsQueryRepository {
     });
 
     return paginationData;
-  }
-
-  async getPostById(id: string) {
-    const post = await PostModel.findById(id);
-
-    return post ? this.mapToViewModel(post) : post;
   }
 
   async getPostsByBlogId({ blogId, query }: { blogId: string; query: PostsRequestQueryType }) {
