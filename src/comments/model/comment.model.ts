@@ -27,6 +27,14 @@ const commentSchema = new Schema(
       },
       required: true,
     },
+    likesCount: {
+      type: Number,
+      default: 0,
+    },
+    dislikesCount: {
+      type: Number,
+      default: 0,
+    },
   },
   { collection: 'blogs' }
 );
