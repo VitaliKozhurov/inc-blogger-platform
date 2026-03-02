@@ -38,11 +38,12 @@ export class CommentsService {
     const comment = {
       content,
       createdAt: new Date(),
-      commentatorInfo: {
-        userId: user._id.toString(),
-        userLogin: user.login,
-      },
       postId,
+      commentatorInfo: { userId, userLogin: user.login },
+      likesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+      },
     };
 
     const commentId = await this.commentsRepository.createComment(comment);

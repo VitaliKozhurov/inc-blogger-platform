@@ -20,7 +20,13 @@ export class CommentsController {
   ) {}
 
   async getCommentById(req: RequestWithUriParamType, res: Response) {
-    const commentViewModel = await this.commentsQueryRepository.getCommentById(req.params.id);
+    const commentId = req.params.id;
+    const userId = req.userId ?? undefined;
+
+    const commentViewModel = await this.commentsQueryRepository.getCommentById({
+      commentId,
+      userId,
+    });
 
     if (!commentViewModel) {
       return res.sendStatus(HTTP_STATUSES.NOT_FOUND);

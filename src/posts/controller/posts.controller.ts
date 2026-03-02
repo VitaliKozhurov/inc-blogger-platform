@@ -91,6 +91,7 @@ export class PostsController {
     res: Response
   ) {
     const postId = req.params.id;
+    const userId = req.userId ?? undefined;
 
     const query = matchedData<CommentsRequestQueryType>(req, {
       locations: ['query'],
@@ -104,6 +105,7 @@ export class PostsController {
     }
 
     const commentsViewModel = await this.commentsQueryRepository.getCommentsByPostId({
+      userId,
       postId,
       query,
     });
@@ -127,9 +129,10 @@ export class PostsController {
       return res.sendStatus(result.status);
     }
 
-    const createdCommentViewModel = await this.commentsQueryRepository.getCommentById(
-      result.data!.commentId
-    );
+    const createdCommentViewModel = await this.commentsQueryRepository.getCommentById({
+      commentId: result.data!.commentId,
+      userId,
+    });
 
     return res.status(HTTP_STATUSES.CREATED).send(createdCommentViewModel);
   }

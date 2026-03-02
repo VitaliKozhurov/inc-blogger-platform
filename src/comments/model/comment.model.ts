@@ -1,5 +1,20 @@
 import { HydratedDocument, InferSchemaType, model, Schema, Types } from 'mongoose';
 
+const commentLikeSchema = new Schema(
+  {
+    likesCount: {
+      type: Number,
+      default: 0,
+    },
+    dislikesCount: {
+      type: Number,
+      default: 0,
+    },
+  },
+
+  { _id: false }
+);
+
 const commentSchema = new Schema(
   {
     content: {
@@ -27,13 +42,9 @@ const commentSchema = new Schema(
       },
       required: true,
     },
-    likesCount: {
-      type: Number,
-      default: 0,
-    },
-    dislikesCount: {
-      type: Number,
-      default: 0,
+    likesInfo: {
+      type: commentLikeSchema,
+      required: true,
     },
   },
   { collection: 'blogs' }

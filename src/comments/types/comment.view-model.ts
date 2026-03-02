@@ -1,14 +1,13 @@
 import { LikeStatus } from '../../likes/model';
 
-import { CommentDbType } from './comment.db';
-
-type CommentLikeInfo = {
-  likesCount: number;
-  dislikesCount: number;
-  myStatus: LikeStatus;
+export type CommentViewModelType = {
+  id: string;
+  content: string;
+  commentatorInfo: { userId: string; userLogin: string };
+  createdAt: string;
+  likesInfo: {
+    likesCount: number;
+    dislikesCount: number;
+    myStatus: LikeStatus;
+  };
 };
-
-export type CommentViewModelType = { id: string } & { likesInfo: CommentLikeInfo } & Omit<
-    CommentDbType,
-    'postId'
-  >;
