@@ -6,19 +6,22 @@ export enum LikeStatus {
   Dislike = 'Dislike ',
 }
 
-const likeSchema = new Schema({
-  status: {
-    type: String,
-    enum: LikeStatus,
-    default: LikeStatus.None,
+const likeSchema = new Schema(
+  {
+    status: {
+      type: String,
+      enum: LikeStatus,
+      default: LikeStatus.None,
+    },
+    authorId: { type: String, required: true },
+    createdAt: {
+      type: Date,
+      required: true,
+    },
+    parentId: { type: String, required: true },
   },
-  authorId: { type: String, required: true },
-  createdAt: {
-    type: Date,
-    required: true,
-  },
-  parentId: { type: String, required: true },
-});
+  { collection: 'likes', versionKey: false }
+);
 
 export type LikeType = InferSchemaType<typeof likeSchema> & {
   _id: Types.ObjectId;

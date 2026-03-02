@@ -47,7 +47,7 @@ const commentSchema = new Schema(
       required: true,
     },
   },
-  { collection: 'blogs' }
+  { collection: 'comments', versionKey: false }
 );
 
 export type CommentType = InferSchemaType<typeof commentSchema> & {

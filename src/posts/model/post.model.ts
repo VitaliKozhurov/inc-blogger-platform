@@ -27,7 +27,7 @@ const postSchema = new Schema(
       required: true,
     },
   },
-  { collection: 'posts' }
+  { collection: 'posts', versionKey: false }
 );
 
 export type PostType = InferSchemaType<typeof postSchema> & {

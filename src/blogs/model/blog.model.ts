@@ -23,7 +23,7 @@ const blogSchema = new Schema(
       required: true,
     },
   },
-  { collection: 'blogs' }
+  { collection: 'blogs', versionKey: false }
 );
 
 export type BlogType = InferSchemaType<typeof blogSchema> & {

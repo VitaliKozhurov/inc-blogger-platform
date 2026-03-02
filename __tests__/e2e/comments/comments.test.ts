@@ -45,12 +45,15 @@ describe('Comments test', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .send(mockComment);
 
-      await testManager.context
+      const { body } = await testManager.context
         .request()
         .get(`${APP_ROUTES.COMMENTS}/${createdComment.body.id}`)
         .set('Authorization', `Bearer ${accessToken}`)
         .send(mockComment)
         .expect(HTTP_STATUSES.OK);
+
+      expect(body.likesInfo.likesCount).toBe(0);
+      expect(body.likesInfo.dislikesCount).toBe(0);
     });
   });
 
@@ -250,6 +253,8 @@ describe('Comments test', () => {
         .expect(HTTP_STATUSES.OK);
 
       expect(comments.body.items).toEqual([commentData.body]);
+      expect(comments.body.items[0].likesInfo.likesCount).toBe(0);
+      expect(comments.body.items[0].likesInfo.dislikesCount).toBe(0);
     });
   });
 });

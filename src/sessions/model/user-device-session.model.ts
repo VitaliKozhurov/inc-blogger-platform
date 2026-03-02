@@ -27,7 +27,7 @@ const userDeviceSessionSchema = new Schema(
       required: true,
     },
   },
-  { collection: 'device-sessions' }
+  { collection: 'device-sessions', versionKey: false }
 );
 
 export type UserDeviceSessionType = InferSchemaType<typeof userDeviceSessionSchema> & {

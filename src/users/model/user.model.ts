@@ -55,7 +55,7 @@ const userSchema = new Schema(
       required: false,
     },
   },
-  { collection: 'users' }
+  { collection: 'users', versionKey: false }
 );
 
 type EmailConfirmation = {

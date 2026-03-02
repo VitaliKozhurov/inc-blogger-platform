@@ -51,9 +51,9 @@ export class CommentsQueryRepository {
       CommentModel.countDocuments({ postId }),
     ]);
 
-    const commentsIds = items.map(c => c._id);
+    const commentsIds = items.map(c => c._id.toString());
 
-    const likes = await LikeModel.find({ _id: { $in: commentsIds } })
+    const likes = await LikeModel.find({ parentId: { $in: commentsIds } })
       .lean()
       .exec();
 
@@ -63,7 +63,7 @@ export class CommentsQueryRepository {
 
         return this.mapToViewModel({
           comment,
-          myStatus: like.authorId === userId ? like.status : LikeStatus.None,
+          myStatus: like && like.authorId === userId ? like.status : LikeStatus.None,
         });
       }),
       pageNumber: query.pageNumber,
