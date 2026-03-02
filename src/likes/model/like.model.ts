@@ -3,7 +3,7 @@ import { HydratedDocument, InferSchemaType, model, Schema, Types } from 'mongoos
 export enum LikeStatus {
   None = 'None',
   Like = 'Like',
-  Dislike = 'Dislike ',
+  Dislike = 'Dislike',
 }
 
 const likeSchema = new Schema(

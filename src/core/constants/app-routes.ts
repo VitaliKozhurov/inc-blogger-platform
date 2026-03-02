@@ -19,4 +19,5 @@ export const APP_ROUTES = {
   COMMENTS: '/comments',
   SECURITY: '/security',
   SECURITY_DEVICES: '/devices',
+  LIKE_STATUS: '/like-status',
 } as const;

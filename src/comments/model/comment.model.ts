@@ -11,7 +11,20 @@ const commentLikeSchema = new Schema(
       default: 0,
     },
   },
+  { _id: false }
+);
 
+const commentatorInfoSchema = new Schema(
+  {
+    userId: {
+      type: String,
+      required: true,
+    },
+    userLogin: {
+      type: String,
+      required: true,
+    },
+  },
   { _id: false }
 );
 
@@ -30,16 +43,7 @@ const commentSchema = new Schema(
       required: true,
     },
     commentatorInfo: {
-      type: {
-        userId: {
-          type: String,
-          required: true,
-        },
-        userLogin: {
-          type: String,
-          required: true,
-        },
-      },
+      type: commentatorInfoSchema,
       required: true,
     },
     likesInfo: {

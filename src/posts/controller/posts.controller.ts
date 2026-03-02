@@ -13,7 +13,11 @@ import {
   RequestWithParamAndQueryType,
   RequestWithUriParamType,
 } from '../../core/types';
-import { RESULT_STATUSES, resultCodeToHttpException } from '../../core/utils';
+import {
+  getUserIdFromAccessToken,
+  RESULT_STATUSES,
+  resultCodeToHttpException,
+} from '../../core/utils';
 import { PostsService } from '../application';
 import { PostsQueryRepository } from '../repository';
 import { CreatePostInputType, PostsRequestQueryType, UpdatePostInputType } from '../types';
@@ -91,12 +95,14 @@ export class PostsController {
     res: Response
   ) {
     const postId = req.params.id;
-    const userId = req.userId ?? undefined;
+    const userId = getUserIdFromAccessToken(req.headers.authorization) ?? undefined;
 
     const query = matchedData<CommentsRequestQueryType>(req, {
       locations: ['query'],
       includeOptionals: true,
     });
+
+    // TODO write into service
 
     const post = await this.postsQueryRepository.getPostById(postId);
 

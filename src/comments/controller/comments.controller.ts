@@ -11,6 +11,9 @@ import { RESULT_STATUSES, resultCodeToHttpException } from '../../core/utils';
 import { CommentsService } from '../application';
 import { CommentsQueryRepository } from '../repository';
 import { UpdateCommentInputType } from '../types';
+import { UpdateCommentLikeStatusInputType } from '../types/comment.input';
+
+import { getUserIdFromAccessToken } from './../../core/utils/get-user-id-from-access-token';
 
 @injectable()
 export class CommentsController {
@@ -21,7 +24,8 @@ export class CommentsController {
 
   async getCommentById(req: RequestWithUriParamType, res: Response) {
     const commentId = req.params.id;
-    const userId = req.userId ?? undefined;
+
+    const userId = getUserIdFromAccessToken(req.headers.authorization) ?? undefined;
 
     const commentViewModel = await this.commentsQueryRepository.getCommentById({
       commentId,
@@ -57,6 +61,27 @@ export class CommentsController {
     const commentId = req.params.id;
 
     const result = await this.commentsService.deleteCommentById({ userId, commentId });
+
+    if (result.status !== RESULT_STATUSES.OK) {
+      return res.sendStatus(resultCodeToHttpException(result.status));
+    }
+
+    return res.sendStatus(HTTP_STATUSES.NO_CONTENT);
+  }
+
+  async updateCommentLikeStatus(
+    req: RequestWithParamAndBodyType<IdParamType, UpdateCommentLikeStatusInputType>,
+    res: Response
+  ) {
+    const userId = req.userId!;
+    const commentId = req.params.id;
+    const likeStatus = req.body.likeStatus;
+
+    const result = await this.commentsService.updateCommentLikeStatus({
+      userId,
+      commentId,
+      likeStatus,
+    });
 
     if (result.status !== RESULT_STATUSES.OK) {
       return res.sendStatus(resultCodeToHttpException(result.status));

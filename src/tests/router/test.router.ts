@@ -4,6 +4,7 @@ import { BlogModel } from '../../blogs/model';
 import { CommentModel } from '../../comments/model';
 import { APP_ROUTES } from '../../core/constants';
 import { HTTP_STATUSES } from '../../core/types';
+import { LikeModel } from '../../likes/model';
 import { RequestLogModel } from '../../logs/model';
 import { PostModel } from '../../posts/model';
 import { UserDeviceSessionModel } from '../../sessions/model';
@@ -20,6 +21,7 @@ testRouter.delete(APP_ROUTES.CLEAR_DATA, async (_: Request, res: Response) => {
       UserModel.deleteMany(),
       UserDeviceSessionModel.deleteMany(),
       RequestLogModel.deleteMany(),
+      LikeModel.deleteMany(),
     ]);
 
     res.sendStatus(HTTP_STATUSES.NO_CONTENT);

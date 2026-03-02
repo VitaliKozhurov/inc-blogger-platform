@@ -115,8 +115,10 @@ export class CommentsService {
       return commentsObjectResult.notFoundComment();
     }
 
+    const parentId = comment.id;
+
     const like = await this.likesRepository.findByFilter({
-      parentId: commentId,
+      parentId,
       authorId: userId,
     });
 
@@ -128,7 +130,7 @@ export class CommentsService {
       const newLike: Omit<LikeType, '_id'> = {
         authorId: userId,
         createdAt: new Date(),
-        parentId: comment.id,
+        parentId,
         status: likeStatus,
       };
 
@@ -150,29 +152,41 @@ export class CommentsService {
       return commentsObjectResult.success();
     }
 
-    if (likeStatus === LikeStatus.Like && like.status === LikeStatus.Dislike) {
-      comment.likesInfo.likesCount += 1;
-      comment.likesInfo.dislikesCount -= 1;
-      like.status = likeStatus;
-    }
-
-    if (likeStatus === LikeStatus.Dislike && like.status === LikeStatus.Like) {
-      comment.likesInfo.dislikesCount += 1;
-      comment.likesInfo.likesCount -= 1;
-      like.status = likeStatus;
-    }
-
-    if (likeStatus === LikeStatus.None) {
-      if (like.status === LikeStatus.Like) {
+    if (like.status === LikeStatus.Like) {
+      if (likeStatus === LikeStatus.Dislike) {
+        comment.likesInfo.dislikesCount += 1;
         comment.likesInfo.likesCount -= 1;
       }
 
-      if (like.status === LikeStatus.Dislike) {
+      if (likeStatus === LikeStatus.None) {
+        comment.likesInfo.likesCount -= 1;
+      }
+    }
+
+    if (like.status === LikeStatus.Dislike) {
+      if (likeStatus === LikeStatus.Like) {
+        comment.likesInfo.likesCount += 1;
         comment.likesInfo.dislikesCount -= 1;
       }
 
-      like.status = likeStatus;
+      if (likeStatus === LikeStatus.None) {
+        comment.likesInfo.dislikesCount -= 1;
+      }
     }
+
+    if (like.status === LikeStatus.None) {
+      if (likeStatus === LikeStatus.Like) {
+        comment.likesInfo.likesCount += 1;
+      }
+
+      if (likeStatus === LikeStatus.Dislike) {
+        comment.likesInfo.dislikesCount += 1;
+      }
+    }
+
+    comment.likesInfo.likesCount = Math.max(0, comment.likesInfo.likesCount);
+    comment.likesInfo.dislikesCount = Math.max(0, comment.likesInfo.dislikesCount);
+    like.status = likeStatus;
 
     await this.likesRepository.save(like);
     await this.commentsRepository.saveComment(comment);

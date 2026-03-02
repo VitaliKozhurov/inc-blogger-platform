@@ -22,14 +22,10 @@ export class CommentsQueryRepository {
       return null;
     }
 
+    const parentId = comment._id.toString();
+
     const like = userId
-      ? await LikeModel.findOne({
-          parentId: comment._id.toString(),
-          authorId: userId,
-        })
-          .select('status')
-          .lean()
-          .exec()
+      ? await LikeModel.findOne({ parentId, authorId: userId }).select('status').lean().exec()
       : null;
 
     return this.mapToViewModel({ comment, myStatus: like?.status ?? LikeStatus.None });
@@ -58,8 +54,10 @@ export class CommentsQueryRepository {
       .exec();
 
     const paginationData = getPaginationData({
-      items: items.map((comment, index) => {
-        const like = likes[index];
+      items: items.map(comment => {
+        const like = likes.find(
+          like => like.parentId === comment._id.toString() && like.authorId === userId
+        );
 
         return this.mapToViewModel({
           comment,
