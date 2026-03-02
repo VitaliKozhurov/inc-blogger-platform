@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 
-import { LikeModel, LikeStatus, LikeType } from '../../likes/model';
+import { LikeStatus, LikeType } from '../../likes/model';
 import { LikesRepository } from '../../likes/repository';
 import { PostsRepository } from '../../posts/repository';
 import { postsObjectResult } from '../../posts/utils/posts-object-result';
@@ -115,10 +115,17 @@ export class CommentsService {
       return commentsObjectResult.notFoundComment();
     }
 
-    const like = await this.likesRepository.findByFilter({ parentId: commentId, authorId: userId });
+    const like = await this.likesRepository.findByFilter({
+      parentId: commentId,
+      authorId: userId,
+    });
 
     if (!like) {
-      const like: Omit<LikeType, '_id'> = {
+      if (likeStatus === LikeStatus.None) {
+        return commentsObjectResult.success();
+      }
+
+      const newLike: Omit<LikeType, '_id'> = {
         authorId: userId,
         createdAt: new Date(),
         parentId: comment.id,
@@ -133,7 +140,8 @@ export class CommentsService {
         comment.likesInfo.dislikesCount += 1;
       }
 
-      await LikeModel.create(like);
+      await this.likesRepository.createLike(newLike);
+      await this.commentsRepository.saveComment(comment);
 
       return commentsObjectResult.success();
     }
@@ -142,16 +150,33 @@ export class CommentsService {
       return commentsObjectResult.success();
     }
 
-    if (likeStatus === LikeStatus.Like) {
+    if (likeStatus === LikeStatus.Like && like.status === LikeStatus.Dislike) {
+      comment.likesInfo.likesCount += 1;
+      comment.likesInfo.dislikesCount -= 1;
       like.status = likeStatus;
     }
 
-    if (likeStatus === LikeStatus.Dislike) {
+    if (likeStatus === LikeStatus.Dislike && like.status === LikeStatus.Like) {
+      comment.likesInfo.dislikesCount += 1;
+      comment.likesInfo.likesCount -= 1;
       like.status = likeStatus;
     }
 
     if (likeStatus === LikeStatus.None) {
+      if (like.status === LikeStatus.Like) {
+        comment.likesInfo.likesCount -= 1;
+      }
+
+      if (like.status === LikeStatus.Dislike) {
+        comment.likesInfo.dislikesCount -= 1;
+      }
+
       like.status = likeStatus;
     }
+
+    await this.likesRepository.save(like);
+    await this.commentsRepository.saveComment(comment);
+
+    return commentsObjectResult.success();
   }
 }

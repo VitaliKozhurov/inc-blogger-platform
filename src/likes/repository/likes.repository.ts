@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 
-import { LikeDocument, LikeModel } from '../model';
+import { LikeDocument, LikeModel, LikeType } from '../model';
 
 @injectable()
 export class LikesRepository {
@@ -8,8 +8,8 @@ export class LikesRepository {
     return LikeModel.findOne({ parentId, authorId });
   }
 
-  async createBlog(blog: Omit<BlogType, '_id'>) {
-    const { id } = await BlogModel.create(blog);
+  async createLike(blog: Omit<LikeType, '_id'>) {
+    const { id } = await LikeModel.create(blog);
 
     return id;
   }
