@@ -1,5 +1,7 @@
 import { inject, injectable } from 'inversify';
 
+import { LikeModel, LikeStatus, LikeType } from '../../likes/model';
+import { LikesRepository } from '../../likes/repository';
 import { PostsRepository } from '../../posts/repository';
 import { postsObjectResult } from '../../posts/utils/posts-object-result';
 import { UsersRepository } from '../../users/repository';
@@ -11,7 +13,8 @@ export class CommentsService {
   constructor(
     @inject(UsersRepository) private usersRepository: UsersRepository,
     @inject(PostsRepository) private postsRepository: PostsRepository,
-    @inject(CommentsRepository) private commentsRepository: CommentsRepository
+    @inject(CommentsRepository) private commentsRepository: CommentsRepository,
+    @inject(LikesRepository) private likesRepository: LikesRepository
   ) {}
 
   async createCommentByPostId({
@@ -95,5 +98,60 @@ export class CommentsService {
     }
 
     return postsObjectResult.notFoundPost();
+  }
+
+  async updateCommentLikeStatus({
+    userId,
+    commentId,
+    likeStatus,
+  }: {
+    userId: string;
+    commentId: string;
+    likeStatus: LikeStatus;
+  }) {
+    const comment = await this.commentsRepository.getCommentById(commentId);
+
+    if (!comment) {
+      return commentsObjectResult.notFoundComment();
+    }
+
+    const like = await this.likesRepository.findByFilter({ parentId: commentId, authorId: userId });
+
+    if (!like) {
+      const like: Omit<LikeType, '_id'> = {
+        authorId: userId,
+        createdAt: new Date(),
+        parentId: comment.id,
+        status: likeStatus,
+      };
+
+      if (likeStatus === LikeStatus.Like) {
+        comment.likesInfo.likesCount += 1;
+      }
+
+      if (likeStatus === LikeStatus.Dislike) {
+        comment.likesInfo.dislikesCount += 1;
+      }
+
+      await LikeModel.create(like);
+
+      return commentsObjectResult.success();
+    }
+
+    if (likeStatus === like.status) {
+      return commentsObjectResult.success();
+    }
+
+    if (likeStatus === LikeStatus.Like) {
+      like.status = likeStatus;
+    }
+
+    if (likeStatus === LikeStatus.Dislike) {
+      like.status = likeStatus;
+    }
+
+    if (likeStatus === LikeStatus.None) {
+      like.status = likeStatus;
+    }
   }
 }
