@@ -102,8 +102,6 @@ export class PostsController {
       includeOptionals: true,
     });
 
-    // TODO write into service
-
     const post = await this.postsQueryRepository.getPostById(postId);
 
     if (!post) {

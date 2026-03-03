@@ -257,10 +257,37 @@ describe('Comments test', () => {
       expect(comments.body.items[0].likesInfo.likesCount).toBe(0);
       expect(comments.body.items[0].likesInfo.dislikesCount).toBe(0);
     });
+
+    it('should return 200 status code with comments', async () => {
+      const createdPost = await createPost(testManager);
+      const accessToken = await loginUser(testManager);
+
+      const commentData = await testManager.context
+        .request()
+        .post(`${APP_ROUTES.POSTS}/${createdPost.id}${APP_ROUTES.COMMENTS}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send(mockComment);
+
+      await testManager.context
+        .request()
+        .put(`${APP_ROUTES.COMMENTS}/${commentData.body.id}${APP_ROUTES.LIKE_STATUS}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ likeStatus: 'Like' })
+        .expect(HTTP_STATUSES.NO_CONTENT);
+
+      const comments = await testManager.context
+        .request()
+        .get(`${APP_ROUTES.POSTS}/${createdPost.id}${APP_ROUTES.COMMENTS}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(HTTP_STATUSES.OK);
+
+      expect(comments.body.items.length).toBe(1);
+      expect(comments.body.items[0].likesInfo.myStatus).toBe(LikeStatus.Like);
+    });
   });
 
   describe('PUT comments/:id/like-status', () => {
-    it('should return 204 status code after like comment by user', async () => {
+    it('should return 204 status code after like comment by user with liked status', async () => {
       const createdPost = await createPost(testManager);
       const accessToken = await loginUser(testManager);
 
@@ -286,6 +313,68 @@ describe('Comments test', () => {
       expect(comments.body.likesInfo.myStatus).toBe(LikeStatus.Like);
       expect(comments.body.likesInfo.likesCount).toBe(1);
       expect(comments.body.likesInfo.dislikesCount).toBe(0);
+    });
+
+    it('should return 204 status code after like comment by user with none liked status', async () => {
+      const createdPost = await createPost(testManager);
+      const accessToken = await loginUser(testManager);
+
+      const commentData = await testManager.context
+        .request()
+        .post(`${APP_ROUTES.POSTS}/${createdPost.id}${APP_ROUTES.COMMENTS}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send(mockComment);
+
+      await testManager.context
+        .request()
+        .put(`${APP_ROUTES.COMMENTS}/${commentData.body.id}${APP_ROUTES.LIKE_STATUS}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ likeStatus: 'Like' })
+        .expect(HTTP_STATUSES.NO_CONTENT);
+
+      const comments = await testManager.context
+        .request()
+        .get(`${APP_ROUTES.COMMENTS}/${commentData.body.id}`)
+        .expect(HTTP_STATUSES.OK);
+
+      expect(comments.body.likesInfo.myStatus).toBe(LikeStatus.None);
+      expect(comments.body.likesInfo.likesCount).toBe(1);
+      expect(comments.body.likesInfo.dislikesCount).toBe(0);
+    });
+
+    it('should return 401 status code if user is unauthorized', async () => {
+      const createdPost = await createPost(testManager);
+      const accessToken = await loginUser(testManager);
+
+      const commentData = await testManager.context
+        .request()
+        .post(`${APP_ROUTES.POSTS}/${createdPost.id}${APP_ROUTES.COMMENTS}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send(mockComment);
+
+      await testManager.context
+        .request()
+        .put(`${APP_ROUTES.COMMENTS}/${commentData.body.id}${APP_ROUTES.LIKE_STATUS}`)
+        .send({ likeStatus: 'Like' })
+        .expect(HTTP_STATUSES.UNAUTHORIZED);
+    });
+
+    it('should return 400 status code if send incorrect like status', async () => {
+      const createdPost = await createPost(testManager);
+      const accessToken = await loginUser(testManager);
+
+      const commentData = await testManager.context
+        .request()
+        .post(`${APP_ROUTES.POSTS}/${createdPost.id}${APP_ROUTES.COMMENTS}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send(mockComment);
+
+      await testManager.context
+        .request()
+        .put(`${APP_ROUTES.COMMENTS}/${commentData.body.id}${APP_ROUTES.LIKE_STATUS}`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ likeStatus: 'Incorrect_Like' })
+        .expect(HTTP_STATUSES.BAD_REQUEST);
     });
   });
 });
