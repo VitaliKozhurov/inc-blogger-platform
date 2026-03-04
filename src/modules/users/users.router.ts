@@ -4,14 +4,16 @@ import { basicAuthMiddleware } from '../../auth/middleware';
 import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware, idUriParamMiddleware } from '../../core/middleware';
-import { UsersController } from '../controller/users.controller';
-import { userInputModelMiddleware, usersInputQueryMiddleware } from '../middleware';
 
-export const userRouter = Router();
+import { userInputModelMiddleware } from './middleware/user-input-model.middleware';
+import { usersInputQueryMiddleware } from './middleware/users-input-query.middleware';
+import { UsersController } from './users.controller';
+
+export const usersRouter = Router();
 
 const usersController = iocContainer.get(UsersController);
 
-userRouter.get(
+usersRouter.get(
   APP_ROUTES.ROOT,
   basicAuthMiddleware,
   usersInputQueryMiddleware,
@@ -19,7 +21,7 @@ userRouter.get(
   usersController.getUsers.bind(usersController)
 );
 
-userRouter.post(
+usersRouter.post(
   APP_ROUTES.ROOT,
   basicAuthMiddleware,
   userInputModelMiddleware,
@@ -27,7 +29,7 @@ userRouter.post(
   usersController.createUser.bind(usersController)
 );
 
-userRouter.delete(
+usersRouter.delete(
   APP_ROUTES.ID,
   basicAuthMiddleware,
   idUriParamMiddleware,

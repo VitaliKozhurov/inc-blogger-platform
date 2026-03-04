@@ -1,7 +1,7 @@
 import { query } from 'express-validator';
 
-import { sortAndPaginationMiddleware } from '../../core/middleware';
-import { UserSortFields } from '../types/user-fields';
+import { sortAndPaginationMiddleware } from '../../../core/middleware';
+import { UserSortFields } from '../types/user-sort-fields.types';
 
 const USER_QUERY_FIELDS = {
   SEARCH_LOGIN_TERM: 'searchLoginTerm',

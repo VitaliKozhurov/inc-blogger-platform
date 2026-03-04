@@ -5,9 +5,3 @@ export enum UserFields {
   PASSWORD = 'password',
   CREATED_AT = 'createdAt',
 }
-
-export enum UserSortFields {
-  CREATED_AT = 'createdAt',
-  LOGIN = 'login',
-  EMAIL = 'email',
-}

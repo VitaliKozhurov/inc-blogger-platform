@@ -11,6 +11,12 @@ import { CommentsController } from './comments/controller';
 import { CommentsQueryRepository, CommentsRepository } from './comments/repository';
 import { EmailAdapter, JWTAdapter, PasswordHashAdapter } from './core/adapters';
 import { LikesRepository } from './likes/repository';
+import {
+  UsersController,
+  UsersQueryRepository,
+  UsersRepository,
+  UsersService,
+} from './modules/users';
 import { PostsService } from './posts/application';
 import { PostsController } from './posts/controller';
 import { PostsQueryRepository, PostsRepository } from './posts/repository';
@@ -20,9 +26,6 @@ import {
   UserDeviceSessionsQueryRepository,
   UserDeviceSessionsRepository,
 } from './sessions/repository';
-import { UsersService } from './users/application';
-import { UsersController } from './users/controller';
-import { UsersQueryRepository, UsersRepository } from './users/repository';
 
 export const iocContainer = new Container();
 

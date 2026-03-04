@@ -1,10 +1,11 @@
 import { body, ValidationChain } from 'express-validator';
 
-import { EMAIL_REG_EXP } from '../../core/constants';
-import { ERROR_FIELD_MESSAGES } from '../../core/utils';
-import { CreateUserInputType, UserFields } from '../types';
+import { EMAIL_REG_EXP } from '../../../core/constants';
+import { ERROR_FIELD_MESSAGES } from '../../../core/utils';
+import { CreateUserDTO } from '../dto/create-user.dto';
+import { UserFields } from '../types/user-fields.types';
 
-type UserFieldsValidationType = Record<keyof CreateUserInputType, ValidationChain>;
+type UserFieldsValidationType = Record<keyof CreateUserDTO, ValidationChain>;
 
 export const USER_VALIDATION_LENGTH = {
   [UserFields.LOGIN]: { min: 3, max: 10 },

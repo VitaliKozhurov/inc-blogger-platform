@@ -1,18 +1,23 @@
 import { injectable } from 'inversify';
+import { Types } from 'mongoose';
 
 import { Nullable, ResponseWithPaginationType } from '../../core/types';
 import { getPaginationData, getPaginationParams } from '../../core/utils';
-import { UserModel, UserType } from '../model';
-import { MeUserViewModelType, UsersRequestQueryType, UserViewModelType } from '../types';
-import { UserFields } from '../types/user-fields';
+import { UserType } from '../../users/model';
 
-type UserMapInputType = Pick<UserType, '_id' | 'login' | 'email' | 'createdAt'>;
+import { MeUserViewModelDTO } from './dto/me-user-view-model.dto';
+import { UserViewModelDTO } from './dto/user-view-model.dto';
+import { UsersRequestQueryDTO } from './dto/users-request-query.dto';
+import { UserFields } from './types/user-fields.types';
+import { UserModel } from './user.model';
+
+type UserMapInputType = { _id: Types.ObjectId } & UserType;
 
 @injectable()
 export class UsersQueryRepository {
   async getUsers(
-    args: UsersRequestQueryType
-  ): Promise<ResponseWithPaginationType<UserViewModelType>> {
+    args: UsersRequestQueryDTO
+  ): Promise<ResponseWithPaginationType<UserViewModelDTO>> {
     const { searchLoginTerm, searchEmailTerm, ...restArgs } = args;
 
     const searchFilter = [];
@@ -30,13 +35,7 @@ export class UsersQueryRepository {
     const { sort, skip, limit } = getPaginationParams(restArgs);
 
     const [items, totalCount] = await Promise.all([
-      UserModel.find(filter)
-        .select('_id login email createdAt')
-        .lean<UserMapInputType[]>()
-        .sort(sort)
-        .skip(skip)
-        .limit(limit)
-        .exec(),
+      UserModel.find(filter).lean<UserMapInputType[]>().sort(sort).skip(skip).limit(limit).exec(),
       UserModel.countDocuments(filter).exec(),
     ]);
 
@@ -50,11 +49,8 @@ export class UsersQueryRepository {
     return paginationData;
   }
 
-  async getUserById(id: string): Promise<Nullable<UserViewModelType>> {
-    const user = await UserModel.findById(id)
-      .select('_id login email createdAt')
-      .lean<UserMapInputType>()
-      .exec();
+  async getUserById(id: string): Promise<Nullable<UserViewModelDTO>> {
+    const user = await UserModel.findById(id).lean().exec();
 
     if (!user) {
       return null;
@@ -63,11 +59,8 @@ export class UsersQueryRepository {
     return this.mapToViewModel(user);
   }
 
-  async getMeUserById(id: string): Promise<Nullable<MeUserViewModelType>> {
-    const user = await UserModel.findById(id)
-      .select('_id login email createdAt')
-      .lean<UserMapInputType>()
-      .exec();
+  async getMeUserById(id: string): Promise<Nullable<MeUserViewModelDTO>> {
+    const user = await UserModel.findById(id).lean().exec();
 
     if (!user) {
       return null;
@@ -76,7 +69,7 @@ export class UsersQueryRepository {
     return { userId: user._id.toString(), email: user.email, login: user.login };
   }
 
-  private mapToViewModel(user: UserMapInputType): UserViewModelType {
+  private mapToViewModel(user: UserMapInputType): UserViewModelDTO {
     return {
       id: user._id.toString(),
       login: user.login,
