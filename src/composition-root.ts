@@ -10,6 +10,7 @@ import { CommentsService } from './comments/application';
 import { CommentsController } from './comments/controller';
 import { CommentsQueryRepository, CommentsRepository } from './comments/repository';
 import { EmailAdapter, JWTAdapter, PasswordHashAdapter } from './core/adapters';
+import { LikesRepository } from './likes/repository';
 import { PostsService } from './posts/application';
 import { PostsController } from './posts/controller';
 import { PostsQueryRepository, PostsRepository } from './posts/repository';
@@ -65,3 +66,6 @@ iocContainer.bind(CommentsRepository).toSelf().inSingletonScope();
 iocContainer.bind(CommentsQueryRepository).toSelf().inSingletonScope();
 iocContainer.bind(CommentsService).toSelf().inSingletonScope();
 iocContainer.bind(CommentsController).toSelf().inSingletonScope();
+
+// likes
+iocContainer.bind(LikesRepository).toSelf().inSingletonScope();

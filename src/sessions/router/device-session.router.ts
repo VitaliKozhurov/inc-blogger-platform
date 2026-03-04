@@ -12,17 +12,17 @@ export const deviceSessionRouter = Router();
 deviceSessionRouter.get(
   APP_ROUTES.SECURITY_DEVICES,
   refreshTokenMiddleware,
-  userDeviceSessionsController.getDeviceSessions.bind(userDeviceSessionsController)
+  userDeviceSessionsController.getSessions.bind(userDeviceSessionsController)
 );
 
 deviceSessionRouter.delete(
   APP_ROUTES.SECURITY_DEVICES,
   refreshTokenMiddleware,
-  userDeviceSessionsController.deleteDevicesSessions.bind(userDeviceSessionsController)
+  userDeviceSessionsController.deleteSessionsExceptTheCurrent.bind(userDeviceSessionsController)
 );
 
 deviceSessionRouter.delete(
   `${APP_ROUTES.SECURITY_DEVICES}${APP_ROUTES.ID}`,
   refreshTokenMiddleware,
-  userDeviceSessionsController.deleteDeviceSessionById.bind(userDeviceSessionsController)
+  userDeviceSessionsController.deleteSessionByDeviceId.bind(userDeviceSessionsController)
 );

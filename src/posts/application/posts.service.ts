@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 
 import { BlogsRepository } from '../../blogs/repository';
 import { PostsRepository } from '../repository';
-import { CreatePostInputType, PostDBType, UpdatePostInputType } from '../types';
+import { CreatePostInputType, UpdatePostInputType } from '../types';
 import { postsObjectResult } from '../utils/posts-object-result';
 
 @injectable()
@@ -19,10 +19,10 @@ export class PostsService {
       return postsObjectResult.notFoundBlog();
     }
 
-    const newPost: PostDBType = {
+    const newPost = {
       ...postData,
       blogName: blog.name,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
     };
 
     const id = await this.postsRepository.createPost(newPost);
@@ -31,13 +31,20 @@ export class PostsService {
   }
 
   async updatePostById({ id, postData }: { id: string; postData: UpdatePostInputType }) {
-    const isUpdated = await this.postsRepository.updatePostById({ id, postData });
+    const post = await this.postsRepository.getPostById(id);
 
-    if (isUpdated) {
-      return postsObjectResult.success();
+    if (!post) {
+      return postsObjectResult.notFoundPost();
     }
 
-    return postsObjectResult.notFoundPost();
+    post.title = postData.title;
+    post.shortDescription = postData.shortDescription;
+    post.content = postData.content;
+    post.blogId = postData.blogId;
+
+    await this.postsRepository.savePost(post);
+
+    return postsObjectResult.success();
   }
 
   async deletePostById(blogId: string) {

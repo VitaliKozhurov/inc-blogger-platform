@@ -21,11 +21,11 @@ export const refreshTokenMiddleware = async (req: Request, res: Response, next: 
     return res.sendStatus(HTTP_STATUSES.UNAUTHORIZED);
   }
 
-  const tokenSession = await userDeviceSessionsRepository.getUserSessionByFilter({
+  const tokenSession = await userDeviceSessionsRepository.getSessionByFilter({
     deviceId: result.payload.deviceId,
   });
 
-  if (!tokenSession || tokenSession.iat !== result.payload.iat) {
+  if (!tokenSession || tokenSession.iat.getTime() / 1000 !== result.payload.iat) {
     return res.sendStatus(HTTP_STATUSES.UNAUTHORIZED);
   }
 

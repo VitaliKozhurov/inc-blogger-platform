@@ -1,56 +1,62 @@
 import { injectable } from 'inversify';
-import { Filter } from 'mongodb';
+import { QueryFilter } from 'mongoose';
 
-import { userDeviceSessionCollection } from '../../db';
-import { UserSessionDBType } from '../types';
+import { UserDeviceSessionDocument, UserDeviceSessionModel, UserDeviceSessionType } from '../model';
 
-type UpdateSessionArgs = { prevIat: number } & Omit<UserSessionDBType, 'userId' | 'deviceName'>;
+type GetUserDeviceArgs = {
+  userId?: string;
+  deviceId?: string;
+  iat?: Date;
+};
 
 @injectable()
 export class UserDeviceSessionsRepository {
-  async getUserSessionsByUserId(userId: string) {
-    return userDeviceSessionCollection.find({ userId }).toArray();
+  async getSessionsByUserId(userId: string) {
+    return UserDeviceSessionModel.find({ userId }).exec();
   }
-  async getUserSessionByFilter(filter: { userId?: string; deviceId?: string }) {
-    const queryFilter: Filter<UserSessionDBType> = {};
+  async getSessionByFilter({ userId, deviceId, iat }: GetUserDeviceArgs) {
+    const queryFilter: QueryFilter<UserDeviceSessionType> = {};
 
-    if (filter.userId) {
-      queryFilter.userId = filter.userId;
+    if (userId) {
+      queryFilter.userId = userId;
     }
 
-    if (filter.deviceId) {
-      queryFilter.deviceId = filter.deviceId;
+    if (deviceId) {
+      queryFilter.deviceId = deviceId;
+    }
+
+    if (iat) {
+      queryFilter.iat = iat;
     }
 
     if (Object.keys(queryFilter).length === 0) {
       return null;
     }
 
-    return userDeviceSessionCollection.findOne(queryFilter);
+    return UserDeviceSessionModel.findOne(queryFilter).exec();
   }
-  async addUserSession(session: UserSessionDBType): Promise<string> {
-    const { insertedId } = await userDeviceSessionCollection.insertOne(session);
 
-    return insertedId.toString();
-  }
-  async updateUserSession({ deviceId, prevIat, ...restData }: UpdateSessionArgs): Promise<boolean> {
-    const { modifiedCount } = await userDeviceSessionCollection.updateOne(
-      { deviceId, iat: prevIat },
-      { $set: restData }
-    );
+  async createSession(session: Omit<UserDeviceSessionType, '_id'>): Promise<string> {
+    const { id } = await UserDeviceSessionModel.create(session);
 
-    return modifiedCount > 0;
+    return id;
   }
-  async deleteUserSession({ deviceId }: Pick<UserSessionDBType, 'deviceId'>) {
-    const { deletedCount } = await userDeviceSessionCollection.deleteOne({ deviceId });
+
+  async deleteSessionByDeviceId(deviceId: string) {
+    const { deletedCount } = await UserDeviceSessionModel.deleteOne({ deviceId });
 
     return deletedCount > 0;
   }
-  async deleteUserSessionsExceptTheCurrent({ deviceId }: { deviceId: string }) {
-    const { deletedCount } = await userDeviceSessionCollection.deleteMany({
+
+  async deleteSessionsExceptTheCurrent({ deviceId }: { deviceId: string }) {
+    const { deletedCount } = await UserDeviceSessionModel.deleteMany({
       deviceId: { $ne: deviceId },
     });
 
     return deletedCount > 0;
+  }
+
+  async saveSession(userDeviceSession: UserDeviceSessionDocument) {
+    await userDeviceSession.save();
   }
 }

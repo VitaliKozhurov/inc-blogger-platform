@@ -4,6 +4,7 @@ import { accessTokenMiddleware } from '../../auth/middleware';
 import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { idUriParamMiddleware, checkValidationMiddleware } from '../../core/middleware';
+import { likeInputModelMiddleware } from '../../likes/middleware';
 import { CommentsController } from '../controller';
 import { commentInputModelMiddleware } from '../middleware/comment-input-model.middleware';
 
@@ -33,4 +34,13 @@ commentRouter.delete(
   idUriParamMiddleware,
   checkValidationMiddleware,
   commentsController.deleteCommentById.bind(commentsController)
+);
+
+commentRouter.put(
+  `${APP_ROUTES.ID}${APP_ROUTES.LIKE_STATUS}`,
+  accessTokenMiddleware,
+  idUriParamMiddleware,
+  likeInputModelMiddleware,
+  checkValidationMiddleware,
+  commentsController.updateCommentLikeStatus.bind(commentsController)
 );

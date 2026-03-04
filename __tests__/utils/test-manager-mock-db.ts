@@ -1,17 +1,18 @@
 import { Server } from 'http';
 
 import express from 'express';
-import { Db } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { Mongoose } from 'mongoose';
 import superTestRequest, { Agent } from 'supertest';
 
-import { runDB, stopDb } from '../../src/db';
 import { initApp } from '../../src/init-app';
+
+import { runDB, stopDb } from './../../src/db/mongo.db';
 
 export class TestManagerMockDB {
   public request!: () => Agent;
   private mongoServer!: MongoMemoryServer;
-  public DB!: Db;
+  public DB!: Mongoose;
   private server!: Server;
 
   async init() {
@@ -34,6 +35,6 @@ export class TestManagerMockDB {
   }
 
   async clearDB() {
-    await this.DB.dropDatabase();
+    await this.DB.connection.dropDatabase();
   }
 }

@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 
 import { BlogsRepository } from '../repository';
-import { BlogDBType, CreateBlogInputType, UpdateBlogInputType } from '../types';
+import { CreateBlogInputType, UpdateBlogInputType } from '../types';
 import { blogsObjectResult } from '../utils/blogs-object-result';
 
 @injectable()
@@ -9,10 +9,10 @@ export class BlogsService {
   constructor(@inject(BlogsRepository) private blogsRepository: BlogsRepository) {}
 
   async createBlog(blogData: CreateBlogInputType) {
-    const newBlog: BlogDBType = {
+    const newBlog = {
       ...blogData,
       isMembership: false,
-      createdAt: new Date().toISOString(),
+      createdAt: new Date(),
     };
 
     const blogId = await this.blogsRepository.createBlog(newBlog);
@@ -21,13 +21,19 @@ export class BlogsService {
   }
 
   async updateBlogById({ id, blogData }: { id: string; blogData: UpdateBlogInputType }) {
-    const isUpdated = await this.blogsRepository.updateBlogById({ id, blogData });
+    const blog = await this.blogsRepository.getBlogById(id);
 
-    if (isUpdated) {
-      return blogsObjectResult.success();
+    if (!blog) {
+      return blogsObjectResult.notFoundBlog();
     }
 
-    return blogsObjectResult.notFoundBlog();
+    blog.name = blogData.name;
+    blog.description = blogData.description;
+    blog.websiteUrl = blogData.websiteUrl;
+
+    await this.blogsRepository.saveBlog(blog);
+
+    return blogsObjectResult.success();
   }
 
   async deleteBlogById(id: string) {

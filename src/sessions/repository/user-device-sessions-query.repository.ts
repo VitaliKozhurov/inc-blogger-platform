@@ -1,17 +1,12 @@
 import { injectable } from 'inversify';
 
-import { userDeviceSessionCollection } from '../../db';
-import { SessionViewModelType, UserSessionDBType } from '../types';
+import { UserDeviceSessionModel, UserDeviceSessionType } from '../model';
+import { SessionViewModelType } from '../types';
 
 @injectable()
 export class UserDeviceSessionsQueryRepository {
-  async getUserSessions(): Promise<SessionViewModelType[]> {
-    const sessions = await userDeviceSessionCollection.find().toArray();
-
-    return sessions.map(this.mapToViewModel);
-  }
-  async getUserSessionsForUserById(userId: string): Promise<SessionViewModelType[]> {
-    const sessions = await userDeviceSessionCollection.find({ userId }).toArray();
+  async getSessionsByUserId(userId: string): Promise<SessionViewModelType[]> {
+    const sessions = await UserDeviceSessionModel.find({ userId }).lean().exec();
 
     return sessions.map(this.mapToViewModel);
   }
@@ -20,7 +15,7 @@ export class UserDeviceSessionsQueryRepository {
     deviceName,
     deviceId,
     iat,
-  }: UserSessionDBType): SessionViewModelType {
-    return { ip, title: deviceName, deviceId, lastActiveDate: new Date(iat * 1000).toISOString() };
+  }: UserDeviceSessionType): SessionViewModelType {
+    return { ip, title: deviceName, deviceId, lastActiveDate: iat.toISOString() };
   }
 }

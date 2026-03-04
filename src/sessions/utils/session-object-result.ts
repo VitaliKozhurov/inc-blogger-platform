@@ -4,7 +4,7 @@ export const sessionObjectResult = {
   success<T>(data: T | null = null) {
     return new ResultObject({ status: RESULT_STATUSES.OK, data, extensions: [] });
   },
-  notFound() {
+  notFoundSession() {
     return new ResultObject({
       status: RESULT_STATUSES.NOT_FOUND,
       data: null,

@@ -1,6 +1,7 @@
 import { add } from 'date-fns';
-import { Db, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { Mongoose } from 'mongoose';
 
 import { AuthTokenAdapter, EmailRegistrationAdapter } from '../../../src/auth/adapters';
 import { AuthService } from '../../../src/auth/application';
@@ -8,7 +9,9 @@ import { iocContainer } from '../../../src/composition-root';
 import { HTTP_STATUSES } from '../../../src/core/types';
 import { RESULT_STATUSES } from '../../../src/core/utils';
 import { runDB, stopDb } from '../../../src/db/mongo.db';
-import { UserDeviceSessionsService } from '../../../src/sessions/application';
+import { UserDeviceSessionDocument } from '../../../src/sessions/model';
+import { UserDeviceSessionsRepository } from '../../../src/sessions/repository';
+import { UserModel } from '../../../src/users/model';
 import { UserDBType } from '../../../src/users/types';
 
 import { SETTINGS } from './../../../src/core/settings/settings';
@@ -16,11 +19,11 @@ import { SETTINGS } from './../../../src/core/settings/settings';
 describe('Auth test', () => {
   const authService = iocContainer.get(AuthService);
   const authTokenAdapter = iocContainer.get(AuthTokenAdapter);
-  const userDeviceSessionService = iocContainer.get(UserDeviceSessionsService);
+  const userDeviceSessionsRepository = iocContainer.get(UserDeviceSessionsRepository);
   const emailRegistrationAdapter = iocContainer.get(EmailRegistrationAdapter);
 
   const confirmationCode = '123';
-  let DB: Db;
+  let DB: Mongoose;
 
   const createUser = async (emailConfirmation: Partial<UserDBType['emailConfirmation']> = {}) => {
     const user = {
@@ -28,7 +31,7 @@ describe('Auth test', () => {
       createdAt: new Date().toISOString(),
       email: SETTINGS.APP_EMAIL_ADDRESS ?? '',
       login: 'super_user',
-      passwordHash: '',
+      passwordHash: 'hash#for#password',
       emailConfirmation: {
         confirmationCode,
         expirationDate: add(new Date(), { hours: 1 }).toISOString(),
@@ -37,7 +40,7 @@ describe('Auth test', () => {
       },
     };
 
-    await DB.collection('users').insertOne(user);
+    await UserModel.create(user);
 
     return user;
   };
@@ -50,7 +53,7 @@ describe('Auth test', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    await DB.dropDatabase();
+    await DB.connection.dropDatabase();
   });
 
   afterAll(async () => {
@@ -72,11 +75,11 @@ describe('Auth test', () => {
     });
 
     it('should return a 400 status code if send credentials with the same user in system', async () => {
-      await createUser();
+      const createdUser = await createUser();
 
       const result = await authService.registration({
         login: 'super_user',
-        email: SETTINGS.APP_EMAIL_ADDRESS ?? '',
+        email: createdUser.email,
         password: 'secret_password',
       });
 
@@ -94,7 +97,7 @@ describe('Auth test', () => {
       );
 
       expect(result.status).toBe(RESULT_STATUSES.OK);
-      const user = await DB.collection('users').findOne({ _id: createdUser._id });
+      const user = await UserModel.findOne({ _id: createdUser._id });
 
       expect(user?.emailConfirmation.isConfirmed).toBe(true);
     });
@@ -145,7 +148,10 @@ describe('Auth test', () => {
   });
 
   describe('POST /auth/refresh', () => {
-    jest.spyOn(userDeviceSessionService, 'updateUserSession').mockResolvedValue(true);
+    jest.spyOn(userDeviceSessionsRepository, 'saveSession').mockResolvedValue(undefined);
+    jest
+      .spyOn(userDeviceSessionsRepository, 'getSessionByFilter')
+      .mockResolvedValue({} as UserDeviceSessionDocument);
 
     it('should return a 200 status code if send correct refreshToken', async () => {
       const mockIp = '0.0.0.0';
@@ -181,9 +187,9 @@ describe('Auth test', () => {
 
       await authService.passwordRecovery({ email: createdUser.email });
 
-      const user = await DB.collection('users').findOne({ _id: createdUser._id });
+      const user = await UserModel.findOne({ _id: createdUser._id });
 
-      expect(user?.passwordRecovery.recoveryCode).toBeDefined();
+      expect(user?.passwordRecovery?.recoveryCode).toBeDefined();
     });
   });
 });

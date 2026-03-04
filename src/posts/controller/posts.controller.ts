@@ -13,7 +13,11 @@ import {
   RequestWithParamAndQueryType,
   RequestWithUriParamType,
 } from '../../core/types';
-import { RESULT_STATUSES, resultCodeToHttpException } from '../../core/utils';
+import {
+  getUserIdFromAccessToken,
+  RESULT_STATUSES,
+  resultCodeToHttpException,
+} from '../../core/utils';
 import { PostsService } from '../application';
 import { PostsQueryRepository } from '../repository';
 import { CreatePostInputType, PostsRequestQueryType, UpdatePostInputType } from '../types';
@@ -91,6 +95,7 @@ export class PostsController {
     res: Response
   ) {
     const postId = req.params.id;
+    const userId = getUserIdFromAccessToken(req.headers.authorization) ?? undefined;
 
     const query = matchedData<CommentsRequestQueryType>(req, {
       locations: ['query'],
@@ -104,6 +109,7 @@ export class PostsController {
     }
 
     const commentsViewModel = await this.commentsQueryRepository.getCommentsByPostId({
+      userId,
       postId,
       query,
     });
@@ -127,9 +133,10 @@ export class PostsController {
       return res.sendStatus(result.status);
     }
 
-    const createdCommentViewModel = await this.commentsQueryRepository.getCommentById(
-      result.data!.commentId
-    );
+    const createdCommentViewModel = await this.commentsQueryRepository.getCommentById({
+      commentId: result.data!.commentId,
+      userId,
+    });
 
     return res.status(HTTP_STATUSES.CREATED).send(createdCommentViewModel);
   }
