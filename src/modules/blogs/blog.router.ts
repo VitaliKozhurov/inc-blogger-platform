@@ -5,9 +5,10 @@ import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware, idUriParamMiddleware } from '../../core/middleware';
 import { postByBlogIdInputModelMiddleware, postInputQueryMiddleware } from '../../posts/middleware';
-import { BlogsController } from '../controller';
-import { blogInputModelMiddleware } from '../middleware/blog-input-model.middleware';
-import { blogInputQueryMiddleware } from '../middleware/blog-input-query.middleware';
+
+import { BlogsController } from './blogs.controller';
+import { blogInputModelMiddleware } from './middleware/blog-input-model.middleware';
+import { blogInputQueryMiddleware } from './middleware/blog-input-query.middleware';
 
 const blogsController = iocContainer.get(BlogsController);
 

@@ -11,12 +11,12 @@ export type BlogType = {
   createdAt: Date;
 };
 
-export type BlogDocument = HydratedDocument<BlogType>;
+export type BlogDocument = HydratedDocument<BlogType, BlogMethodsType>;
 
 export type BlogStaticMethodsType = {
   createBlogInstance(args: CreateBlogDTO): Promise<BlogDocument>;
 };
 
 export type BlogMethodsType = {
-  updateBlog(args: UpdateBlogDTO): Promise<BlogDocument>;
+  updateBlog(args: UpdateBlogDTO): BlogDocument;
 };

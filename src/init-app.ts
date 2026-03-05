@@ -4,10 +4,10 @@ import cookieParser from 'cookie-parser';
 import { Express } from 'express';
 
 import { authRouter } from './auth/router/auth.router';
-import { blogRouter } from './blogs/router/blog.router';
 import { commentRouter } from './comments/router/comment.router';
 import { APP_ROUTES } from './core/constants';
 import { bodyParserMiddleware, globalErrorMiddleware } from './core/middleware';
+import { blogRouter } from './modules/blogs';
 import { usersRouter } from './modules/users';
 import { postRouter } from './posts/router/posts.router';
 import { deviceSessionRouter } from './sessions/router/device-session.router';

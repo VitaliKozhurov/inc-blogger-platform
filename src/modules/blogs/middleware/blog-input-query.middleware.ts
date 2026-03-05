@@ -1,7 +1,7 @@
 import { query } from 'express-validator';
 
-import { sortAndPaginationMiddleware } from '../../core/middleware';
-import { BlogSortFields } from '../types';
+import { sortAndPaginationMiddleware } from '../../../core/middleware';
+import { BlogSortFields } from '../types/blog-sort-fields.types';
 
 const BLOGS_QUERY_FIELDS = {
   SEARCH_NAME_TERM: 'searchNameTerm',

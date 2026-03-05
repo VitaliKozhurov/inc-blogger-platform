@@ -14,9 +14,12 @@ import { resultCodeToHttpException, RESULT_STATUSES } from '../../core/utils';
 import { PostsService } from '../../posts/application';
 import { PostsQueryRepository } from '../../posts/repository';
 import { CreatePostInputType, PostsRequestQueryType } from '../../posts/types';
-import { BlogsService } from '../application';
-import { BlogsQueryRepository } from '../repository';
-import { BlogsRequestQueryType, CreateBlogInputType, UpdateBlogInputType } from '../types';
+
+import { BlogsQueryRepository } from './blogs-query.repository';
+import { BlogsService } from './blogs.service';
+import { BlogsRequestQueryDTO } from './dto/blogs-request-query.dto';
+import { CreateBlogDTO } from './dto/create-blog.dto';
+import { UpdateBlogDTO } from './dto/update-blog.dto';
 
 @injectable()
 export class BlogsController {
@@ -28,7 +31,7 @@ export class BlogsController {
   ) {}
 
   async getBlogs(req: Request, res: Response) {
-    const query = matchedData<BlogsRequestQueryType>(req, {
+    const query = matchedData<BlogsRequestQueryDTO>(req, {
       locations: ['query'],
       includeOptionals: true,
     });
@@ -48,7 +51,7 @@ export class BlogsController {
     return res.status(HTTP_STATUSES.OK).send(blogViewModel);
   }
 
-  async createBlog(req: RequestWithBodyType<CreateBlogInputType>, res: Response) {
+  async createBlog(req: RequestWithBodyType<CreateBlogDTO>, res: Response) {
     const result = await this.blogsService.createBlog(req.body);
 
     const createdBlogViewModel = await this.blogsQueryRepository.getBlogById(result.data);
@@ -57,7 +60,7 @@ export class BlogsController {
   }
 
   async updateBlogById(
-    req: RequestWithParamAndBodyType<IdParamType, UpdateBlogInputType>,
+    req: RequestWithParamAndBodyType<IdParamType, UpdateBlogDTO>,
     res: Response
   ) {
     const result = await this.blogsService.updateBlogById({

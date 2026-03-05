@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify';
 import { BlogModel } from './blog.model';
 import { BlogsRepository } from './blogs.repository';
 import { CreateBlogDTO } from './dto/create-blog.dto';
+import { UpdateBlogDTO } from './dto/update-blog.dto';
 import { blogsObjectResult } from './utils/blogs-object-result';
 
 @injectable()
@@ -14,21 +15,19 @@ export class BlogsService {
 
     await this.blogsRepository.saveBlog(blogDocument);
 
-    return blogsObjectResult.success(blogDocument.id);
+    return blogsObjectResult.success(blogDocument._id.toString());
   }
 
-  async updateBlogById({ id, blogData }: { id: string; blogData: UpdateBlogInputType }) {
+  async updateBlogById({ id, blogData }: { id: string; blogData: UpdateBlogDTO }) {
     const blog = await this.blogsRepository.getBlogById(id);
 
     if (!blog) {
       return blogsObjectResult.notFoundBlog();
     }
 
-    blog.name = blogData.name;
-    blog.description = blogData.description;
-    blog.websiteUrl = blogData.websiteUrl;
+    const updatedBlog = blog.updateBlog(blogData);
 
-    await this.blogsRepository.saveBlog(blog);
+    await this.blogsRepository.saveBlog(updatedBlog);
 
     return blogsObjectResult.success();
   }

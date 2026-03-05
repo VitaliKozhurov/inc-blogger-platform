@@ -4,7 +4,7 @@ import { CreateBlogDTO } from './dto/create-blog.dto';
 import { UpdateBlogDTO } from './dto/update-blog.dto';
 import { BlogMethodsType, BlogStaticMethodsType, BlogType } from './types/blog.types';
 
-type BlogModelType = Model<BlogType> & BlogStaticMethodsType;
+type BlogModelType = Model<BlogType, unknown, BlogMethodsType> & BlogStaticMethodsType;
 
 const blogSchema = new Schema<BlogType, BlogModelType, BlogMethodsType>(
   {
@@ -59,4 +59,4 @@ blogSchema.static(
   }
 );
 
-export const BlogModel = model<BlogType, BlogModelType, BlogMethodsType>('blog', blogSchema);
+export const BlogModel = model<BlogType, BlogModelType>('blog', blogSchema);
