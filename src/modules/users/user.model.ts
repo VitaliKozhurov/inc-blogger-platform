@@ -1,8 +1,6 @@
 import { Model, model, Schema } from 'mongoose';
 
-import { UserType } from '../../users/model';
-
-import { UserStaticMethodsType } from './types/user.types';
+import { UserStaticMethodsType, UserType } from './types/user.types';
 
 type UserModelType = Model<UserType> & UserStaticMethodsType;
 

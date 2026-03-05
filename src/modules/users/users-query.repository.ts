@@ -3,12 +3,12 @@ import { Types } from 'mongoose';
 
 import { Nullable, ResponseWithPaginationType } from '../../core/types';
 import { getPaginationData, getPaginationParams } from '../../core/utils';
-import { UserType } from '../../users/model';
 
 import { MeUserViewModelDTO } from './dto/me-user-view-model.dto';
 import { UserViewModelDTO } from './dto/user-view-model.dto';
 import { UsersRequestQueryDTO } from './dto/users-request-query.dto';
 import { UserFields } from './types/user-fields.types';
+import { UserType } from './types/user.types';
 import { UserModel } from './user.model';
 
 type UserMapInputType = { _id: Types.ObjectId } & UserType;
