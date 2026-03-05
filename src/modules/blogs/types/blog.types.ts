@@ -1,5 +1,8 @@
 import { HydratedDocument } from 'mongoose';
 
+import { CreateBlogDTO } from '../dto/create-blog.dto';
+import { UpdateBlogDTO } from '../dto/update-blog.dto';
+
 export type BlogType = {
   name: string;
   description: string;
@@ -9,3 +12,11 @@ export type BlogType = {
 };
 
 export type BlogDocument = HydratedDocument<BlogType>;
+
+export type BlogStaticMethodsType = {
+  createBlogInstance(args: CreateBlogDTO): Promise<BlogDocument>;
+};
+
+export type BlogMethodsType = {
+  updateBlog(args: UpdateBlogDTO): Promise<BlogDocument>;
+};
