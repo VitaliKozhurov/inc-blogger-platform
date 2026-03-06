@@ -18,9 +18,12 @@ import {
   RESULT_STATUSES,
   resultCodeToHttpException,
 } from '../../core/utils';
-import { PostsService } from '../application';
-import { PostsQueryRepository } from '../repository';
-import { CreatePostInputType, PostsRequestQueryType, UpdatePostInputType } from '../types';
+
+import { CreatePostDTO } from './dto/create-post.dto';
+import { PostsRequestQueryDTO } from './dto/posts-request-query.dto';
+import { UpdatePostDTO } from './dto/update-post.dto';
+import { PostsQueryRepository } from './posts-query.repository';
+import { PostsService } from './posts.service';
 
 @injectable()
 export class PostsController {
@@ -32,7 +35,7 @@ export class PostsController {
   ) {}
 
   async getPosts(req: Request, res: Response) {
-    const query = matchedData<PostsRequestQueryType>(req, {
+    const query = matchedData<PostsRequestQueryDTO>(req, {
       locations: ['query'],
       includeOptionals: true,
     });
@@ -52,7 +55,7 @@ export class PostsController {
     return res.status(HTTP_STATUSES.OK).send(postViewModel);
   }
 
-  async createPost(req: RequestWithBodyType<CreatePostInputType>, res: Response) {
+  async createPost(req: RequestWithBodyType<CreatePostDTO>, res: Response) {
     const result = await this.postsService.createPost(req.body);
 
     if (result.status !== RESULT_STATUSES.OK) {
@@ -65,7 +68,7 @@ export class PostsController {
   }
 
   async updatePostById(
-    req: RequestWithParamAndBodyType<IdParamType, UpdatePostInputType>,
+    req: RequestWithParamAndBodyType<IdParamType, UpdatePostDTO>,
     res: Response
   ) {
     const result = await this.postsService.updatePostById({

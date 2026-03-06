@@ -9,20 +9,23 @@ import { CommentsQueryRepository, CommentsRepository } from './comments/reposito
 import { EmailAdapter, JWTAdapter, PasswordHashAdapter } from './core/adapters';
 import { LikesRepository } from './likes/repository';
 import {
-  BlogsRepository,
-  BlogsQueryRepository,
-  BlogsService,
   BlogsController,
+  BlogsQueryRepository,
+  BlogsRepository,
+  BlogsService,
 } from './modules/blogs';
+import {
+  PostsController,
+  PostsQueryRepository,
+  PostsRepository,
+  PostsService,
+} from './modules/posts';
 import {
   UsersController,
   UsersQueryRepository,
   UsersRepository,
   UsersService,
 } from './modules/users';
-import { PostsService } from './posts/application';
-import { PostsController } from './posts/controller';
-import { PostsQueryRepository, PostsRepository } from './posts/repository';
 import { UserDeviceSessionsService } from './sessions/application';
 import { UserDeviceSessionsController } from './sessions/controller';
 import {

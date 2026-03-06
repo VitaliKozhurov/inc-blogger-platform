@@ -1,8 +1,6 @@
-export type PostDBType = {
+export type UpdatePostDTO = {
   title: string;
   shortDescription: string;
   content: string;
   blogId: string;
-  blogName: string;
-  createdAt: string;
 };

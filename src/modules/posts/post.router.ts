@@ -8,9 +8,10 @@ import {
 import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware, idUriParamMiddleware } from '../../core/middleware';
-import { PostsController } from '../controller';
-import { postInputQueryMiddleware } from '../middleware';
-import { postInputModelMiddleware } from '../middleware/post-input-model.middleware';
+
+import { postInputModelMiddleware } from './middleware/post-input-model.middleware';
+import { postInputQueryMiddleware } from './middleware/post-input-query.middleware';
+import { PostsController } from './posts.controller';
 
 const postsController = iocContainer.get(PostsController);
 

@@ -1,6 +1,7 @@
 import { HydratedDocument } from 'mongoose';
 
 import { CreatePostDTO } from '../dto/create-post.dto';
+import { UpdatePostDTO } from '../dto/update-post.dto';
 
 export type PostType = {
   title: string;
@@ -11,8 +12,12 @@ export type PostType = {
   createdAt: Date;
 };
 
-export type PostDocument = HydratedDocument<PostType>;
+export type PostDocument = HydratedDocument<PostType, PostMethodsType>;
 
 export type PostStaticMethodsType = {
   createPostInstance(args: { blogName: string; postData: CreatePostDTO }): Promise<PostDocument>;
+};
+
+export type PostMethodsType = {
+  updatePost(args: UpdatePostDTO): PostDocument;
 };

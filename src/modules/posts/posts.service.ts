@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify';
 import { BlogsRepository } from '../blogs';
 
 import { CreatePostDTO } from './dto/create-post.dto';
+import { UpdatePostDTO } from './dto/update-post.dto';
 import { PostModel } from './post.model';
 import { PostsRepository } from './posts.repository';
 import { postsObjectResult } from './utils/posts-object-result';
@@ -28,19 +29,16 @@ export class PostsService {
     return postsObjectResult.success({ id: postDocument._id.toString() });
   }
 
-  async updatePostById({ id, postData }: { id: string; postData: UpdatePostInputType }) {
+  async updatePostById({ id, postData }: { id: string; postData: UpdatePostDTO }) {
     const post = await this.postsRepository.getPostById(id);
 
     if (!post) {
       return postsObjectResult.notFoundPost();
     }
 
-    post.title = postData.title;
-    post.shortDescription = postData.shortDescription;
-    post.content = postData.content;
-    post.blogId = postData.blogId;
+    const updatedPost = post.updatePost(postData);
 
-    await this.postsRepository.savePost(post);
+    await this.postsRepository.savePost(updatedPost);
 
     return postsObjectResult.success();
   }

@@ -1,10 +1,12 @@
 import { Model, model, Schema } from 'mongoose';
 
 import { CreatePostDTO } from './dto/create-post.dto';
-import { PostStaticMethodsType, PostType } from './types/post.types';
-type PostModelType = Model<PostType> & PostStaticMethodsType;
+import { UpdatePostDTO } from './dto/update-post.dto';
+import { PostMethodsType, PostStaticMethodsType, PostType } from './types/post.types';
 
-const postSchema = new Schema<PostType, PostModelType>(
+type PostModelType = Model<PostType, unknown, PostMethodsType> & PostStaticMethodsType;
+
+const postSchema = new Schema<PostType, PostModelType, PostMethodsType>(
   {
     title: {
       type: String,
@@ -33,6 +35,15 @@ const postSchema = new Schema<PostType, PostModelType>(
   },
   { collection: 'posts', versionKey: false }
 );
+
+postSchema.method('updatePost', function updateBlog(args: UpdatePostDTO) {
+  this.blogId = args.blogId;
+  this.title = args.title;
+  this.shortDescription = args.shortDescription;
+  this.content = args.content;
+
+  return this;
+});
 
 postSchema.static(
   'createPostInstance',
