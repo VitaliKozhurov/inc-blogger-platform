@@ -1,18 +1,19 @@
 import { injectable } from 'inversify';
+import { Types } from 'mongoose';
 
-import { Nullable } from '../../core/types';
 import { getPaginationData, getPaginationParams } from '../../core/utils';
 import { LikeModel, LikeStatus } from '../../likes/model';
 
+import { CommentModel } from './comment.model';
+import { CommentsRequestQueryDTO } from './dto/comment-request-type.dto';
+import { CommentViewModelDTO } from './dto/comment-view-model.dto';
+import { CommentType } from './types/comment.types';
+
+type CommentMapInputType = { _id: Types.ObjectId } & CommentType;
+
 @injectable()
 export class CommentsQueryRepository {
-  async getCommentById({
-    commentId,
-    userId,
-  }: {
-    commentId: string;
-    userId?: string;
-  }): Promise<Nullable<CommentViewModelType>> {
+  async getCommentById({ commentId, userId }: { commentId: string; userId?: string }) {
     const comment = await CommentModel.findById(commentId).lean().exec();
 
     if (!comment) {
@@ -35,7 +36,7 @@ export class CommentsQueryRepository {
   }: {
     userId?: string;
     postId: string;
-    query: CommentsRequestQueryType;
+    query: CommentsRequestQueryDTO;
   }) {
     const { sort, skip, limit } = getPaginationParams(query);
 
@@ -73,9 +74,9 @@ export class CommentsQueryRepository {
     comment,
     myStatus,
   }: {
-    comment: CommentType;
+    comment: CommentMapInputType;
     myStatus: LikeStatus;
-  }): CommentViewModelType {
+  }): CommentViewModelDTO {
     return {
       id: comment._id.toString(),
       createdAt: comment.createdAt.toISOString(),

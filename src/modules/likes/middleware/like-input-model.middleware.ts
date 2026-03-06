@@ -1,7 +1,7 @@
 import { body } from 'express-validator';
 
-import { ERROR_FIELD_MESSAGES } from '../../core/utils';
-import { LikeStatus } from '../model';
+import { ERROR_FIELD_MESSAGES } from '../../../core/utils';
+import { LikeStatus } from '../types/like-status.types';
 
 const LIKE_STATUS_MESSAGE = 'Incorrect like status';
 
