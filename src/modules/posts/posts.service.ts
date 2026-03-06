@@ -1,10 +1,11 @@
 import { inject, injectable } from 'inversify';
 
-import { BlogsRepository } from '../../modules/blogs';
-import { PostModel } from '../model';
-import { PostsRepository } from '../repository';
-import { CreatePostInputType, UpdatePostInputType } from '../types';
-import { postsObjectResult } from '../utils/posts-object-result';
+import { BlogsRepository } from '../blogs';
+
+import { CreatePostDTO } from './dto/create-post.dto';
+import { PostModel } from './post.model';
+import { PostsRepository } from './posts.repository';
+import { postsObjectResult } from './utils/posts-object-result';
 
 @injectable()
 export class PostsService {
@@ -13,23 +14,18 @@ export class PostsService {
     @inject(PostsRepository) private postsRepository: PostsRepository
   ) {}
 
-  async createPost(postData: CreatePostInputType) {
+  async createPost(postData: CreatePostDTO) {
     const blog = await this.blogsRepository.getBlogById(postData.blogId);
 
     if (!blog) {
       return postsObjectResult.notFoundBlog();
     }
 
-    const postDocument = await PostModel.createPostInstance;
-    const newPost = {
-      ...postData,
-      blogName: blog.name,
-      createdAt: new Date(),
-    };
+    const postDocument = await PostModel.createPostInstance({ blogName: blog.name, postData });
 
-    const id = await this.postsRepository.createPost(newPost);
+    await this.postsRepository.savePost(postDocument);
 
-    return postsObjectResult.success({ id });
+    return postsObjectResult.success({ id: postDocument._id.toString() });
   }
 
   async updatePostById({ id, postData }: { id: string; postData: UpdatePostInputType }) {
