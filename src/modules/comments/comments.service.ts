@@ -1,10 +1,10 @@
 import { inject, injectable } from 'inversify';
 
-import { LikeStatus, LikeType } from '../../likes/model';
-import { LikesRepository } from '../../likes/repository';
+import { LikeModel, LikesRepository, LikeStatus } from '../likes';
 import { PostsRepository } from '../posts';
 import { UsersRepository } from '../users';
 
+import { CommentModel } from './comment.model';
 import { CommentsRepository } from './comments.repository';
 import { commentsObjectResult } from './utils/comments-object-result';
 
@@ -29,29 +29,24 @@ export class CommentsService {
     const post = await this.postsRepository.getPostById(postId);
 
     if (!post) {
-      return postsObjectResult.notFoundPost();
+      return commentsObjectResult.notFoundError('post');
     }
 
     const user = await this.usersRepository.getUserById(userId);
 
     if (!user) {
-      return postsObjectResult.badRequest();
+      return commentsObjectResult.notFoundError('user');
     }
 
-    const comment = {
-      content,
-      createdAt: new Date(),
+    const commentDocument = await CommentModel.createCommentInstance({
       postId,
-      commentatorInfo: { userId, userLogin: user.login },
-      likesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-      },
-    };
+      commentData: { content },
+      userData: { userId, userLogin: user.login },
+    });
 
-    const commentId = await this.commentsRepository.createComment(comment);
+    await this.commentsRepository.saveComment(commentDocument);
 
-    return postsObjectResult.success({ commentId });
+    return commentsObjectResult.success(commentDocument._id.toString());
   }
 
   async updateCommentById({
@@ -66,25 +61,25 @@ export class CommentsService {
     const comment = await this.commentsRepository.getCommentById(commentId);
 
     if (!comment) {
-      return commentsObjectResult.notFoundComment();
+      return commentsObjectResult.notFoundError('comment');
     }
 
-    if (comment.commentatorInfo.userId !== userId) {
+    if (!comment.verifyCommentOwnership(userId)) {
       return commentsObjectResult.forbiddenCommentMutation();
     }
 
-    comment.content = content;
+    const commentDocument = comment.updateComment({ content });
 
-    await this.commentsRepository.saveComment(comment);
+    await this.commentsRepository.saveComment(commentDocument);
 
-    return postsObjectResult.success();
+    return commentsObjectResult.success();
   }
 
   async deleteCommentById({ userId, commentId }: { userId: string; commentId: string }) {
     const comment = await this.commentsRepository.getCommentById(commentId);
 
     if (!comment) {
-      return commentsObjectResult.notFoundComment();
+      return commentsObjectResult.notFoundError('comment');
     }
 
     if (comment.commentatorInfo.userId !== userId) {
@@ -94,10 +89,10 @@ export class CommentsService {
     const isDeleted = await this.commentsRepository.deleteCommentById(commentId);
 
     if (isDeleted) {
-      return postsObjectResult.success();
+      return commentsObjectResult.success();
     }
 
-    return postsObjectResult.notFoundPost();
+    return commentsObjectResult.notFoundError('post');
   }
 
   async updateCommentLikeStatus({
@@ -112,10 +107,10 @@ export class CommentsService {
     const comment = await this.commentsRepository.getCommentById(commentId);
 
     if (!comment) {
-      return commentsObjectResult.notFoundComment();
+      return commentsObjectResult.notFoundError('comment');
     }
 
-    const parentId = comment.id;
+    const parentId = comment._id.toString();
 
     const like = await this.likesRepository.findByFilter({
       parentId,
@@ -127,23 +122,15 @@ export class CommentsService {
         return commentsObjectResult.success();
       }
 
-      const newLike: Omit<LikeType, '_id'> = {
+      const likeDocument = await LikeModel.createLikeInstance({
         authorId: userId,
-        createdAt: new Date(),
         parentId,
-        status: likeStatus,
-      };
+        likeStatus,
+      });
+      const commentDocument = comment.updateCommentLikesByIncomingLikeStatus(likeStatus);
 
-      if (likeStatus === LikeStatus.Like) {
-        comment.likesInfo.likesCount += 1;
-      }
-
-      if (likeStatus === LikeStatus.Dislike) {
-        comment.likesInfo.dislikesCount += 1;
-      }
-
-      await this.likesRepository.createLike(newLike);
-      await this.commentsRepository.saveComment(comment);
+      await this.likesRepository.save(likeDocument);
+      await this.commentsRepository.saveComment(commentDocument);
 
       return commentsObjectResult.success();
     }
@@ -152,44 +139,15 @@ export class CommentsService {
       return commentsObjectResult.success();
     }
 
-    if (like.status === LikeStatus.Like) {
-      if (likeStatus === LikeStatus.Dislike) {
-        comment.likesInfo.dislikesCount += 1;
-        comment.likesInfo.likesCount -= 1;
-      }
+    const commentDocument = comment.updateCommentLikesByIncomingLikeStatusAndLike({
+      like,
+      likeStatus,
+    });
 
-      if (likeStatus === LikeStatus.None) {
-        comment.likesInfo.likesCount -= 1;
-      }
-    }
+    const likeDocument = like.updateLikeStatus(likeStatus);
 
-    if (like.status === LikeStatus.Dislike) {
-      if (likeStatus === LikeStatus.Like) {
-        comment.likesInfo.likesCount += 1;
-        comment.likesInfo.dislikesCount -= 1;
-      }
-
-      if (likeStatus === LikeStatus.None) {
-        comment.likesInfo.dislikesCount -= 1;
-      }
-    }
-
-    if (like.status === LikeStatus.None) {
-      if (likeStatus === LikeStatus.Like) {
-        comment.likesInfo.likesCount += 1;
-      }
-
-      if (likeStatus === LikeStatus.Dislike) {
-        comment.likesInfo.dislikesCount += 1;
-      }
-    }
-
-    comment.likesInfo.likesCount = Math.max(0, comment.likesInfo.likesCount);
-    comment.likesInfo.dislikesCount = Math.max(0, comment.likesInfo.dislikesCount);
-    like.status = likeStatus;
-
-    await this.likesRepository.save(like);
-    await this.commentsRepository.saveComment(comment);
+    await this.likesRepository.save(likeDocument);
+    await this.commentsRepository.saveComment(commentDocument);
 
     return commentsObjectResult.success();
   }

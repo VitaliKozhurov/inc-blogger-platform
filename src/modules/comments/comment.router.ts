@@ -3,10 +3,11 @@ import { Router } from 'express';
 import { accessTokenMiddleware } from '../../auth/middleware';
 import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
-import { idUriParamMiddleware, checkValidationMiddleware } from '../../core/middleware';
-import { likeInputModelMiddleware } from '../../likes/middleware';
-import { CommentsController } from '../controller';
-import { commentInputModelMiddleware } from '../middleware/comment-input-model.middleware';
+import { checkValidationMiddleware, idUriParamMiddleware } from '../../core/middleware';
+import { likeInputModelMiddleware } from '../likes';
+
+import { CommentsController } from './comments.controller';
+import { commentInputModelMiddleware } from './middleware/comment-input-model.middleware';
 
 const commentsController = iocContainer.get(CommentsController);
 

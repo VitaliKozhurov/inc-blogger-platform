@@ -1,7 +1,7 @@
 import { body } from 'express-validator';
 
-import { ERROR_FIELD_MESSAGES } from '../../core/utils';
-import { CommentFields } from '../types';
+import { ERROR_FIELD_MESSAGES } from '../../../core/utils';
+import { CommentFields } from '../types/comment-fields.types';
 
 export const COMMENT_VALIDATION_LENGTH = {
   [CommentFields.CONTENT]: { min: 20, max: 300 },

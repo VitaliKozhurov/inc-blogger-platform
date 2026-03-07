@@ -8,12 +8,12 @@ import {
   RequestWithUriParamType,
 } from '../../core/types';
 import { RESULT_STATUSES, resultCodeToHttpException } from '../../core/utils';
-import { CommentsService } from '../application';
-import { CommentsQueryRepository } from '../repository';
-import { UpdateCommentInputType } from '../types';
-import { UpdateCommentLikeStatusInputType } from '../types/comment.input';
 
 import { getUserIdFromAccessToken } from './../../core/utils/get-user-id-from-access-token';
+import { CommentsQueryRepository } from './comments-query.repository';
+import { CommentsService } from './comments.service';
+import { UpdateCommentLikeStatusDTO } from './dto/update-comment-like-status.dto';
+import { UpdateCommentDTO } from './dto/update-comment.dto';
 
 @injectable()
 export class CommentsController {
@@ -40,7 +40,7 @@ export class CommentsController {
   }
 
   async updateCommentById(
-    req: RequestWithParamAndBodyType<IdParamType, UpdateCommentInputType>,
+    req: RequestWithParamAndBodyType<IdParamType, UpdateCommentDTO>,
     res: Response
   ) {
     const userId = req.userId!;
@@ -70,7 +70,7 @@ export class CommentsController {
   }
 
   async updateCommentLikeStatus(
-    req: RequestWithParamAndBodyType<IdParamType, UpdateCommentLikeStatusInputType>,
+    req: RequestWithParamAndBodyType<IdParamType, UpdateCommentLikeStatusDTO>,
     res: Response
   ) {
     const userId = req.userId!;

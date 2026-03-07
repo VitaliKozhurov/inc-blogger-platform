@@ -1,14 +1,14 @@
-import { RESULT_STATUSES, ResultObject } from '../../core/utils';
+import { RESULT_STATUSES, ResultObject } from '../../../core/utils';
 
 export const commentsObjectResult = {
   success<T>(data: T = null as T) {
     return new ResultObject({ status: RESULT_STATUSES.OK, data, extensions: [] });
   },
-  notFoundComment() {
+  notFoundError(field: 'post' | 'user' | 'comment') {
     return new ResultObject({
       status: RESULT_STATUSES.NOT_FOUND,
       data: null,
-      extensions: [{ field: null, message: 'Comment not found' }],
+      extensions: [{ field, message: `${field} not found` }],
     });
   },
   forbiddenCommentMutation() {

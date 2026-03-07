@@ -1,9 +1,12 @@
-import { model, Schema } from 'mongoose';
+import { Model, model, Schema } from 'mongoose';
 
+import { CreateLikeDTO } from './dto/create-like.dto';
 import { LikeStatus } from './types/like-status.types';
-import { LikeType } from './types/like.types';
+import { LikeMethodsType, LikeStaticMethodsType, LikeType } from './types/like.types';
 
-const likeSchema = new Schema(
+type LikeModelType = Model<LikeType, unknown, LikeMethodsType> & LikeStaticMethodsType;
+
+const likeSchema = new Schema<LikeType, LikeModelType, LikeMethodsType>(
   {
     authorId: { type: String, required: true },
     parentId: { type: String, required: true },
@@ -20,4 +23,28 @@ const likeSchema = new Schema(
   { collection: 'likes', versionKey: false }
 );
 
-export const LikeModel = model<LikeType>('like', likeSchema);
+likeSchema.method('updateLikeStatus', function updateLikeStatus(likeStatus: LikeStatus) {
+  this.status = likeStatus;
+
+  return this;
+});
+
+likeSchema.static(
+  'createLikeInstance',
+  async function createLikeInstance(
+    args: CreateLikeDTO
+  ): ReturnType<LikeStaticMethodsType['createLikeInstance']> {
+    const newLike = {
+      authorId: args.authorId,
+      parentId: args.parentId,
+      likeStatus: args.likeStatus,
+      createdAt: new Date(),
+    };
+
+    const likeDocument = await this.create(newLike);
+
+    return likeDocument;
+  }
+);
+
+export const LikeModel = model<LikeType, LikeModelType>('like', likeSchema);
