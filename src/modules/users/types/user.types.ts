@@ -1,5 +1,7 @@
 import { HydratedDocument } from 'mongoose';
 
+import { CreateUserDTO } from '../dto/create-user.dto';
+
 type EmailConfirmationType = {
   confirmationCode: string;
   expirationDate?: Date | null;
@@ -20,16 +22,26 @@ export type UserType = {
   passwordRecovery?: PasswordRecoveryType;
 };
 
-export type UserDocument = HydratedDocument<UserType>;
+export type UserDocument = HydratedDocument<UserType, UserMethodsType>;
 
 export type UserStaticMethodsType = {
   checkIsUserExist(args: {
     login: string;
     email: string;
   }): Promise<{ isExist: true; byField: 'login' | 'email' } | { isExist: false }>;
-  createUserInstance(args: {
-    login: string;
-    email: string;
-    passwordHash: string;
-  }): Promise<UserDocument>;
+  createUserInstance(args: CreateUserDTO): Promise<UserDocument>;
+  createUnconfirmedUserInstance(
+    args: CreateUserDTO
+  ): Promise<{ userDocument: UserDocument; confirmationCode: string }>;
+};
+
+export type UserMethodsType = {
+  checkIsConfirmed(): boolean;
+  checkIsConfirmationExpired(): boolean;
+  confirmUser(): UserDocument;
+  updateUserConfirmationData(): UserDocument;
+  setPasswordRecoveryData(): UserDocument;
+  checkIsRecoveryPasswordExist(): boolean;
+  checkIsRecoveryPasswordExpired(): boolean;
+  updateUserPassword(passwordHash: string): UserDocument;
 };

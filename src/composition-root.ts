@@ -1,13 +1,12 @@
 import { Container } from 'inversify';
 
-import { AuthTokenAdapter, EmailRegistrationAdapter } from './auth/adapters';
-import { AuthService } from './auth/application';
-import { AuthController } from './auth/controller';
-import { CommentsService } from './comments/application';
-import { CommentsController } from './comments/controller';
-import { CommentsQueryRepository, CommentsRepository } from './comments/repository';
 import { EmailAdapter, JWTAdapter, PasswordHashAdapter } from './core/adapters';
-import { LikesRepository } from './likes/repository';
+import {
+  AuthController,
+  AuthService,
+  AuthTokenAdapter,
+  EmailRegistrationAdapter,
+} from './modules/auth';
 import {
   BlogsController,
   BlogsQueryRepository,
@@ -15,23 +14,30 @@ import {
   BlogsService,
 } from './modules/blogs';
 import {
+  CommentsController,
+  CommentsQueryRepository,
+  CommentsRepository,
+  CommentsService,
+} from './modules/comments';
+import { LikesRepository } from './modules/likes';
+import {
   PostsController,
   PostsQueryRepository,
   PostsRepository,
   PostsService,
 } from './modules/posts';
 import {
+  UserDeviceSessionsController,
+  UserDeviceSessionsQueryRepository,
+  UserDeviceSessionsRepository,
+  UserDeviceSessionsService,
+} from './modules/user-device-session';
+import {
   UsersController,
   UsersQueryRepository,
   UsersRepository,
   UsersService,
 } from './modules/users';
-import { UserDeviceSessionsService } from './sessions/application';
-import { UserDeviceSessionsController } from './sessions/controller';
-import {
-  UserDeviceSessionsQueryRepository,
-  UserDeviceSessionsRepository,
-} from './sessions/repository';
 
 export const iocContainer = new Container();
 

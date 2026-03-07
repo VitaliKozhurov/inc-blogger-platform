@@ -10,6 +10,10 @@ export class UsersRepository {
     return UserModel.findById(id).exec();
   }
 
+  async getUserByLoginOrEmail(loginOrEmail: string) {
+    return UserModel.findOne({ $or: [{ login: loginOrEmail }, { email: loginOrEmail }] }).exec();
+  }
+
   async getUserByConfirmationCode(code: string) {
     return UserModel.findOne({ 'emailConfirmation.confirmationCode': code });
   }

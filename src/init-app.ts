@@ -3,16 +3,15 @@ import { Server } from 'http';
 import cookieParser from 'cookie-parser';
 import { Express } from 'express';
 
-import { authRouter } from './auth/router/auth.router';
-import { commentRouter } from './comments/router/comment.router';
 import { APP_ROUTES } from './core/constants';
 import { bodyParserMiddleware, globalErrorMiddleware } from './core/middleware';
+import { authRouter } from './modules/auth';
 import { blogRouter } from './modules/blogs';
+import { commentRouter } from './modules/comments';
 import { postRouter } from './modules/posts';
+import { userDeviceSessionRouter } from './modules/user-device-session';
 import { usersRouter } from './modules/users';
-import { deviceSessionRouter } from './sessions/router/device-session.router';
 import { testRouter } from './tests/router/test.router';
-
 const PORT = process.env.PORT || 5000;
 
 export const initApp = (app: Express): Promise<Server> => {
@@ -25,7 +24,7 @@ export const initApp = (app: Express): Promise<Server> => {
   app.use(APP_ROUTES.COMMENTS, commentRouter);
   app.use(APP_ROUTES.USERS, usersRouter);
   app.use(APP_ROUTES.AUTH, authRouter);
-  app.use(APP_ROUTES.SECURITY, deviceSessionRouter);
+  app.use(APP_ROUTES.SECURITY, userDeviceSessionRouter);
   app.use(APP_ROUTES.TESTING, testRouter);
 
   app.use(globalErrorMiddleware);
