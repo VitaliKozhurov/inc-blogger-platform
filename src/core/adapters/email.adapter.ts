@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import nodemailer from 'nodemailer';
 
-import { SETTINGS } from '../../core/settings';
+import { SETTINGS } from '../../config/settings';
 
 type SendEmailArgs = { email: string; html: string; from?: string; subject?: string };
 

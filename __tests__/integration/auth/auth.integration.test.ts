@@ -3,18 +3,18 @@ import { ObjectId } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Mongoose } from 'mongoose';
 
-import { AuthTokenAdapter, EmailRegistrationAdapter } from '../../../src/auth/adapters';
-import { AuthService } from '../../../src/auth/application';
 import { iocContainer } from '../../../src/composition-root';
+import { runDB, stopDb } from '../../../src/config/mongo.db';
+import { SETTINGS } from '../../../src/config/settings';
 import { HTTP_STATUSES } from '../../../src/core/types';
 import { RESULT_STATUSES } from '../../../src/core/utils';
-import { runDB, stopDb } from '../../../src/db/mongo.db';
-import { UserDeviceSessionDocument } from '../../../src/sessions/model';
-import { UserDeviceSessionsRepository } from '../../../src/sessions/repository';
-import { UserModel } from '../../../src/users/model';
-import { UserDBType } from '../../../src/users/types';
-
-import { SETTINGS } from './../../../src/core/settings/settings';
+import { AuthTokenAdapter } from '../../../src/modules/auth/adapters/auth-token.adapter';
+import { EmailRegistrationAdapter } from '../../../src/modules/auth/adapters/email-registration.adapter';
+import { AuthService } from '../../../src/modules/auth/auth.service';
+import { UserDeviceSessionDocument } from '../../../src/modules/user-device-session/types/user-device-session.types';
+import { UserDeviceSessionsRepository } from '../../../src/modules/user-device-session/user-device-sessions.repository';
+import { UserType } from '../../../src/modules/users/types/user.types';
+import { UserModel } from '../../../src/modules/users/user.model';
 
 describe('Auth test', () => {
   const authService = iocContainer.get(AuthService);
@@ -25,7 +25,7 @@ describe('Auth test', () => {
   const confirmationCode = '123';
   let DB: Mongoose;
 
-  const createUser = async (emailConfirmation: Partial<UserDBType['emailConfirmation']> = {}) => {
+  const createUser = async (emailConfirmation: Partial<UserType['emailConfirmation']> = {}) => {
     const user = {
       _id: new ObjectId(),
       createdAt: new Date().toISOString(),

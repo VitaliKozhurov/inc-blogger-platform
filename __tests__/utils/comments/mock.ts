@@ -1,4 +1,5 @@
-import { CreateCommentInputType } from './../../../src/comments/types/comment.input';
-export const mockComment: CreateCommentInputType = {
+import { CreateCommentDTO } from '../../../src/modules/comments/dto/create-comment.dto';
+
+export const mockComment: CreateCommentDTO = {
   content: 'Comment for new post of blog, long comment',
 };

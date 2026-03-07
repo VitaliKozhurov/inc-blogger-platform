@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 
 import { iocContainer } from '../../../composition-root';
 import { HTTP_STATUSES } from '../../../core/types';
-import { UserDeviceSessionsRepository } from '../../user-device-session';
+import { UserDeviceSessionsRepository } from '../../user-device-session/user-device-sessions.repository';
 import { AuthTokenAdapter } from '../adapters/auth-token.adapter';
 
 const authTokenAdapter = iocContainer.get(AuthTokenAdapter);

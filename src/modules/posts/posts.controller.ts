@@ -15,18 +15,16 @@ import {
   RESULT_STATUSES,
   resultCodeToHttpException,
 } from '../../core/utils';
-import {
-  CommentsQueryRepository,
-  CommentsRequestQueryDTO,
-  CommentsService,
-  CreateCommentDTO,
-} from '../comments';
+import { CommentsQueryRepository } from '../comments/comments-query.repository';
+import { CommentsService } from '../comments/comments.service';
 
 import { CreatePostDTO } from './dto/create-post.dto';
 import { PostsRequestQueryDTO } from './dto/posts-request-query.dto';
 import { UpdatePostDTO } from './dto/update-post.dto';
 import { PostsQueryRepository } from './posts-query.repository';
 import { PostsService } from './posts.service';
+import { CreateCommentDTO } from '../comments/dto/create-comment.dto';
+import { CommentsRequestQueryDTO } from '../comments/dto/comment-request-type.dto';
 
 @injectable()
 export class PostsController {

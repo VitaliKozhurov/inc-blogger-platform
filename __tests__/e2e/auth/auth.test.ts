@@ -1,11 +1,11 @@
 import { ObjectId } from 'mongodb';
 
-import { AuthTokenAdapter } from '../../../src/auth/adapters';
 import { iocContainer } from '../../../src/composition-root';
 import { JWTAdapter } from '../../../src/core/adapters';
 import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
+import { AuthTokenAdapter } from '../../../src/modules/auth/adapters/auth-token.adapter';
 import { TestManager } from '../../utils/test-manager';
 import { createUser } from '../../utils/users/create-user';
 import { mockUser } from '../../utils/users/mock';

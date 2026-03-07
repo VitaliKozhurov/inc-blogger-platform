@@ -1,9 +1,9 @@
 import express from 'express';
 import superTestRequest from 'supertest';
 
+import { runDB, stopDb } from '../../src/config/mongo.db';
+import { SETTINGS } from '../../src/config/settings';
 import { APP_ROUTES } from '../../src/core/constants';
-import { SETTINGS } from '../../src/core/settings';
-import { runDB, stopDb } from '../../src/db/mongo.db';
 import { initApp } from '../../src/init-app';
 
 export const setupTestContext = async () => {

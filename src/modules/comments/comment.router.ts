@@ -3,8 +3,8 @@ import { Router } from 'express';
 import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware, idUriParamMiddleware } from '../../core/middleware';
-import { accessTokenMiddleware } from '../auth';
-import { likeInputModelMiddleware } from '../likes';
+import { accessTokenMiddleware } from '../auth/middleware/access-token.middleware';
+import { likeInputModelMiddleware } from '../likes/middleware/like-input-model.middleware';
 
 import { CommentsController } from './comments.controller';
 import { commentInputModelMiddleware } from './middleware/comment-input-model.middleware';

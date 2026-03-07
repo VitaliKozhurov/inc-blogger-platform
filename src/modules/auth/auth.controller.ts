@@ -3,8 +3,8 @@ import { inject, injectable } from 'inversify';
 
 import { HTTP_STATUSES, RequestWithBodyType } from '../../core/types';
 import { getRequestIp, RESULT_STATUSES, resultCodeToHttpException } from '../../core/utils';
-import { UserDeviceSessionsService } from '../user-device-session';
-import { UsersQueryRepository } from '../users';
+import { UserDeviceSessionsService } from '../user-device-session/user-device-session.service';
+import { UsersQueryRepository } from '../users/users-query.repository';
 
 import { AuthService } from './auth.service';
 

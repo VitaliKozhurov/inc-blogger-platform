@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 
+import { SETTINGS } from '../../../config/settings';
 import { JWTAdapter } from '../../../core/adapters';
-import { SETTINGS } from '../../../core/settings';
 
 type AccessTokenPayload = {
   userId: string;

@@ -1,8 +1,10 @@
 import { inject, injectable } from 'inversify';
 
-import { LikeModel, LikesRepository, LikeStatus } from '../likes';
-import { PostsRepository } from '../posts';
-import { UsersRepository } from '../users';
+import { LikeModel } from '../likes/like.model';
+import { LikesRepository } from '../likes/likes.repository';
+import { LikeStatus } from '../likes/types/like-status.types';
+import { PostsRepository } from '../posts/posts.repository';
+import { UsersRepository } from '../users/users.repository';
 
 import { CommentModel } from './comment.model';
 import { CommentsRepository } from './comments.repository';

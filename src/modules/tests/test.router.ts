@@ -2,13 +2,13 @@ import { Request, Response, Router } from 'express';
 
 import { APP_ROUTES } from '../../core/constants';
 import { HTTP_STATUSES } from '../../core/types';
-import { RequestLogModel } from '../app-services';
-import { BlogModel } from '../blogs';
-import { CommentModel } from '../comments';
-import { LikeModel } from '../likes';
-import { PostModel } from '../posts';
-import { UserDeviceSessionModel } from '../user-device-session';
-import { UserModel } from '../users';
+import { RequestLogModel } from '../app-services/request-log.model';
+import { BlogModel } from '../blogs/blog.model';
+import { CommentModel } from '../comments/comment.model';
+import { LikeModel } from '../likes/like.model';
+import { PostModel } from '../posts/post.model';
+import { UserDeviceSessionModel } from '../user-device-session/user-device-session.model';
+import { UserModel } from '../users/user.model';
 
 export const testRouter = Router();
 

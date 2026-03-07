@@ -11,7 +11,10 @@ import {
   RequestWithUriParamType,
 } from '../../core/types';
 import { RESULT_STATUSES, resultCodeToHttpException } from '../../core/utils';
-import { CreatePostDTO, PostsQueryRepository, PostsRequestQueryDTO, PostsService } from '../posts';
+import { CreatePostDTO } from '../posts/dto/create-post.dto';
+import { PostsRequestQueryDTO } from '../posts/dto/posts-request-query.dto';
+import { PostsQueryRepository } from '../posts/posts-query.repository';
+import { PostsService } from '../posts/posts.service';
 
 import { BlogsQueryRepository } from './blogs-query.repository';
 import { BlogsService } from './blogs.service';

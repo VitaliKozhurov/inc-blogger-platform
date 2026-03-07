@@ -1,18 +1,18 @@
 import { ObjectId } from 'mongodb';
 
-import { BlogViewModelType } from '../../../src/blogs/types';
 import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES, ResponseWithPaginationType } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
-import { PostViewModelType } from '../../../src/posts/types';
+import { BlogViewModelDTO } from '../../../src/modules/blogs/dto/blog-view-model.dto';
+import { PostViewModelDTO } from '../../../src/modules/posts/dto/post-view-model.dto';
 import { createBlog } from '../../utils/blogs/create-blog';
 import { mockBlog, mockUpdatedBlog } from '../../utils/blogs/mock';
 import { createPost } from '../../utils/posts/create-post';
 import { mockPost } from '../../utils/posts/mock';
 import { TestManager } from '../../utils/test-manager';
 
-type BlogsResponseType = ResponseWithPaginationType<BlogViewModelType>;
-type PostsResponseType = ResponseWithPaginationType<PostViewModelType>;
+type BlogsResponseType = ResponseWithPaginationType<BlogViewModelDTO>;
+type PostsResponseType = ResponseWithPaginationType<PostViewModelDTO>;
 
 describe('Blogs test', () => {
   const testManager = new TestManager();

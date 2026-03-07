@@ -4,8 +4,10 @@ import { inject, injectable } from 'inversify';
 
 import { PasswordHashAdapter } from '../../core/adapters';
 import { convertUnixTimeToDate } from '../../core/utils';
-import { UserDeviceSessionsRepository, UserDeviceSessionsService } from '../user-device-session';
-import { UserModel, UsersRepository } from '../users';
+import { UserDeviceSessionsService } from '../user-device-session/user-device-session.service';
+import { UserDeviceSessionsRepository } from '../user-device-session/user-device-sessions.repository';
+import { UserModel } from '../users/user.model';
+import { UsersRepository } from '../users/users.repository';
 
 import { AuthTokenAdapter } from './adapters/auth-token.adapter';
 import { EmailRegistrationAdapter } from './adapters/email-registration.adapter';

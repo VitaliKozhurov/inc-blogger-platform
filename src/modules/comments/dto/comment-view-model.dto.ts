@@ -1,4 +1,4 @@
-import { LikeStatus } from '../../likes';
+import { LikeStatus } from '../../likes/types/like-status.types';
 
 export type CommentViewModelDTO = {
   id: string;

@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify';
 
 import { HTTP_STATUSES, RequestWithUriParamType } from '../../core/types';
 import { RESULT_STATUSES, resultCodeToHttpException } from '../../core/utils';
-import { AuthTokenAdapter } from '../auth';
+import { AuthTokenAdapter } from '../auth/adapters/auth-token.adapter';
 
 import { UserDeviceSessionsService } from './user-device-session.service';
 import { UserDeviceSessionsQueryRepository } from './user-device-sessions-query.repository';

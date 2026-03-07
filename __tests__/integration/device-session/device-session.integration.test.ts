@@ -2,11 +2,11 @@ import { randomUUID } from 'crypto';
 
 import { ObjectId } from 'mongodb';
 
-import { AuthTokenAdapter } from '../../../src/auth/adapters';
 import { iocContainer } from '../../../src/composition-root';
 import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES } from '../../../src/core/types';
-import { UserDeviceSessionModel } from '../../../src/sessions/model';
+import { AuthTokenAdapter } from '../../../src/modules/auth/adapters/auth-token.adapter';
+import { UserDeviceSessionModel } from '../../../src/modules/user-device-session/user-device-session.model';
 import { TestManagerMockDB } from '../../utils/test-manager-mock-db';
 
 describe('User sessions test', () => {

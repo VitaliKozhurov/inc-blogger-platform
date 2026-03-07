@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 
-import { BlogsRepository } from '../blogs';
+import { BlogsRepository } from '../blogs/blogs.repository';
 
 import { CreatePostDTO } from './dto/create-post.dto';
 import { UpdatePostDTO } from './dto/update-post.dto';

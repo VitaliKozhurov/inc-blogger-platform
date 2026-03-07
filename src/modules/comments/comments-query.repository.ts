@@ -2,12 +2,14 @@ import { injectable } from 'inversify';
 import { Types } from 'mongoose';
 
 import { getPaginationData, getPaginationParams } from '../../core/utils';
-import { LikeModel, LikeStatus } from '../likes';
+import { LikeModel } from '../likes/like.model';
+import { LikeStatus } from '../likes/types/like-status.types';
 
 import { CommentModel } from './comment.model';
 import { CommentsRequestQueryDTO } from './dto/comment-request-type.dto';
 import { CommentViewModelDTO } from './dto/comment-view-model.dto';
 import { CommentType } from './types/comment.types';
+
 type CommentMapInputType = { _id: Types.ObjectId } & CommentType;
 
 @injectable()

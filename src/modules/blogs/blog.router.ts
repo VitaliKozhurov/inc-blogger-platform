@@ -3,8 +3,9 @@ import { Router } from 'express';
 import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware, idUriParamMiddleware } from '../../core/middleware';
-import { basicAuthMiddleware } from '../auth';
-import { postByBlogIdInputModelMiddleware, postInputQueryMiddleware } from '../posts';
+import { basicAuthMiddleware } from '../auth/middleware/basic-auth.middleware';
+import { postByBlogIdInputModelMiddleware } from '../posts/middleware/post-input-model.middleware';
+import { postInputQueryMiddleware } from '../posts/middleware/post-input-query.middleware';
 
 import { BlogsController } from './blogs.controller';
 import { blogInputModelMiddleware } from './middleware/blog-input-model.middleware';

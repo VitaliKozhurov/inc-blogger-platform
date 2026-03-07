@@ -1,6 +1,7 @@
 import { Model, model, Schema } from 'mongoose';
 
-import { LikeDocument, LikeStatus } from '../likes';
+import { LikeStatus } from '../likes/types/like-status.types';
+import { LikeDocument } from '../likes/types/like.types';
 
 import { CreateCommentDTO } from './dto/create-comment.dto';
 import { UpdateCommentDTO } from './dto/update-comment.dto';

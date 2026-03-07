@@ -5,13 +5,13 @@ import { Express } from 'express';
 
 import { APP_ROUTES } from './core/constants';
 import { bodyParserMiddleware, globalErrorMiddleware } from './core/middleware';
-import { authRouter } from './modules/auth';
-import { blogRouter } from './modules/blogs';
-import { commentRouter } from './modules/comments';
-import { postRouter } from './modules/posts';
-import { testRouter } from './modules/tests';
-import { userDeviceSessionRouter } from './modules/user-device-session';
-import { usersRouter } from './modules/users';
+import { authRouter } from './modules/auth/auth.router';
+import { blogRouter } from './modules/blogs/blog.router';
+import { commentRouter } from './modules/comments/comment.router';
+import { postRouter } from './modules/posts/post.router';
+import { testRouter } from './modules/tests/test.router';
+import { userDeviceSessionRouter } from './modules/user-device-session/user-device-session.router';
+import { usersRouter } from './modules/users/users.router';
 
 const PORT = process.env.PORT || 5000;
 

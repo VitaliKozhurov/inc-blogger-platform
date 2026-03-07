@@ -3,11 +3,12 @@ import { ObjectId } from 'mongodb';
 import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES, ResponseWithPaginationType } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
-import { PostViewModelType } from '../../../src/posts/types';
+import { PostViewModelDTO } from '../../../src/modules/posts/dto/post-view-model.dto';
 import { createPost } from '../../utils/posts/create-post';
 import { mockPost, mockUpdatedPost } from '../../utils/posts/mock';
 import { TestManager } from '../../utils/test-manager';
-type PostsResponseType = ResponseWithPaginationType<PostViewModelType>;
+
+type PostsResponseType = ResponseWithPaginationType<PostViewModelDTO>;
 
 describe('Posts', () => {
   const testManager = new TestManager();

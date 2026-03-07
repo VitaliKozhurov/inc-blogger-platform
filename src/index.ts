@@ -1,8 +1,8 @@
-import 'reflect-metadata';
 import express from 'express';
+import 'reflect-metadata';
 
-import { SETTINGS } from './core/settings';
-import { runDB } from './db/mongo.db';
+import { runDB } from './config/mongo.db';
+import { SETTINGS } from './config/settings';
 import { initApp } from './init-app';
 
 const bootstrap = async () => {
