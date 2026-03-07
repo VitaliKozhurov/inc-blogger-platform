@@ -37,7 +37,7 @@ likeSchema.static(
     const newLike = {
       authorId: args.authorId,
       parentId: args.parentId,
-      likeStatus: args.likeStatus,
+      status: args.likeStatus,
       createdAt: new Date(),
     };
 

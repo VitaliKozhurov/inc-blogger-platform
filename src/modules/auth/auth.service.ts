@@ -51,7 +51,7 @@ export class AuthService {
       return authObjectResult.invalidCredentials();
     }
 
-    if (!user.emailConfirmation.isConfirmed) {
+    if (!user.checkIsConfirmed()) {
       return authObjectResult.emailNotVerified();
     }
 

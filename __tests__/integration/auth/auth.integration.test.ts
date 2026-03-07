@@ -149,9 +149,11 @@ describe('Auth test', () => {
 
   describe('POST /auth/refresh', () => {
     jest.spyOn(userDeviceSessionsRepository, 'saveSession').mockResolvedValue(undefined);
-    jest
-      .spyOn(userDeviceSessionsRepository, 'getSessionByFilter')
-      .mockResolvedValue({} as UserDeviceSessionDocument);
+    jest.spyOn(userDeviceSessionsRepository, 'getSessionByFilter').mockResolvedValue({
+      updateUserDeviceSession: function () {
+        return {} as UserDeviceSessionDocument;
+      } as UserDeviceSessionDocument['updateUserDeviceSession'],
+    } as UserDeviceSessionDocument);
 
     it('should return a 200 status code if send correct refreshToken', async () => {
       const mockIp = '0.0.0.0';

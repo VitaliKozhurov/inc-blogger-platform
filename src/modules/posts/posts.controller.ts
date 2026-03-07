@@ -17,14 +17,14 @@ import {
 } from '../../core/utils';
 import { CommentsQueryRepository } from '../comments/comments-query.repository';
 import { CommentsService } from '../comments/comments.service';
+import { CommentsRequestQueryDTO } from '../comments/dto/comment-request-type.dto';
+import { CreateCommentDTO } from '../comments/dto/create-comment.dto';
 
 import { CreatePostDTO } from './dto/create-post.dto';
 import { PostsRequestQueryDTO } from './dto/posts-request-query.dto';
 import { UpdatePostDTO } from './dto/update-post.dto';
 import { PostsQueryRepository } from './posts-query.repository';
 import { PostsService } from './posts.service';
-import { CreateCommentDTO } from '../comments/dto/create-comment.dto';
-import { CommentsRequestQueryDTO } from '../comments/dto/comment-request-type.dto';
 
 @injectable()
 export class PostsController {

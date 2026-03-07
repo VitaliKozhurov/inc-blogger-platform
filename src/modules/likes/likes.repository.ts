@@ -9,7 +9,7 @@ export class LikesRepository {
     return LikeModel.findOne({ parentId, authorId });
   }
 
-  async save(likeDocument: LikeDocument) {
+  async saveLike(likeDocument: LikeDocument) {
     await likeDocument.save();
   }
 }

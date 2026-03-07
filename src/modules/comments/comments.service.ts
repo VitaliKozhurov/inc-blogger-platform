@@ -66,7 +66,7 @@ export class CommentsService {
       return commentsObjectResult.notFoundError('comment');
     }
 
-    if (!comment.verifyCommentOwnership(userId)) {
+    if (!comment.isCommentOwner(userId)) {
       return commentsObjectResult.forbiddenCommentMutation();
     }
 
@@ -129,9 +129,10 @@ export class CommentsService {
         parentId,
         likeStatus,
       });
+
       const commentDocument = comment.updateCommentLikesByIncomingLikeStatus(likeStatus);
 
-      await this.likesRepository.save(likeDocument);
+      await this.likesRepository.saveLike(likeDocument);
       await this.commentsRepository.saveComment(commentDocument);
 
       return commentsObjectResult.success();
@@ -148,7 +149,7 @@ export class CommentsService {
 
     const likeDocument = like.updateLikeStatus(likeStatus);
 
-    await this.likesRepository.save(likeDocument);
+    await this.likesRepository.saveLike(likeDocument);
     await this.commentsRepository.saveComment(commentDocument);
 
     return commentsObjectResult.success();

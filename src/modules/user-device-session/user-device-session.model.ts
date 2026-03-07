@@ -68,8 +68,8 @@ userDeviceSessionSchema.method(
 );
 
 userDeviceSessionSchema.static(
-  'createBlogInstance',
-  async function createBlogInstance(
+  'createUserDevicesSessionInstance',
+  async function createUserDevicesSessionInstance(
     args: CreateUserDeviceSessionType
   ): ReturnType<UserDeviceSessionStaticMethodsType['createUserDevicesSessionInstance']> {
     const newUserDeviceSession = {

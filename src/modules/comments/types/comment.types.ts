@@ -30,7 +30,7 @@ export type CommentStaticMethodsType = {
 };
 
 export type CommentMethodsType = {
-  verifyCommentOwnership(userId: string): boolean;
+  isCommentOwner(userId: string): boolean;
   updateComment(commentData: UpdateCommentDTO): CommentDocument;
   updateCommentLikesByIncomingLikeStatusAndLike(args: {
     like: LikeDocument;

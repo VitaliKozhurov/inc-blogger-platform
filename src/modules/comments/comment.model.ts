@@ -63,8 +63,8 @@ const commentSchema = new Schema<CommentType, CommentModelType, CommentMethodsTy
   { collection: 'comments', versionKey: false }
 );
 
-commentSchema.method('verifyCommentOwnership', function verifyCommentOwnership(userId: string) {
-  return this.commentatorInfo.userId !== userId;
+commentSchema.method('isCommentOwner', function isCommentOwner(userId: string) {
+  return this.commentatorInfo.userId === userId;
 });
 commentSchema.method('updateComment', function updateComment(args: UpdateCommentDTO) {
   this.content = args.content;
@@ -135,7 +135,7 @@ commentSchema.method(
 
 commentSchema.static(
   'createCommentInstance',
-  async function createBlogInstance(args: {
+  async function createCommentInstance(args: {
     postId: string;
     commentData: CreateCommentDTO;
     userData: { userId: string; userLogin: string };
