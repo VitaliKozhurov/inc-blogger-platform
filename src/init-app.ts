@@ -9,9 +9,10 @@ import { authRouter } from './modules/auth';
 import { blogRouter } from './modules/blogs';
 import { commentRouter } from './modules/comments';
 import { postRouter } from './modules/posts';
+import { testRouter } from './modules/tests';
 import { userDeviceSessionRouter } from './modules/user-device-session';
 import { usersRouter } from './modules/users';
-import { testRouter } from './tests/router/test.router';
+
 const PORT = process.env.PORT || 5000;
 
 export const initApp = (app: Express): Promise<Server> => {

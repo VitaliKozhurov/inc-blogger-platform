@@ -1,4 +1,6 @@
-import { HydratedDocument, InferSchemaType, model, Schema, Types } from 'mongoose';
+import { model, Schema } from 'mongoose';
+
+import { RequestLogType } from './types/request-log.types';
 
 const requestLogSchema = new Schema(
   {
@@ -17,10 +19,5 @@ const requestLogSchema = new Schema(
   },
   { collection: 'request-logs' }
 );
-
-export type RequestLogType = InferSchemaType<typeof requestLogSchema> & {
-  _id: Types.ObjectId;
-};
-export type RequestLogDocument = HydratedDocument<RequestLogType>;
 
 export const RequestLogModel = model<RequestLogType>('request-log', requestLogSchema);

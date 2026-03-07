@@ -2,9 +2,6 @@ import { Request, Response } from 'express';
 import { matchedData } from 'express-validator';
 import { inject, injectable } from 'inversify';
 
-import { CommentsService } from '../../comments/application';
-import { CommentsQueryRepository } from '../../comments/repository';
-import { CommentsRequestQueryType, CreateCommentInputType } from '../../comments/types';
 import {
   HTTP_STATUSES,
   IdParamType,
@@ -18,6 +15,12 @@ import {
   RESULT_STATUSES,
   resultCodeToHttpException,
 } from '../../core/utils';
+import {
+  CommentsQueryRepository,
+  CommentsRequestQueryDTO,
+  CommentsService,
+  CreateCommentDTO,
+} from '../comments';
 
 import { CreatePostDTO } from './dto/create-post.dto';
 import { PostsRequestQueryDTO } from './dto/posts-request-query.dto';
@@ -100,7 +103,7 @@ export class PostsController {
     const postId = req.params.id;
     const userId = getUserIdFromAccessToken(req.headers.authorization) ?? undefined;
 
-    const query = matchedData<CommentsRequestQueryType>(req, {
+    const query = matchedData<CommentsRequestQueryDTO>(req, {
       locations: ['query'],
       includeOptionals: true,
     });
@@ -121,7 +124,7 @@ export class PostsController {
   }
 
   async createCommentByPostId(
-    req: RequestWithParamAndBodyType<IdParamType, CreateCommentInputType>,
+    req: RequestWithParamAndBodyType<IdParamType, CreateCommentDTO>,
     res: Response
   ) {
     const userId = req.userId!;

@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { HTTP_STATUSES } from '../../core/types';
-import { getRequestIp } from '../../core/utils';
-import { requestLogsRepository } from '../repository/request-logs.repository';
+import { HTTP_STATUSES } from '../../../core/types';
+import { getRequestIp } from '../../../core/utils';
+import { requestLogsRepository } from '../request-logs.repository';
 
 type Args = {
   attemptsLimit: number;

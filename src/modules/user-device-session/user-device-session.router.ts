@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
-import { refreshTokenMiddleware } from '../../auth/middleware';
 import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
+import { refreshTokenMiddleware } from '../auth';
 
 import { UserDeviceSessionsController } from './user-device-sessions.controller';
 

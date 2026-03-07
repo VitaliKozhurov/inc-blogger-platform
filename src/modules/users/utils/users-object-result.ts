@@ -1,4 +1,4 @@
-import { RESULT_STATUSES, ResultObject } from '../../core/utils';
+import { RESULT_STATUSES, ResultObject } from '../../../core/utils';
 
 export const usersObjectResult = {
   success<T>(data: T = null as T) {

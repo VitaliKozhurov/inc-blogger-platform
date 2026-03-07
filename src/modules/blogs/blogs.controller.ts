@@ -10,10 +10,8 @@ import {
   RequestWithParamAndQueryType,
   RequestWithUriParamType,
 } from '../../core/types';
-import { resultCodeToHttpException, RESULT_STATUSES } from '../../core/utils';
-import { PostsService } from '../../posts/application';
-import { PostsQueryRepository } from '../../posts/repository';
-import { CreatePostInputType, PostsRequestQueryType } from '../../posts/types';
+import { RESULT_STATUSES, resultCodeToHttpException } from '../../core/utils';
+import { CreatePostDTO, PostsQueryRepository, PostsRequestQueryDTO, PostsService } from '../posts';
 
 import { BlogsQueryRepository } from './blogs-query.repository';
 import { BlogsService } from './blogs.service';
@@ -86,7 +84,7 @@ export class BlogsController {
   }
 
   async createPostByBlogId(
-    req: RequestWithParamAndBodyType<IdParamType, Omit<CreatePostInputType, 'blogId'>>,
+    req: RequestWithParamAndBodyType<IdParamType, Omit<CreatePostDTO, 'blogId'>>,
     res: Response
   ) {
     const blogId = req.params.id;
@@ -108,7 +106,7 @@ export class BlogsController {
   ) {
     const blogId = req.params.id;
 
-    const query = matchedData<PostsRequestQueryType>(req, {
+    const query = matchedData<PostsRequestQueryDTO>(req, {
       locations: ['query'],
       includeOptionals: true,
     });

@@ -1,10 +1,10 @@
 import { Router } from 'express';
 
-import { basicAuthMiddleware } from '../../auth/middleware';
 import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware, idUriParamMiddleware } from '../../core/middleware';
-import { postByBlogIdInputModelMiddleware, postInputQueryMiddleware } from '../../posts/middleware';
+import { basicAuthMiddleware } from '../auth';
+import { postByBlogIdInputModelMiddleware, postInputQueryMiddleware } from '../posts';
 
 import { BlogsController } from './blogs.controller';
 import { blogInputModelMiddleware } from './middleware/blog-input-model.middleware';

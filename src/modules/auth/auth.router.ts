@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware } from '../../core/middleware';
-import { getRateLimitMiddleware } from '../../logs/middleware';
+import { getRateLimitMiddleware } from '../app-services';
 
 import { AuthController } from './auth.controller';
 import { accessTokenMiddleware } from './middleware/access-token.middleware';

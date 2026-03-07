@@ -5,7 +5,7 @@ import { inject, injectable } from 'inversify';
 import { HTTP_STATUSES, RequestWithBodyType, RequestWithUriParamType } from '../../core/types';
 import { RESULT_STATUSES, resultCodeToHttpException } from '../../core/utils';
 
-import { CreateUserDTO } from './dto/create-user.dto';
+import { CreateUserRequestDTO } from './dto/create-user.dto';
 import { UsersRequestQueryDTO } from './dto/users-request-query.dto';
 import { UsersQueryRepository } from './users-query.repository';
 import { UsersService } from './users.service';
@@ -28,7 +28,7 @@ export class UsersController {
     res.status(HTTP_STATUSES.OK).send(usersViewModel);
   }
 
-  async createUser(req: RequestWithBodyType<CreateUserDTO>, res: Response) {
+  async createUser(req: RequestWithBodyType<CreateUserRequestDTO>, res: Response) {
     const result = await this.usersService.createUser(req.body);
 
     if (result.status !== RESULT_STATUSES.OK) {

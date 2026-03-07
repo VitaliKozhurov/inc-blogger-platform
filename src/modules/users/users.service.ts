@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 
 import { PasswordHashAdapter } from '../../core/adapters';
 
-import { CreateUserDTO } from './dto/create-user.dto';
+import { CreateUserRequestDTO } from './dto/create-user.dto';
 import { UserModel } from './user.model';
 import { UsersRepository } from './users.repository';
 import { usersObjectResult } from './utils/users-object-result';
@@ -14,7 +14,7 @@ export class UsersService {
     @inject(PasswordHashAdapter) private passwordHashAdapter: PasswordHashAdapter
   ) {}
 
-  async createUser(user: CreateUserDTO) {
+  async createUser(user: CreateUserRequestDTO) {
     const checkInputUser = await UserModel.checkIsUserExist(user);
 
     if (checkInputUser.isExist) {
@@ -29,7 +29,7 @@ export class UsersService {
 
     await this.usersRepository.saveUser(userDocument);
 
-    return usersObjectResult.success({ id: userDocument.id });
+    return usersObjectResult.success({ id: userDocument._id.toString() });
   }
 
   async deleteUserById(id: string) {

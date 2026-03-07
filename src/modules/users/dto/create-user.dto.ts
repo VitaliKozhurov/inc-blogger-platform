@@ -3,3 +3,9 @@ export type CreateUserDTO = {
   email: string;
   passwordHash: string;
 };
+
+export type CreateUserRequestDTO = {
+  login: string;
+  email: string;
+  password: string;
+};

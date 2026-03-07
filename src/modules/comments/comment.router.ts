@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
-import { accessTokenMiddleware } from '../../auth/middleware';
 import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware, idUriParamMiddleware } from '../../core/middleware';
+import { accessTokenMiddleware } from '../auth';
 import { likeInputModelMiddleware } from '../likes';
 
 import { CommentsController } from './comments.controller';

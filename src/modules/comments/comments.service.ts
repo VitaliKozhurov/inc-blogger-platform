@@ -46,7 +46,7 @@ export class CommentsService {
 
     await this.commentsRepository.saveComment(commentDocument);
 
-    return commentsObjectResult.success(commentDocument._id.toString());
+    return commentsObjectResult.success({ commentId: commentDocument._id.toString() });
   }
 
   async updateCommentById({

@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
-import { basicAuthMiddleware } from '../../auth/middleware';
 import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware, idUriParamMiddleware } from '../../core/middleware';
+import { basicAuthMiddleware } from '../auth/middleware/basic-auth.middleware';
 
 import { userInputModelMiddleware } from './middleware/user-input-model.middleware';
 import { usersInputQueryMiddleware } from './middleware/users-input-query.middleware';

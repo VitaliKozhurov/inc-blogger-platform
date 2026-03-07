@@ -1,5 +1,10 @@
+export { CommentModel } from './comment.model';
 export { commentRouter } from './comment.router';
 export { CommentsQueryRepository } from './comments-query.repository';
 export { CommentsController } from './comments.controller';
 export { CommentsRepository } from './comments.repository';
 export { CommentsService } from './comments.service';
+export { CommentsRequestQueryDTO } from './dto/comment-request-type.dto';
+export { CreateCommentDTO } from './dto/create-comment.dto';
+export { commentInputQueryMiddleware } from './middleware/comment-input-query.middleware';
+export { commentInputModelMiddleware } from './middleware/comment-input-model.middleware';

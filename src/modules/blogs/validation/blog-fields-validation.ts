@@ -1,10 +1,11 @@
 import { body, ValidationChain } from 'express-validator';
 
-import { URL_REG_EXP } from '../../core/constants';
-import { ERROR_FIELD_MESSAGES } from '../../core/utils';
-import { BlogFields, CreateBlogInputType } from '../types';
+import { URL_REG_EXP } from '../../../core/constants';
+import { ERROR_FIELD_MESSAGES } from '../../../core/utils';
+import { CreateBlogDTO } from '../dto/create-blog.dto';
+import { BlogFields } from '../types/blog-fields.types';
 
-type BlogValidatorType = Record<keyof CreateBlogInputType, ValidationChain>;
+type BlogValidatorType = Record<keyof CreateBlogDTO, ValidationChain>;
 
 export const BLOG_VALIDATION_LENGTH = {
   [BlogFields.NAME]: { min: 1, max: 15 },

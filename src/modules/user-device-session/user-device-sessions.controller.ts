@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 
-import { AuthTokenAdapter } from '../../auth/adapters';
 import { HTTP_STATUSES, RequestWithUriParamType } from '../../core/types';
 import { RESULT_STATUSES, resultCodeToHttpException } from '../../core/utils';
+import { AuthTokenAdapter } from '../auth';
 
 import { UserDeviceSessionsService } from './user-device-session.service';
 import { UserDeviceSessionsQueryRepository } from './user-device-sessions-query.repository';

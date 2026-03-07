@@ -2,10 +2,10 @@ import { body, ValidationChain } from 'express-validator';
 
 import { EMAIL_REG_EXP } from '../../../core/constants';
 import { ERROR_FIELD_MESSAGES } from '../../../core/utils';
-import { CreateUserDTO } from '../dto/create-user.dto';
+import { CreateUserRequestDTO } from '../dto/create-user.dto';
 import { UserFields } from '../types/user-fields.types';
 
-type UserFieldsValidationType = Record<keyof CreateUserDTO, ValidationChain>;
+type UserFieldsValidationType = Record<keyof CreateUserRequestDTO, ValidationChain>;
 
 export const USER_VALIDATION_LENGTH = {
   [UserFields.LOGIN]: { min: 3, max: 10 },
@@ -14,10 +14,7 @@ export const USER_VALIDATION_LENGTH = {
 
 export const USER_LOGIN_REG_EXP = /^[a-zA-Z0-9_-]*$/;
 
-export const userFieldsValidation: Omit<
-  UserFieldsValidationType,
-  'emailConfirmation' | 'passwordRecovery'
-> = {
+export const userFieldsValidation: UserFieldsValidationType = {
   [UserFields.LOGIN]: body(UserFields.LOGIN)
     .exists()
     .withMessage(ERROR_FIELD_MESSAGES.REQUIRED(UserFields.LOGIN))

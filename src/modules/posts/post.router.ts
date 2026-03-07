@@ -1,13 +1,10 @@
 import { Router } from 'express';
 
-import { accessTokenMiddleware, basicAuthMiddleware } from '../../auth/middleware';
-import {
-  commentInputModelMiddleware,
-  commentInputQueryMiddleware,
-} from '../../comments/middleware';
 import { iocContainer } from '../../composition-root';
 import { APP_ROUTES } from '../../core/constants';
 import { checkValidationMiddleware, idUriParamMiddleware } from '../../core/middleware';
+import { accessTokenMiddleware, basicAuthMiddleware } from '../auth';
+import { commentInputModelMiddleware, commentInputQueryMiddleware } from '../comments';
 
 import { postInputModelMiddleware } from './middleware/post-input-model.middleware';
 import { postInputQueryMiddleware } from './middleware/post-input-query.middleware';

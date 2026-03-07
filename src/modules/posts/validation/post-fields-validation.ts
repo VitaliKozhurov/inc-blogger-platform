@@ -1,9 +1,10 @@
 import { body, ValidationChain } from 'express-validator';
 
-import { ERROR_FIELD_MESSAGES } from '../../core/utils';
-import { CreatePostInputType, PostFields } from '../types';
+import { ERROR_FIELD_MESSAGES } from '../../../core/utils';
+import { CreatePostDTO } from '../dto/create-post.dto';
+import { PostFields } from '../types/post-fields.types';
 
-type PostValidationType = Record<keyof CreatePostInputType, ValidationChain>;
+type PostValidationType = Record<keyof CreatePostDTO, ValidationChain>;
 
 export const POST_VALIDATION_LENGTH = {
   [PostFields.TITLE]: { min: 1, max: 30 },

@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 
-import { AuthTokenAdapter } from '../../auth/adapters';
 import { convertUnixTimeToDate } from '../../core/utils';
+import { AuthTokenAdapter } from '../auth';
 
 import { UserDeviceSessionModel } from './user-device-session.model';
 import { UserDeviceSessionsRepository } from './user-device-sessions.repository';
