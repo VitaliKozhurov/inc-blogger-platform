@@ -58,8 +58,15 @@ export class AuthService {
     const userId = user._id.toString();
     const deviceId = randomUUID();
 
-    const accessToken = this.authTokenAdapter.createAccessToken({ userId });
-    const refreshToken = this.authTokenAdapter.createRefreshToken({ userId, deviceId });
+    const accessToken = this.authTokenAdapter.createAccessToken({
+      userId,
+      login: user.login,
+    });
+    const refreshToken = this.authTokenAdapter.createRefreshToken({
+      userId,
+      login: user.login,
+      deviceId,
+    });
 
     await this.userDeviceSessionService.createSession({
       userId,
@@ -96,9 +103,13 @@ export class AuthService {
 
     const userId = user._id.toString();
 
-    const newAccessToken = this.authTokenAdapter.createAccessToken({ userId });
+    const newAccessToken = this.authTokenAdapter.createAccessToken({
+      userId,
+      login: user.login,
+    });
     const newRefreshToken = this.authTokenAdapter.createRefreshToken({
       userId,
+      login: user.login,
       deviceId: tokenResult.deviceId,
     });
 

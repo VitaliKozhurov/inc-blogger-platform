@@ -6,9 +6,11 @@ import { LikeStatus } from './like-status.types';
 
 export type LikeType = {
   authorId: string;
+  login: string;
   parentId: string;
   createdAt: Date;
   status: LikeStatus;
+  addedLikeDate: Date | null;
 };
 
 export type LikeDocument = HydratedDocument<LikeType, LikeMethodsType>;

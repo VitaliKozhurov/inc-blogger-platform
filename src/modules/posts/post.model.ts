@@ -6,6 +6,20 @@ import { PostMethodsType, PostStaticMethodsType, PostType } from './types/post.t
 
 type PostModelType = Model<PostType, unknown, PostMethodsType> & PostStaticMethodsType;
 
+const postLikeSchema = new Schema(
+  {
+    likesCount: {
+      type: Number,
+      default: 0,
+    },
+    dislikesCount: {
+      type: Number,
+      default: 0,
+    },
+  },
+  { _id: false }
+);
+
 const postSchema = new Schema<PostType, PostModelType, PostMethodsType>(
   {
     title: {
@@ -32,6 +46,10 @@ const postSchema = new Schema<PostType, PostModelType, PostMethodsType>(
       type: Date,
       required: true,
     },
+    extendedLikesInfo: {
+      type: postLikeSchema,
+      required: true,
+    },
   },
   { collection: 'posts', versionKey: false }
 );
@@ -54,13 +72,17 @@ postSchema.static(
     blogName: string;
     postData: CreatePostDTO;
   }): ReturnType<PostStaticMethodsType['createPostInstance']> {
-    const newPost = {
+    const newPost: PostType = {
       blogId: postData.blogId,
       blogName: blogName,
       title: postData.title,
       shortDescription: postData.shortDescription,
       content: postData.content,
       createdAt: new Date(),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+      },
     };
 
     const postDocument = await this.create(newPost);

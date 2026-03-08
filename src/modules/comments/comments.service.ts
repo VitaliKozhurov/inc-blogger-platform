@@ -99,10 +99,12 @@ export class CommentsService {
 
   async updateCommentLikeStatus({
     userId,
+    login,
     commentId,
     likeStatus,
   }: {
     userId: string;
+    login: string;
     commentId: string;
     likeStatus: LikeStatus;
   }) {
@@ -126,6 +128,7 @@ export class CommentsService {
 
       const likeDocument = await LikeModel.createLikeInstance({
         authorId: userId,
+        login,
         parentId,
         likeStatus,
       });

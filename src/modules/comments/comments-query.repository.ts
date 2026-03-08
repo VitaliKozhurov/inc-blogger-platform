@@ -42,26 +42,25 @@ export class CommentsQueryRepository {
     const { sort, skip, limit } = getPaginationParams(query);
 
     const [items, totalCount] = await Promise.all([
-      CommentModel.find({ postId }).lean().sort(sort).skip(skip).limit(limit),
-      CommentModel.countDocuments({ postId }),
+      CommentModel.find({ postId }).lean().sort(sort).skip(skip).limit(limit).exec(),
+      CommentModel.countDocuments({ postId }).exec(),
     ]);
 
     const commentsIds = items.map(c => c._id.toString());
 
-    const likes = await LikeModel.find({ parentId: { $in: commentsIds } })
-      .lean()
-      .exec();
+    const likes = userId
+      ? await LikeModel.find({ parentId: { $in: commentsIds }, authorId: userId })
+          .lean()
+          .exec()
+      : [];
+
+    const likesMap = new Map(likes.map(like => [like.parentId, like.status]));
 
     const paginationData = getPaginationData({
       items: items.map(comment => {
-        const like = likes.find(
-          like => like.parentId === comment._id.toString() && like.authorId === userId
-        );
+        const myStatus = likesMap.get(comment._id.toString()) ?? LikeStatus.None;
 
-        return this.mapToViewModel({
-          comment,
-          myStatus: like && like.authorId === userId ? like.status : LikeStatus.None,
-        });
+        return this.mapToViewModel({ comment, myStatus });
       }),
       pageNumber: query.pageNumber,
       pageSize: query.pageSize,

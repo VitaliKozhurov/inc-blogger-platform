@@ -10,6 +10,10 @@ export type PostType = {
   blogId: string;
   blogName: string;
   createdAt: Date;
+  extendedLikesInfo: {
+    likesCount: number;
+    dislikesCount: number;
+  };
 };
 
 export type PostDocument = HydratedDocument<PostType, PostMethodsType>;

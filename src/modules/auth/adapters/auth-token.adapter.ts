@@ -5,6 +5,7 @@ import { JWTAdapter } from '../../../core/adapters';
 
 type AccessTokenPayload = {
   userId: string;
+  login: string;
 };
 
 type RefreshTokenPayload = AccessTokenPayload & {

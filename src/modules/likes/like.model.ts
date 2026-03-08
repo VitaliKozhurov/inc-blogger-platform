@@ -9,6 +9,7 @@ type LikeModelType = Model<LikeType, unknown, LikeMethodsType> & LikeStaticMetho
 const likeSchema = new Schema<LikeType, LikeModelType, LikeMethodsType>(
   {
     authorId: { type: String, required: true },
+    login: { type: String, required: true },
     parentId: { type: String, required: true },
     createdAt: {
       type: Date,
@@ -18,6 +19,10 @@ const likeSchema = new Schema<LikeType, LikeModelType, LikeMethodsType>(
       type: String,
       enum: LikeStatus,
       default: LikeStatus.None,
+    },
+    addedLikeDate: {
+      type: Date,
+      default: null,
     },
   },
   { collection: 'likes', versionKey: false }
@@ -36,9 +41,11 @@ likeSchema.static(
   ): ReturnType<LikeStaticMethodsType['createLikeInstance']> {
     const newLike = {
       authorId: args.authorId,
+      login: args.login,
       parentId: args.parentId,
       status: args.likeStatus,
       createdAt: new Date(),
+      addedLikeDate: args.likeStatus === LikeStatus.Like ? new Date() : null,
     };
 
     const likeDocument = await this.create(newLike);
