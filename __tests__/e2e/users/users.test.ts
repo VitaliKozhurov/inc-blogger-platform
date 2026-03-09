@@ -3,12 +3,12 @@ import { ObjectId } from 'mongodb';
 import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES, ResponseWithPaginationType } from '../../../src/core/types';
 import { ERROR_FIELD_MESSAGES } from '../../../src/core/utils';
-import { UserViewModelType } from '../../../src/users/types';
+import { UserViewModelDTO } from '../../../src/modules/users/dto/user-view-model.dto';
 import { TestManager } from '../../utils/test-manager';
 import { createUser } from '../../utils/users/create-user';
 import { mockUser } from '../../utils/users/mock';
 
-type UsersResponseType = ResponseWithPaginationType<UserViewModelType>;
+type UsersResponseType = ResponseWithPaginationType<UserViewModelDTO>;
 
 describe('Users test', () => {
   const testManager = new TestManager();
@@ -135,7 +135,7 @@ describe('Users test', () => {
 
       expect(createdUser).toHaveProperty('id');
 
-      const { body }: { body: ResponseWithPaginationType<UserViewModelType> } =
+      const { body }: { body: ResponseWithPaginationType<UserViewModelDTO> } =
         await testManager.context
           .request()
           .get(`${APP_ROUTES.USERS}`)

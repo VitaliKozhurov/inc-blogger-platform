@@ -1,11 +1,11 @@
 import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES } from '../../../src/core/types';
-import { UserViewModelType } from '../../../src/users/types';
+import { UserViewModelDTO } from '../../../src/modules/users/dto/user-view-model.dto';
 import { TestManager } from '../test-manager';
 
 import { mockUser } from './mock';
 
-export const createUser = async (testManager: TestManager): Promise<UserViewModelType> => {
+export const createUser = async (testManager: TestManager): Promise<UserViewModelDTO> => {
   const { body } = await testManager.context
     .request()
     .post(`${APP_ROUTES.USERS}`)

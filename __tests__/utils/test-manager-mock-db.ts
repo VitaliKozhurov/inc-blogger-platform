@@ -5,9 +5,8 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Mongoose } from 'mongoose';
 import superTestRequest, { Agent } from 'supertest';
 
+import { runDB, stopDb } from '../../src/config/mongo.db';
 import { initApp } from '../../src/init-app';
-
-import { runDB, stopDb } from './../../src/db/mongo.db';
 
 export class TestManagerMockDB {
   public request!: () => Agent;

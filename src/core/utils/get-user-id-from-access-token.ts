@@ -1,5 +1,5 @@
-import { AuthTokenAdapter } from '../../auth/adapters';
 import { iocContainer } from '../../composition-root';
+import { AuthTokenAdapter } from '../../modules/auth/adapters/auth-token.adapter';
 
 export const getUserIdFromAccessToken = (tokenString: string | undefined) => {
   if (!tokenString) {

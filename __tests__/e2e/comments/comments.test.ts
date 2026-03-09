@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb';
 
-import { AuthTokenAdapter } from '../../../src/auth/adapters';
 import { iocContainer } from '../../../src/composition-root';
 import { APP_ROUTES } from '../../../src/core/constants';
 import { HTTP_STATUSES } from '../../../src/core/types';
-import { LikeStatus } from '../../../src/likes/model';
+import { AuthTokenAdapter } from '../../../src/modules/auth/adapters/auth-token.adapter';
+import { LikeStatus } from '../../../src/modules/likes/types/like-status.types';
 import { mockComment } from '../../utils/comments/mock';
 import { createPost } from '../../utils/posts/create-post';
 import { TestManager } from '../../utils/test-manager';
