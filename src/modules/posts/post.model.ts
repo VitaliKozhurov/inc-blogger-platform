@@ -1,5 +1,8 @@
 import { Model, model, Schema } from 'mongoose';
 
+import { LikeStatus } from '../likes/types/like-status.types';
+
+import { LikeDocument } from './../likes/types/like.types';
 import { CreatePostDTO } from './dto/create-post.dto';
 import { UpdatePostDTO } from './dto/update-post.dto';
 import { PostMethodsType, PostStaticMethodsType, PostType } from './types/post.types';
@@ -62,6 +65,68 @@ postSchema.method('updatePost', function updateBlog(args: UpdatePostDTO) {
 
   return this;
 });
+
+postSchema.method(
+  'updatePostLikesByIncomingLikeStatus',
+  function updatePostLikesByIncomingLikeStatus(likeStatus: LikeStatus) {
+    if (likeStatus === LikeStatus.Like) {
+      this.extendedLikesInfo.likesCount += 1;
+    }
+
+    if (likeStatus === LikeStatus.Dislike) {
+      this.extendedLikesInfo.dislikesCount += 1;
+    }
+
+    return this;
+  }
+);
+
+postSchema.method(
+  'updatePostLikesByIncomingLikeStatusAndLike',
+  function updatePostLikesByIncomingLikeStatusAndLike(args: {
+    like: LikeDocument;
+    likeStatus: LikeStatus;
+  }) {
+    const { like, likeStatus } = args;
+
+    if (like.status === LikeStatus.Like) {
+      if (likeStatus === LikeStatus.Dislike) {
+        this.extendedLikesInfo.dislikesCount += 1;
+        this.extendedLikesInfo.likesCount -= 1;
+      }
+
+      if (likeStatus === LikeStatus.None) {
+        this.extendedLikesInfo.likesCount -= 1;
+      }
+    }
+
+    if (like.status === LikeStatus.Dislike) {
+      if (likeStatus === LikeStatus.Like) {
+        this.extendedLikesInfo.likesCount += 1;
+        this.extendedLikesInfo.dislikesCount -= 1;
+      }
+
+      if (likeStatus === LikeStatus.None) {
+        this.extendedLikesInfo.dislikesCount -= 1;
+      }
+    }
+
+    if (like.status === LikeStatus.None) {
+      if (likeStatus === LikeStatus.Like) {
+        this.extendedLikesInfo.likesCount += 1;
+      }
+
+      if (likeStatus === LikeStatus.Dislike) {
+        this.extendedLikesInfo.dislikesCount += 1;
+      }
+    }
+
+    this.extendedLikesInfo.likesCount = Math.max(0, this.extendedLikesInfo.likesCount);
+    this.extendedLikesInfo.dislikesCount = Math.max(0, this.extendedLikesInfo.dislikesCount);
+
+    return this;
+  }
+);
 
 postSchema.static(
   'createPostInstance',

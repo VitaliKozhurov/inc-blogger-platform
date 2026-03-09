@@ -59,19 +59,73 @@ export class PostsQueryRepository {
       PostModel.countDocuments().exec(),
     ]);
 
-    const postsIds = items.map(c => c._id.toString());
+    const paginationData = await this.buildPostsPaginationResult({
+      items,
+      pageNumber: requestArgs.pageNumber,
+      pageSize: requestArgs.pageSize,
+      totalCount,
+      userId,
+    });
+
+    return paginationData;
+  }
+
+  async getPostsByBlogId({
+    blogId,
+    userId,
+    query,
+  }: {
+    blogId: string;
+    userId?: string;
+    query: PostsRequestQueryDTO;
+  }) {
+    const { sort, skip, limit } = getPaginationParams(query);
+
+    const [items, totalCount] = await Promise.all([
+      PostModel.find({ blogId }).lean().sort(sort).skip(skip).limit(limit),
+      PostModel.countDocuments({ blogId }),
+    ]);
+
+    const paginationData = await this.buildPostsPaginationResult({
+      items,
+      pageNumber: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount,
+      userId,
+    });
+
+    return paginationData;
+  }
+
+  private async buildPostsPaginationResult({
+    items,
+    totalCount,
+    userId,
+    pageNumber,
+    pageSize,
+  }: {
+    items: ({ _id: Types.ObjectId } & PostType)[];
+    totalCount: number;
+    userId?: string;
+    pageNumber: number;
+    pageSize: number;
+  }) {
+    const postsIds = items.map(post => post._id.toString());
 
     if (postsIds.length === 0) {
       return getPaginationData({
         items: [],
-        pageNumber: requestArgs.pageNumber,
-        pageSize: requestArgs.pageSize,
+        pageNumber,
+        pageSize,
         totalCount,
       });
     }
 
     const likesPromise = userId
-      ? LikeModel.find({ parentId: { $in: postsIds }, authorId: userId })
+      ? LikeModel.find({
+          parentId: { $in: postsIds },
+          authorId: userId,
+        })
           .lean()
           .exec()
       : Promise.resolve([]);
@@ -107,41 +161,20 @@ export class PostsQueryRepository {
     ]);
 
     const likesMap = new Map(likes.map(like => [like.parentId, like.status]));
-
     const newestLikesMap = new Map(newestLikesByPosts.map(item => [item._id, item.newestLikes]));
 
-    const paginationData = getPaginationData({
+    return getPaginationData({
       items: items.map(post => {
-        const likeStatus = likesMap.get(post._id.toString());
-        const newestLikes = newestLikesMap.get(post._id.toString()) ?? [];
-        const myStatus = likeStatus ? likeStatus : LikeStatus.None;
+        const postId = post._id.toString();
+        const myStatus = likesMap.get(postId) ?? LikeStatus.None;
+        const newestLikes = newestLikesMap.get(postId) ?? [];
 
         return this.mapToViewModel({ post, myStatus, newestLikes });
       }),
-      pageNumber: requestArgs.pageNumber,
-      pageSize: requestArgs.pageSize,
+      pageNumber,
+      pageSize,
       totalCount,
     });
-
-    return paginationData;
-  }
-
-  async getPostsByBlogId({ blogId, query }: { blogId: string; query: PostsRequestQueryDTO }) {
-    const { sort, skip, limit } = getPaginationParams(query);
-
-    const [items, totalCount] = await Promise.all([
-      PostModel.find({ blogId }).lean().sort(sort).skip(skip).limit(limit),
-      PostModel.countDocuments({ blogId }),
-    ]);
-
-    const paginationData = getPaginationData({
-      items: items.map(this.mapToViewModel),
-      pageNumber: query.pageNumber,
-      pageSize: query.pageSize,
-      totalCount,
-    });
-
-    return paginationData;
   }
 
   private mapToViewModel({ post, myStatus, newestLikes }: PostMapInputType): PostViewModelDTO {

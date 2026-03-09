@@ -7,6 +7,7 @@ import { accessTokenMiddleware } from '../auth/middleware/access-token.middlewar
 import { basicAuthMiddleware } from '../auth/middleware/basic-auth.middleware';
 import { commentInputModelMiddleware } from '../comments/middleware/comment-input-model.middleware';
 import { commentInputQueryMiddleware } from '../comments/middleware/comment-input-query.middleware';
+import { likeInputModelMiddleware } from '../likes/middleware/like-input-model.middleware';
 
 import { postInputModelMiddleware } from './middleware/post-input-model.middleware';
 import { postInputQueryMiddleware } from './middleware/post-input-query.middleware';
@@ -70,4 +71,13 @@ postRouter.post(
   commentInputModelMiddleware,
   checkValidationMiddleware,
   postsController.createCommentByPostId.bind(postsController)
+);
+
+postRouter.put(
+  `${APP_ROUTES.ID}${APP_ROUTES.LIKE_STATUS}`,
+  accessTokenMiddleware,
+  idUriParamMiddleware,
+  likeInputModelMiddleware,
+  checkValidationMiddleware,
+  postsController.updatePostLikeStatus.bind(postsController)
 );

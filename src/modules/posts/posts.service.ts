@@ -1,6 +1,9 @@
 import { inject, injectable } from 'inversify';
 
 import { BlogsRepository } from '../blogs/blogs.repository';
+import { LikeModel } from '../likes/like.model';
+import { LikesRepository } from '../likes/likes.repository';
+import { LikeStatus } from '../likes/types/like-status.types';
 
 import { CreatePostDTO } from './dto/create-post.dto';
 import { UpdatePostDTO } from './dto/update-post.dto';
@@ -12,7 +15,8 @@ import { postsObjectResult } from './utils/posts-object-result';
 export class PostsService {
   constructor(
     @inject(BlogsRepository) private blogsRepository: BlogsRepository,
-    @inject(PostsRepository) private postsRepository: PostsRepository
+    @inject(PostsRepository) private postsRepository: PostsRepository,
+    @inject(LikesRepository) private likesRepository: LikesRepository
   ) {}
 
   async createPost(postData: CreatePostDTO) {
@@ -51,5 +55,66 @@ export class PostsService {
     }
 
     return postsObjectResult.notFoundPost();
+  }
+
+  async updatePostLikeStatus({
+    userId,
+    login,
+    postId,
+    likeStatus,
+  }: {
+    userId: string;
+    login: string;
+    postId: string;
+    likeStatus: LikeStatus;
+  }) {
+    const post = await this.postsRepository.getPostById(postId);
+
+    if (!post) {
+      return postsObjectResult.notFoundPost();
+    }
+
+    const parentId = post._id.toString();
+
+    const like = await this.likesRepository.findByFilter({
+      parentId,
+      authorId: userId,
+    });
+
+    if (!like) {
+      if (likeStatus === LikeStatus.None) {
+        return postsObjectResult.success();
+      }
+
+      const likeDocument = await LikeModel.createLikeInstance({
+        authorId: userId,
+        login,
+        parentId,
+        likeStatus,
+      });
+
+      const postDocument = post.updatePostLikesByIncomingLikeStatus(likeStatus);
+
+      await this.likesRepository.saveLike(likeDocument);
+      await this.postsRepository.savePost(postDocument);
+
+      return postsObjectResult.success();
+    }
+
+    if (likeStatus === like.status) {
+      return postsObjectResult.success();
+    }
+
+    const postDocument = post.updatePostLikesByIncomingLikeStatusAndLike({
+      like,
+      likeStatus,
+    });
+
+    const likeDocument = like.updateLikeStatus(likeStatus);
+
+    await this.likesRepository.saveLike(likeDocument);
+    await this.postsRepository.savePost(postDocument);
+
+    return postsObjectResult.success();
   }
 }

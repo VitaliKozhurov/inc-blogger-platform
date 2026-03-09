@@ -26,6 +26,7 @@ export const accessTokenMiddleware = (req: Request, res: Response, next: NextFun
   }
 
   req.userId = result.payload.userId;
+  req.login = result.payload.login;
 
   next();
 };

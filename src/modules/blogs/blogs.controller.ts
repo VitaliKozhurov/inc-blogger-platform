@@ -10,7 +10,11 @@ import {
   RequestWithParamAndQueryType,
   RequestWithUriParamType,
 } from '../../core/types';
-import { RESULT_STATUSES, resultCodeToHttpException } from '../../core/utils';
+import {
+  getUserIdFromAccessToken,
+  RESULT_STATUSES,
+  resultCodeToHttpException,
+} from '../../core/utils';
 import { CreatePostDTO } from '../posts/dto/create-post.dto';
 import { PostsRequestQueryDTO } from '../posts/dto/posts-request-query.dto';
 import { PostsQueryRepository } from '../posts/posts-query.repository';
@@ -91,6 +95,7 @@ export class BlogsController {
     res: Response
   ) {
     const blogId = req.params.id;
+    const userId = req.userId ?? undefined;
 
     const result = await this.postsService.createPost({ blogId, ...req.body });
 
@@ -98,7 +103,10 @@ export class BlogsController {
       return res.sendStatus(resultCodeToHttpException(result.status));
     }
 
-    const createdPostViewModel = await this.postsQueryRepository.getPostById(result.data!.id);
+    const createdPostViewModel = await this.postsQueryRepository.getPostById({
+      id: result.data!.id,
+      userId,
+    });
 
     res.status(HTTP_STATUSES.CREATED).send(createdPostViewModel);
   }
@@ -107,6 +115,7 @@ export class BlogsController {
     req: RequestWithParamAndQueryType<IdParamType, Record<string, string>>,
     res: Response
   ) {
+    const userId = getUserIdFromAccessToken(req.headers.authorization) ?? undefined;
     const blogId = req.params.id;
 
     const query = matchedData<PostsRequestQueryDTO>(req, {
@@ -120,7 +129,11 @@ export class BlogsController {
       return res.sendStatus(HTTP_STATUSES.NOT_FOUND);
     }
 
-    const postsViewMode = await this.postsQueryRepository.getPostsByBlogId({ blogId, query });
+    const postsViewMode = await this.postsQueryRepository.getPostsByBlogId({
+      userId,
+      blogId,
+      query,
+    });
 
     return res.status(HTTP_STATUSES.OK).send(postsViewMode);
   }

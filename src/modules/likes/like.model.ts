@@ -28,6 +28,8 @@ const likeSchema = new Schema<LikeType, LikeModelType, LikeMethodsType>(
   { collection: 'likes', versionKey: false }
 );
 
+likeSchema.index({ parentId: 1, status: 1, addedLikeDate: -1 });
+
 likeSchema.method('updateLikeStatus', function updateLikeStatus(likeStatus: LikeStatus) {
   this.status = likeStatus;
 
